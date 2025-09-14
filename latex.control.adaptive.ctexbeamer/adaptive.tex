@@ -1,0 +1,259 @@
+\documentclass{beamer}
+\usetheme{Madrid} % 简洁清晰的Beamer主题
+\usecolortheme{whale} % 沉稳配色，适配学术场景
+\usepackage{ctex} % 中文支持
+\usepackage{amsmath,amssymb,graphicx} % 公式与图形支持
+\usepackage{hyperref} % 超链接
+
+% 字体配置
+\setCJKmainfont{SimSun} % 中文正文字体（宋体）
+\setCJKsansfont{Microsoft YaHei} % 中文标题字体（微软雅黑）
+
+% 课件基本信息
+\title{参数估计与充分丰富信号}
+\subtitle{自适应控制的核心方法与收敛条件}
+\author{基于Alessandro Astolfi课程文档整理}
+\institute{自动化学院 控制理论与应用教研室}
+\date{\today}
+
+\begin{document}
+
+% ---------------------- 第1页：封面 ----------------------
+\begin{frame}
+  \titlepage
+  \note{1分钟：封面页快速带过，明确课件主题是“参数估计”与“充分丰富信号”}
+\end{frame}
+
+% ---------------------- 第2页：目录 ----------------------
+\begin{frame}{目录}
+  \tableofcontents[sectionstyle=show/shaded, subsectionstyle=show/show/shaded]
+  \note{1分钟：梳理课件逻辑，让听众明确核心模块}
+\end{frame}
+
+% ---------------------- 第3页：参数估计的基本概念 ----------------------
+\section{参数估计：自适应控制的“感知核心”}
+\begin{frame}{为什么需要参数估计？}
+  \begin{block}{核心问题：系统参数未知性}
+    自适应控制的前提是“处理不确定性”，而**参数未知**是最常见的不确定性形式，例如：
+    - 线性系统：$\dot{x}=Ax+Bu$中矩阵$A,B$的元素未知；
+    - 非线性系统：$\dot{x}=a_0f(x,t)+b_0g(x,t)+u$中系数$a_0,b_0$未知。
+  \end{block}
+
+  \vspace{0.5cm}
+  \begin{block}{参数估计的本质}
+    \begin{center}
+      \textbf{观测响应 $y(t)$ vs 模型响应 $\hat{y}(\hat{\theta},t)$} $\to$ \textbf{更新参数估计 $\hat{\theta}$}
+    \end{center}
+    目标：使估计误差$\epsilon=y-\hat{y}$渐近收敛，最终$\hat{\theta}\to\theta$（真实参数）。
+  \end{block}
+  \note{3分钟：结合文档1-821~838页，讲清参数估计的背景与核心逻辑}
+\end{frame}
+
+% ---------------------- 第4页：参数估计的核心框架 ----------------------
+\begin{frame}{参数估计的三步骤框架}
+  \begin{enumerate}
+    \item[Step 1：\textbf{模型参数化}]
+      将系统表示为“可测信号+未知参数”的形式，文档中核心模型包括：
+      - 线性参数模型：$z=\theta^\top\phi$（$\phi$为可测回归向量，如滤波后的$u,y$）；
+      - 双线性参数模型：$y=k_0(\theta^\top\phi+z_0)$（$k_0$为未知高频增益，$\theta$为未知参数向量）。
+
+    \item[Step 2：\textbf{设计更新律}]
+      基于误差信号$\epsilon$设计$\dot{\hat{\theta}}$，保证$\hat{\theta}$有界且$\epsilon$收敛。
+
+    \item[Step 3：\textbf{输入信号设计}]
+      选择“充分丰富的输入$u$”，确保参数估计能收敛到真实值（核心：解决“信息不足”问题）。
+  \end{enumerate}
+
+  \vspace{0.3cm}
+  \begin{figure}
+    % \includegraphics[width=0.7\textwidth]{param_est_flow.pdf} % 替换为参数估计流程图（如文档1-838页逻辑）
+    \caption{参数估计的闭环逻辑}
+  \end{figure}
+  \note{4分钟：基于文档1-696~813页参数化内容，拆解框架，引出“输入设计”的必要性}
+\end{frame}
+
+% ---------------------- 第5-6页：常用参数估计方法 ----------------------
+\section{常用参数估计方法}
+\begin{frame}{1. 梯度法（Gradient Identifiers）}
+  \begin{block}{核心模型：线性参数化$z=\theta^\top\phi$}
+    估计误差定义：$\epsilon=z-\hat{z}=z-\hat{\theta}^\top\phi=-\tilde{\theta}^\top\phi$（$\tilde{\theta}=\hat{\theta}-\theta$）。
+  \end{block}
+
+  \begin{block}{梯度更新律设计}
+    最小化瞬时代价$J(\hat{\theta})=\frac{1}{2}\epsilon^2$，由梯度下降得：
+    \[
+    \dot{\hat{\theta}}=\Gamma\phi\epsilon
+    \]
+    其中$\Gamma=\Gamma^\top>0$为自适应增益（调节参数更新速度）。
+  \end{block}
+
+  \begin{block}{稳定性分析（Lyapunov方法）}
+    取Lyapunov函数$V=\frac{1}{2}\tilde{\theta}^\top\Gamma^{-1}\tilde{\theta}$，则：
+    \[
+    \dot{V}=\tilde{\theta}^\top\Gamma^{-1}\dot{\tilde{\theta}}=\tilde{\theta}^\top\phi\epsilon=-\epsilon^2\leq0
+    \]
+    结论：$\epsilon\in L_2\cap L_\infty$，$\hat{\theta}\in L_\infty$（参数有界）。
+  \end{block}
+  \note{4分钟：详细讲解文档1-1048~1067页梯度法，突出稳定性分析核心}
+\end{frame}
+
+\begin{frame}{2. SPR设计与DREM方法}
+  \begin{block}{SPR设计（Strictly Positive Real）}
+    核心思想：对参数模型滤波，使传递函数$W(s)L(s)$为\textbf{严格正实}，结合无源性定理：
+    - 误差系统：$\epsilon=W(s)L(s)(-\tilde{\theta}^\top\phi)$（严格无源）；
+    - 参数更新：$\dot{\hat{\theta}}=\Gamma\phi\epsilon$（无源子系统）；
+    - 互联后：$\epsilon\to0$，若$\phi$持续激励则$\hat{\theta}\to\theta$（文档1-1013~1037页）。
+  \end{block}
+
+  \vspace{0.3cm}
+  \begin{block}{DREM方法（动态回归扩展混合）}
+    解决“参数耦合”问题：通过滤波与矩阵伴随运算，将多参数估计解耦为 scalar 估计：
+    \[
+    \tilde{\mathcal{Z}}_i=\det\Phi\cdot\theta_i \implies \dot{\hat{\theta}}_i=\gamma_i\det\Phi(\tilde{\mathcal{Z}}_i-\det\Phi\hat{\theta}_i)
+    \]
+    优势：每个参数独立更新，保证$|\tilde{\theta}_i(t)|$非增（文档1-1093~1111页）。
+  \end{block}
+  \note{4分钟：简化文档中SPR和DREM的复杂推导，聚焦核心优势与应用场景}
+\end{frame}
+
+% ---------------------- 第7-9页：充分丰富信号的定义与意义 ----------------------
+\section{充分丰富信号：参数收敛的关键}
+\begin{frame}{为什么需要“充分丰富信号”？}
+  \begin{block}{反例：信息不足的输入无法估计参数}
+    以 scalar 系统$\dot{x}=-ax+bu$（$a,b$未知）为例：
+    - 若$u=0$：$x(t)=e^{-at}x(0)$，仅含$a$的信息（且指数衰减），无法估计$b$；
+    - 若$u=u_0$（常数）：$x(t)=e^{-at}(x(0)-\frac{b}{a}u_0)+\frac{b}{a}u_0$，仅能估计$\frac{b}{a}$（比例），无法分离$a,b$；
+    - 若$u=\sin\omega_0t$（正弦信号）：$x(t)$含稳态正弦分量，可从幅值/相位提取$a,b$信息（文档1-955~966页）。
+  \end{block}
+
+  \vspace{0.3cm}
+%   \begin{conclusion}
+    输入信号$u$需携带“足够多的信息”，才能使参数估计$\hat{\theta}$收敛到真实值$\theta$——这就是“充分丰富信号”的核心作用。
+%   \end{conclusion}
+  \note{4分钟：用文档1-955~966页的 scalar 例子，直观说明信号丰富性的必要性}
+\end{frame}
+
+\begin{frame}{充分丰富信号的定义}
+  \begin{block}{定义1：基于频率数量（文档1-970~974页）}
+    信号$u:\mathbb{R}^{\geq0}\to\mathbb{R}$是\textbf{n阶充分丰富}的，若其包含至少$\frac{n}{2}$个不同频率。\\
+    例：$u(t)=\sum_{i=1}^m A_i\sin\omega_i t$（$A_i\neq0$，$\omega_i\neq\omega_k$），则$u$是$2m$阶充分丰富的。
+  \end{block}
+
+  \vspace{0.3cm}
+  \begin{block}{定义2：基于持续激励（Persistent Excitation，文档1-988~990页）}
+    信号$u:\mathbb{R}^{\geq0}\to\mathbb{R}^m$是\textbf{持续激励}的，若存在$t_0,T>0$和$\alpha>0$，使得：
+    \[
+    \frac{1}{T}\int_t^{t+T} u(\tau)u^\top(\tau)d\tau \geq \alpha I>0 \quad \forall t\geq t_0
+    \]
+    物理意义：信号在任意时间窗内的“能量分布”不趋于零，持续提供信息。
+  \end{block}
+  \note{4分钟：准确呈现文档1-970~990页的两个核心定义，用例子辅助理解}
+\end{frame}
+
+\begin{frame}{充分丰富信号与参数收敛的定理}
+  \begin{theorem}[核心定理，文档1-991~1006页]
+    考虑线性系统$\dot{x}=A_p x+B_p u$（$A_p$渐近稳定，$(A_p,B_p)$能控），参数估计采用并行模型（P）或串并行模型（SP）：
+    1. 若$u$是$(n+1)$阶充分丰富信号（$n$为系统阶数），则$\hat{A}_p\to A_p$，$\hat{B}_p\to B_p$（指数收敛）；
+    2. 若多输入$u_i$均为$(n+1)$阶充分丰富且频率互不重叠，则参数估计同样指数收敛。
+  \end{theorem}
+
+  \vspace{0.3cm}
+  \begin{corollary}[回归向量与持续激励]
+    设$\phi=H(s)u$（$H(s)$稳定真有理），若$u$是$n$阶充分丰富信号，且$H(j\omega_1),\dots,H(j\omega_n)$线性无关，则$\phi$是持续激励的——最终保证$\hat{\theta}\to\theta$。
+  \end{corollary}
+
+  \vspace{0.2cm}
+  \begin{figure}
+    %\includegraphics[width=0.6\textwidth]{signal_richness.pdf} % 替换为“充分/不充分信号的频率对比图”
+    \caption{充分丰富信号（多频率）与非充分信号（单频率）的频谱差异}
+  \end{figure}
+  \note{5分钟：讲解文档1-991~1006页的核心定理，建立“信号丰富性→持续激励→参数收敛”的逻辑链}
+\end{frame}
+
+% ---------------------- 第10-11页：实例验证 ----------------------
+\section{实例： scalar 系统的参数估计与信号影响}
+\begin{frame}{实例设置（文档1-1113~1117页）}
+  被控系统：$\dot{x}=-ax+bu$，真实参数$a=0.4$，$b=0.4$；\\
+  参数估计方法：梯度法 vs DREM方法；\\
+  输入信号对比：
+  \begin{enumerate}
+    \item 信号1：$u(t)=10$（常数，1阶，非充分丰富）；
+    \item 信号2：$u(t)=10\sin\left(\frac{5t}{2}\right)$（单频率，2阶，充分丰富）。
+  \end{enumerate}
+
+  \begin{block}{DREM滤波设置}
+    选择两个不同时间常数的滤波器：
+    \[
+    H_1(s)=\frac{1}{s+1}, \quad H_2(s)=\frac{2}{s+2}
+    \]
+    生成解耦的回归信号$\mathcal{Z}$与$\Phi$，实现$a,b$的独立估计。
+  \end{block}
+  \note{3分钟：基于文档1-1113~1117页的Assignment 2，明确实例参数与对比方案}
+\end{frame}
+
+\begin{frame}{实例结果分析}
+  \begin{block}{1. 输入信号对收敛性的影响}
+    - 信号1（常数$u=10$）：$\hat{a}$收敛到近似值，但$\hat{b}$无法收敛（仅能估计$\frac{b}{a}$）；
+    - 信号2（正弦$u=10\sin(2.5t)$）：$\hat{a}\to0.4$，$\hat{b}\to0.4$（指数收敛，因$u$是2阶充分丰富）。
+  \end{block}
+
+  \begin{block}{2. 估计方法性能对比}
+    \begin{tabular}{|c|c|c|}
+      \hline
+      性能指标 & 梯度法 & DREM方法 \\
+      \hline
+      参数耦合性 & 耦合（$\hat{a},\hat{b}$相互影响） & 解耦（独立更新） \\
+      \hline
+      瞬态响应 & 超调较大 & 无超调（$|\tilde{\theta}_i|$非增） \\
+      \hline
+      抗噪声性 & 一般（易受$u,y$噪声干扰） & 更强（滤波抑制噪声） \\
+      \hline
+    \end{tabular}
+  \end{block}
+
+  \vspace{0.2cm}
+  \begin{figure}
+    %\includegraphics[width=0.5\textwidth]{est_result.pdf} % 替换为参数估计收敛曲线（如$\hat{a}(t),\hat{b}(t)$）
+    \caption{正弦输入下的参数估计收敛曲线}
+  \end{figure}
+  \note{3分钟：结合文档实例结论，用表格和曲线直观对比，强化“充分丰富信号+合适方法”的重要性}
+\end{frame}
+
+% ---------------------- 第12-13页：总结与问答 ----------------------
+\section{总结与工程启示}
+\begin{frame}{核心内容总结}
+  \begin{enumerate}
+    \item[1. 参数估计的核心]
+      基于“误差驱动更新”，常用方法各有侧重：
+      - 梯度法：简单易实现，适合线性参数模型；
+      - SPR设计：适用于仅测输入输出的场景；
+      - DREM：解耦多参数估计，鲁棒性强。
+
+    \item[2. 充分丰富信号的关键]
+      - 定义：$n$阶信号需$\geq n/2$个不同频率，或满足持续激励条件；
+      - 作用：是参数估计收敛到真实值的\textbf{必要条件}（无则仅能保证参数有界）。
+
+    \item[3. 工程设计原则]
+      - 输入设计：优先选择多频率组合信号（如$\sum A_i\sin\omega_i t$）；
+      - 方法选择：噪声小时用梯度法，多参数时用DREM，仅I/O测量时用SPR设计。
+  \end{enumerate}
+  \note{3分钟：梳理核心知识点，建立“方法-信号-应用”的关联}
+\end{frame}
+
+\begin{frame}{问答与讨论}
+  \begin{block}{待思考的工程问题}
+    1. 若系统参数时变（如$a(t)=1+0.1\sin t$），充分丰富信号是否仍能保证参数估计跟踪？\\
+    2. 如何在“控制性能”与“信号丰富性”间平衡（如避免输入过大影响系统运行）？\\
+    3. 对于非线性系统，充分丰富信号的定义是否需要调整？
+  \end{block}
+
+  \vspace{1cm}
+  \begin{center}
+    \Huge{谢谢聆听！}\\
+    \vspace{0.5cm}
+    \Large{欢迎提问与交流}
+  \end{center}
+  \note{4分钟：提出文档相关的延伸问题，引导讨论，结束课件}
+\end{frame}
+
+\end{document}
