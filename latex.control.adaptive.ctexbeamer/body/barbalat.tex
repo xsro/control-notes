@@ -1,6 +1,52 @@
 \section{Barbalat 引理}
-% ---------------------- 第2页：背景引入 —— 矛盾与问题 ----------------------
-\begin{frame}{背景引入：一个核心矛盾}
+
+\begin{frame}
+  \frametitle{Barbalat 引理}
+  \framesubtitle{函数及其导数的渐进性质}
+  $\dot{f}\to 0 $
+  $\nRightarrow$
+  $f$ 收敛
+
+  函数的倒数趋于零$\dot{f}\to 0 $并不等价于函数收敛$\exists C\in\mathbb{R},\lim_{t\to\infty}f(t)=C$.
+
+  \begin{block}{example}
+    \begin{enumerate}
+      \item 有界函数：$f(t)=\sin(\ln t)$，$\dot{f}(t)=\frac{\cos(\ln t)}{t}$
+      \item 无界函数：$f(t)=\sqrt{t} \sin(\ln t)$，$\dot{f}(t)=\frac{\sin(\ln t)}{2 \sqrt{t}}+ \frac{\cos (\ln t)}{\sqrt{t}}$
+    \end{enumerate}
+    这两个函数的导数都趋于零，但是函数不收敛 
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Barbalat 引理}
+  \framesubtitle{函数及其导数的渐进性质}
+
+  $f$ 收敛
+  $\nRightarrow$
+  $\dot{f}\to 0 $
+
+  函数收敛并不意味着函数倒数趋于零$\dot{f}\to 0$.
+
+  \begin{block}{Example}
+    $f(t)=e^{-t}\sin (e^{2t})$收敛到零，但是其导数
+    \[
+      \dot{f}=-e^{-t}\sin(e^{2t}) + 2 e^{t} \cos(e^{2t})
+    \]
+    是一个有界函数。
+  \end{block}
+
+  \begin{block}{Tip: 与Lyapunov的联系}
+    这个现象说明：
+    如果一个函数$f$有下界并且为非增函数$\dot{f}\leq 0$，
+    那么这个函数收敛到一个极限。
+    \textbf{但是这个函数的导数不一定收敛到零}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Barbalat 引理}
+
   我们已知：若 $\lim_{t \to \infty} f(t) = 0$，则 $\lim_{t \to \infty} \intt{t}{f(\tau)} = C$（积分收敛，$C$ 为常数）。
   
   \vspace{0.5cm}
