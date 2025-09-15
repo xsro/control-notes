@@ -1,8 +1,18 @@
 \begin{frame}
     \frametitle{参数自适应}
 
-    考虑一个简单的自适应控制系统：
+    考虑一个简单的具有未知参数的被控对象的镇定问题：
+    \begin{equation}
+        \dot{x}=w(t) \mu +u
+    \end{equation}
+    其中$f\in\mathbb{R}$是未知参数，设计控制器为：
+    \begin{equation}
+        u=-x-w(t)\hat{\mu},
+        \quad
+        \dot{\hat{\mu}}=-xw(t)
+    \end{equation}
 
+    于是闭环的自适应控制系统可以写作：
     \[
     \begin{cases}
     \dot{e} = -e + \theta w(t) \\
@@ -10,7 +20,7 @@
     \end{cases}
     \]
 
-    其中，\( e \) 是跟踪误差，\( \theta \) 是参数误差，\( w(t) \) 是一个有界连续函数。
+    其中，\( e=x \) 是跟踪误差，\( \theta=\hat{\mu}-\mu \) 是参数误差，\( w(t) \) 是一个有界连续函数。
 \end{frame}
 
 \begin{frame}
@@ -21,11 +31,11 @@ V &= e^2 + \theta^2 \\
 \dot{V} &= 2e(-e + \theta w) + 2\theta(-ew(t)) = -2e^2 \leq 0
 \end{split}
 \]
-所以 \( V(t) \geq V(0) \)，因此 \( e \) 和 \( \theta \) 是有界的。
+所以 \( V(t) \leq V(0) \)，因此 \( e \) 和 \( \theta \) 是有界的。
 
-由于动力学是非自治的，不变集定理不能用来推断 \( e \) 的收敛性。
+由于动力学是非自治的，\textbf{不变集定理}不能用来推断 \( e \) 的收敛性。
 
-为了使用 Barbalat 引理，检查 \( \dot{V} \) 的一致连续性。
+为了使用 \textbf{Barbalat 引理}，检查 \( \dot{V} \) 的一致连续性。
 \[
 \ddot{V} = -4e(-e + \theta w)
 \]
@@ -34,7 +44,7 @@ V &= e^2 + \theta^2 \\
 
 应用 Barbalat 引理：当 \( \dot{V} = 0 \) 时，\( t \to \infty \) 时 \( e \to 0 \)。
 
-\textbf{重要提示}：尽管 \( e \to 0 \)，但系统不是渐近稳定（a.s.）的，因为仅证明了 \( \theta \) 是有界的。
+\textbf{重要提示}：尽管 \( e \to 0 \)，但系统不是渐近稳定（a.s.）的，因为仅证明了 \( \theta \) 是有界的。（非稳定系统也可以解决镇定问题！）
 \end{frame}
 
 
@@ -42,8 +52,8 @@ V &= e^2 + \theta^2 \\
     \frametitle{闭环系统是否稳定}
 
     \begin{enumerate}
-        \item 持续激励信号：$w(t)=\sin(t)$
-        \item 非持续激励信号：当 $t< 5$ 时，$w(t)=1$；当$t\geq 5$时，$w(t)=0$
+        \item 持续激励信号：$w(t)=\sin(t)$.
+        \item 非持续激励信号：当 $t< 2\pi$ 时，$w(t)=\sin(t)$；当$t\geq 5$时，$w(t)=0$.
     \end{enumerate}
 
     \begin{figure}
@@ -56,4 +66,11 @@ V &= e^2 + \theta^2 \\
             \caption{非持续激励信号}
         \end{subfigure}
     \end{figure}
+
+    \begin{block}{什么条件能保证系统稳定}
+        \begin{enumerate}
+            \item 猜想1：$w(t)$ 最终非零？
+            \item 猜想2：$w(t)$ 趋于零？
+        \end{enumerate}
+    \end{block}
 \end{frame}
