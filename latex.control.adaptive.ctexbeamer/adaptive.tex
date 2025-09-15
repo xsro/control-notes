@@ -1,4 +1,8 @@
 \documentclass{beamer}
+% 引用设置
+\usepackage[backend=biber]{biblatex}
+\addbibresource{body/refs.bib} 
+
 \usetheme{Madrid} % 简洁清晰的Beamer主题
 \usecolortheme{whale} % 沉稳配色，适配学术场景
 \usecolortheme{seahorse}
@@ -70,6 +74,12 @@
     \item 2. 发散的信号在自适应中有大量的应用
   \end{enumerate}
   
+\end{frame}
+
+% 显示参考文献列表
+\begin{frame}[allowframebreaks]{参考文献}
+  \printbibliography
+  % allowframebreaks选项允许参考文献跨页显示
 \end{frame}
 
 \end{document}
