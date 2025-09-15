@@ -1,8 +1,19 @@
 \documentclass{beamer}
 \usetheme{Madrid} % 简洁清晰的Beamer主题
 \usecolortheme{whale} % 沉稳配色，适配学术场景
+\usecolortheme{seahorse}
+
+% 加载必要宏包
+\usepackage{amsmath,amssymb,graphicx,subfigure,hyperref}
+% 定义常用符号
+\newcommand{\R}{\mathbb{R}} % 实数集
+\newcommand{\abs}[1]{\left| #1 \right|} % 绝对值
+\newcommand{\intlim}[2]{\int_{#1}^{\infty} #2 \, dt} % 无穷积分
+\newcommand{\intt}[2]{\int_{0}^{#1} #2 \, d\tau} % 从0到t的积分
+% 定义常用定理
+\newtheorem{remark}{\textbf{Remark}} 
+
 \usepackage{ctex} % 中文支持
-\usepackage{amsmath,amssymb,graphicx} % 公式与图形支持
 \usepackage{hyperref} % 超链接
 
 % 字体配置
@@ -11,7 +22,7 @@
 
 % 课件基本信息
 \title{现代控制理论研讨}
-\subtitle{自适应控制的核心方法：Barbalat's lemma, PE 与其他}
+\subtitle{自适应控制：Barbalat's lemma, PE ...}
 \author{刘成}
 \institute{中山大学 航空航天学院}
 \date{\today}

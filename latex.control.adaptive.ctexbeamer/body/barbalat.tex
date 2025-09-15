@@ -1,27 +1,4 @@
 \section{Barbalat 引理}
-
-% 加载必要宏包
-\usepackage{amsmath,amssymb,graphicx,subfigure,hyperref}
-% 设置主题与颜色
-\usetheme{Madrid} % Beamer主题（可替换为Berlin、Singapore等）
-\usecolortheme{seahorse}
-% 定义常用符号
-\newcommand{\R}{\mathbb{R}} % 实数集
-\newcommand{\abs}[1]{\left| #1 \right|} % 绝对值
-\newcommand{\intlim}[2]{\int_{#1}^{\infty} #2 \, dt} % 无穷积分
-\newcommand{\intt}[2]{\int_{0}^{#1} #2 \, d\tau} % 从0到t的积分
-
-% ---------------------- 第1页：封面 ----------------------
-\begin{frame}
-  \centering
-  \vspace{2cm}
-  \Huge{\textbf{Barbalat 引理}} \\
-  \vspace{1cm}
-  \Large{\textbf{—— 从“积分收敛”到“函数收敛”的桥梁}} \\
-  \vspace{3cm}
-  \small{汇报人：XXX \quad 日期：XXX}
-\end{frame}
-
 % ---------------------- 第2页：背景引入 —— 矛盾与问题 ----------------------
 \begin{frame}{背景引入：一个核心矛盾}
   我们已知：若 $\lim_{t \to \infty} f(t) = 0$，则 $\lim_{t \to \infty} \intt{t}{f(\tau)} = C$（积分收敛，$C$ 为常数）。
@@ -49,9 +26,9 @@
   \begin{theorem}[经典 Barbalat 引理]
     设函数 $f(t): [0, \infty) \to \R$ 满足以下两个条件：
     \begin{enumerate}
-      \item $f(t)$ 在 $[0, \infty)$ 上**连续**；
-      \item 无穷积分 $\intlim{0}{f(\tau)}$ **收敛**（即 $\lim_{t \to \infty} \intt{t}{f(\tau)} = C$，$C$ 为常数）；
-      \item $f'(t)$ 在 $[0, \infty)$ 上**一致连续**（或 $f(t)$ 本身一致连续）。
+      \item $f(t)$ 在 $[0, \infty)$ 上\textbf{连续}；
+      \item 无穷积分 $\intlim{0}{f(\tau)}$ \textbf{收敛}（即 $\lim_{t \to \infty} \intt{t}{f(\tau)} = C$，$C$ 为常数）；
+      \item $f'(t)$ 在 $[0, \infty)$ 上\textbf{一致连续}（或 $f(t)$ 本身一致连续）。
     \end{enumerate}
     则必有：$\boxed{\lim_{t \to \infty} f(t) = 0}$。
   \end{theorem}
@@ -77,7 +54,7 @@
       \item 结论：$f_n(t)$ 不趋于零（最大值 $n \to \infty$）。
     \end{itemize}
     \vspace{0.3cm}
-    \includegraphics[width=0.9\textwidth]{rectangle_pulse.png} % 插入之前Python画的脉冲图
+    % \includegraphics[width=0.9\textwidth]{rectangle_pulse.png} % 插入之前Python画的脉冲图
 
     \column{0.5\textwidth}
     \textbf{反例2：高频振荡函数}
@@ -88,7 +65,7 @@
       \item 结论：$f_n(t)$ 振幅 $\sqrt{n} \to \infty$（不趋于零）。
     \end{itemize}
     \vspace{0.3cm}
-    \includegraphics[width=0.9\textwidth]{oscillating_function.png} % 插入振荡函数图
+    % \includegraphics[width=0.9\textwidth]{oscillating_function.png} % 插入振荡函数图
   \end{columns}
 \end{frame}
 

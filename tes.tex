@@ -1,0 +1,67 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{amsmath,amssymb} % 用于数学符号和公式
+\begin{document}
+\begin{tikzpicture}[
+    >=stealth, % 箭头样式
+    axis/.style={thick,->}, % 坐标轴样式
+    func/.style={thick,red}, % 函数图像样式
+    label/.style={font=\small}, % 标签字体样式
+    fill区域/.style={red!20} % 积分区域填充色
+]
+
+% 1. 定义参数n（可修改n的值观察函数变化，此处以n=3为例）
+\def\n{3}
+\def\interval{1/(\n*\n)} % 区间长度1/n²，计算得1/9≈0.111
+
+% 2. 绘制坐标轴
+% x轴（时间t）：范围0到1.2（留出足够空间显示标注），高度设为0
+\draw[axis] (0,0) -- (1.2,0) node[right,label] {$t$};
+% y轴（函数值f_n(t)）：范围0到\n+1（高于最大值n，避免标注拥挤）
+\draw[axis] (0,0) -- (0,\n+1) node[above,label] {$f_n(t)$};
+
+% 3. 标注坐标轴关键刻度
+% x轴刻度：0、1/n²、1（1为参考点，体现区间[0,1/n²]的“窄”）
+\draw (0,2pt) -- (0,-2pt) node[below,label] {$0$};
+\draw (\interval,2pt) -- (\interval,-2pt) node[below,label] {$\frac{1}{n^2}$};
+\draw (1,2pt) -- (1,-2pt) node[below,label] {$1$};
+
+% y轴刻度：0、n（函数最大值）
+\draw (2pt,0) -- (-2pt,0) node[left,label] {$0$};
+\draw (2pt,\n) -- (-2pt,\n) node[left,label] {$n$};
+
+% 4. 绘制函数f_n(t)（分段函数：[0,1/n²]上为n，其余为0）
+% 左半段：t∈[0,1/n²]，f_n(t)=n（水平线段）
+\draw[func] (0,\n) -- (\interval,\n);
+% 右半段：t>1/n²，f_n(t)=0（沿x轴延伸）
+\draw[func] (\interval,0) -- (1.1,0);
+% 垂直连接段：t=1/n²处，从(1/n²,0)到(1/n²,n)（体现函数在该点的跳跃）
+\draw[func,dashed] (\interval,0) -- (\interval,\n); % 虚线表示“跳跃点不包含右侧”
+% 左端点标记：(0,n)为实心点（包含t=0）
+\fill[func] (0,\n) circle (1.5pt);
+% 右端点标记：(1/n²,n)为空心点（不包含t=1/n²），(1/n²,0)为实心点（包含t=1/n²）
+\fill[white,draw=red] (\interval,\n) circle (1.5pt);
+\fill[func] (\interval,0) circle (1.5pt);
+
+% 5. 填充积分区域（t∈[0,1/n²]，f_n(t)下方与x轴之间的矩形）
+\fill[fill区域] (0,0) rectangle (\interval,\n);
+
+% 6. 添加函数表达式及特性说明
+% 函数表达式（右上角）
+\node[above right,label,align=left] at (0.2,\n) {
+    $f_n(t) = n \cdot \chi_{[0, \frac{1}{n^2}]}(t)$ \\
+    （$\chi$为指示函数）
+};
+
+% 积分特性（右下角）
+\node[below right,label,align=left] at (0.5,0.5) {
+    积分收敛：$\int_0^\infty f_n(t)dt = \frac{1}{n} \to 0$ \\
+    函数发散：$\max_{t \in \mathbb{R}} f_n(t) = n \to \infty$
+};
+
+% 7. 标注积分区域（左下角）
+\node[below left,label] at (\interval/2,\n/2) {
+    积分区域：面积$=n \cdot \frac{1}{n^2} = \frac{1}{n}$
+};
+
+\end{tikzpicture}
+\end{document}
