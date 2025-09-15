@@ -11,10 +11,18 @@
 
   \begin{block}{example}
     \begin{enumerate}
-      \item 有界函数：$f(t)=\sin(\ln t)$，$\dot{f}(t)=\frac{\cos(\ln t)}{t}$
-      \item 无界函数：$f(t)=\sqrt{t} \sin(\ln t)$，$\dot{f}(t)=\frac{\sin(\ln t)}{2 \sqrt{t}}+ \frac{\cos (\ln t)}{\sqrt{t}}$
+      \item 有界函数：$f_1(t)=\sin(\ln t)$，$\dot{f}_1(t)=\frac{\cos(\ln t)}{t}$
+      \item 无界函数：$f_2(t)=\sqrt{t} \sin(\ln t)$，$\dot{f}_2(t)=\frac{\sin(\ln t)}{2 \sqrt{t}}+ \frac{\cos (\ln t)}{\sqrt{t}}$
     \end{enumerate}
-    这两个函数的导数都趋于零，但是函数不收敛 
+
+    这两个函数的导数都趋于零，但是函数不收敛.
+
+    \begin{figure}
+      \centering
+      \includegraphics[height=2.8cm]{figure/sinlnt.pdf}
+      \quad
+      \includegraphics[height=2.8cm]{figure/sqrttsinlnt.pdf}
+    \end{figure}
   \end{block}
 \end{frame}
 
@@ -28,302 +36,70 @@
 
   函数收敛并不意味着函数倒数趋于零$\dot{f}\to 0$.
 
-  \begin{block}{Example}
-    $f(t)=e^{-t}\sin (e^{2t})$收敛到零，但是其导数
-    \[
-      \dot{f}=-e^{-t}\sin(e^{2t}) + 2 e^{t} \cos(e^{2t})
-    \]
-    是一个有界函数。
-  \end{block}
-
   \begin{block}{Tip: 与Lyapunov的联系}
     这个现象说明：
     如果一个函数$f$有下界并且为非增函数$\dot{f}\leq 0$，
     那么这个函数收敛到一个极限。
     \textbf{但是这个函数的导数不一定收敛到零}
   \end{block}
-\end{frame}
 
+  \begin{block}{Example 1}
+    另一个例子是周期脉冲信号：
 
-\begin{frame}{Barbalat 引理}
-
-  我们已知：若 $\lim_{t \to \infty} f(t) = 0$，则 $\lim_{t \to \infty} \intt{t}{f(\tau)} = C$（积分收敛，$C$ 为常数）。
-  
-  \vspace{0.5cm}
-  \textbf{反过来成立吗？}  
-  即：若 $\intt{\infty}{f(\tau)}$ 收敛（积分趋于常数），能否推出 $\lim_{t \to \infty} f(t) = 0$？
-
-  \vspace{0.8cm}
-  \begin{block}{反例：积分收敛，但函数不趋于零}
-    回顾之前的三类函数（以矩形脉冲为例）：
-    \[ f_n(t) = n \cdot \chi_{[0, 1/n^2]}(t) \]
-    （$\chi$ 为指示函数，$t \in [0,1/n^2]$ 时 $f_n(t)=n$，否则为0）
-    
-    - 积分特性：$\int_0^\infty f_n(t)dt = n \cdot \frac{1}{n^2} = \frac{1}{n} \to 0$（积分收敛）；
-    - 函数特性：$\max_{t \in \R} f_n(t) = n \to \infty$（函数不趋于零，反而发散）。
+    \begin{figure}
+      \centering
+      \includegraphics[height=2.6cm]{figure/barbalat_f4.pdf}
+      \includegraphics[height=2.6cm]{figure/barbalat_f4d.pdf}
+    \end{figure}
   \end{block}
 \end{frame}
 
-% ---------------------- 第3页：Barbalat 引理 —— 准确陈述 ----------------------
-\begin{frame}{Barbalat 引理：条件与结论}
-  Barbalat 引理是解决“积分收敛 $\Rightarrow$ 函数收敛”的关键工具，核心是通过**额外条件**弥补上述矛盾。
 
-  \vspace{0.5cm}
-  \begin{theorem}[经典 Barbalat 引理]
-    设函数 $f(t): [0, \infty) \to \R$ 满足以下两个条件：
+\begin{frame}
+  \begin{block}{Example 2}
+    $f(t)=e^{-t}\sin (e^{2t})$收敛到零，但是其导数
+    \[
+      \dot{f}=-e^{-t}\sin(e^{2t}) + 2 e^{t} \cos(e^{2t})
+    \]
+    是一个有界函数。
+
+    \begin{figure}
+      \centering
+      \includegraphics[height=2.6cm]{figure/barbalat_f3.pdf}
+      \includegraphics[height=2.6cm]{figure/barbalat_f3d.pdf}
+    \end{figure}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Barbalat‘s 引理的基本形式}
+
+  \begin{lemma}
+  设 $x:[0, \infty) \to \mathbb{R}$ 为一阶连续可导，且当 $t \to \infty$ 时有极限，则如果 $\dot{x}(t), t \in [0, \infty)$ 一致连续，那么 $\lim\limits_{t \to \infty} \dot{x}(t) = 0$。
+  \end{lemma} 
+
+  如果 $\ddot{x}(t)$ 存在且有界，那么引理1中 $\dot{x}(t)$ 的一致连续性条件可用 $\ddot{x}(t)$ 的有界性来替代，从而得到如下形式的引理。
+
+  \begin{lemma}
+  设 $x:[0, \infty) \to \mathbb{R}$ 一阶连续可导，且当 $t \to \infty$ 时有极限，则如果 $\ddot{x}(t), t \in [0, \infty)$ 存在且有界，那么 $\lim\limits_{t \to \infty} \dot{x}(t) = 0$。
+  \end{lemma}
+
+  如下推论是显而易见的。
+
+  \begin{corollary}
+    若 $x: [0, \infty) \to \mathbb{R}$ 一致连续，并且 $\lim\limits_{t \to \infty} \int_{0}^{t} x(\tau) \mathrm{d}\tau$ 存在且有界，那么 $\lim\limits_{t \to \infty} x(t) = 0$。
+  \end{corollary}
+\end{frame}
+
+\begin{frame}
+  \frametitle{在Lyapunov分析中的应用}  
+  \begin{theorem}
+    如果一个标量函数$V(t,x)$ 满足如下条件：
     \begin{enumerate}
-      \item $f(t)$ 在 $[0, \infty)$ 上\textbf{连续}；
-      \item 无穷积分 $\intlim{0}{f(\tau)}$ \textbf{收敛}（即 $\lim_{t \to \infty} \intt{t}{f(\tau)} = C$，$C$ 为常数）；
-      \item $f'(t)$ 在 $[0, \infty)$ 上\textbf{一致连续}（或 $f(t)$ 本身一致连续）。
+      \item $V(t,x)$ 有下界；
+      \item $\dot{V}(t,x)$ 是半负定；
+      \item $\dot{V}(t,x)$ 关于时间是一致连续的
     \end{enumerate}
-    则必有：$\boxed{\lim_{t \to \infty} f(t) = 0}$。
-  \end{theorem}
-
-  \vspace{0.3cm}
-  \begin{remark}
-    - 条件3是核心：若缺少“一致连续”，则可能出现“积分收敛但函数不趋于零”（如前页反例）；
-    - 常见简化版：若 $f(t)$ 一致连续且 $\intlim{0}{f(\tau)}$ 收敛，则 $\lim_{t \to \infty} f(t) = 0$（更易验证）。
-  \end{remark}
-\end{frame}
-
-% ---------------------- 第4页：条件分析 —— 为什么需要“一致连续”？ ----------------------
-\begin{frame}{条件的必要性：反例验证}
-  为说明“一致连续”不可缺少，我们对比两类函数（结合之前的Python绘图结果）：
-
-  \begin{columns}[T] % 分栏布局
-    \column{0.5\textwidth}
-    \textbf{反例1：矩形脉冲函数}
-    \[ f_n(t) = n \cdot \chi_{[0, 1/n^2]}(t) \]
-    \begin{itemize}
-      \item 积分：$\int_0^\infty f_n(t)dt = 1/n \to 0$（收敛）；
-      \item 连续性：$f_n(t)$ 在 $t=1/n^2$ 处间断（非一致连续）；
-      \item 结论：$f_n(t)$ 不趋于零（最大值 $n \to \infty$）。
-    \end{itemize}
-    \vspace{0.3cm}
-    % \includegraphics[width=0.9\textwidth]{rectangle_pulse.png} % 插入之前Python画的脉冲图
-
-    \column{0.5\textwidth}
-    \textbf{反例2：高频振荡函数}
-    \[ f_n(t) = \sqrt{n} \cdot \sin(nt) \]
-    \begin{itemize}
-      \item 积分：$\int_0^\infty f_n(t)dt = \frac{1 - \cos(nt)}{\sqrt{n}} \to 0$（收敛）；
-      \item 连续性：$f_n(t)$ 连续，但 $f_n'(t) = n^{3/2}\cos(nt)$ 无界（非一致连续）；
-      \item 结论：$f_n(t)$ 振幅 $\sqrt{n} \to \infty$（不趋于零）。
-    \end{itemize}
-    \vspace{0.3cm}
-    % \includegraphics[width=0.9\textwidth]{oscillating_function.png} % 插入振荡函数图
-  \end{columns}
-\end{frame}
-
-% ---------------------- 第5页：证明思路 —— 简化版反证法 ----------------------
-\begin{frame}{证明思路：反证法（简化版）}
-  假设结论不成立，即 $\lim_{t \to \infty} f(t) \neq 0$，推出矛盾。
-
-  \begin{enumerate}
-    \item \textbf{反设前提}：存在 $\varepsilon_0 > 0$ 和序列 $t_k \to \infty$（$k \to \infty$），使得 $\abs{f(t_k)} \geq \varepsilon_0$。
-    
-    \item \textbf{利用一致连续性}：因 $f'(t)$ 一致连续，存在 $\delta > 0$，对任意 $t \in [t_k - \delta, t_k + \delta]$，有：
-    \[ \abs{f'(t)} \leq \frac{\varepsilon_0}{2\delta} \]
-    由拉格朗日中值定理：$\abs{f(t) - f(t_k)} \leq \abs{f'(\xi)} \cdot \delta \leq \frac{\varepsilon_0}{2}$，故 $\abs{f(t)} \geq \frac{\varepsilon_0}{2}$。
-
-    \item \textbf{积分矛盾}：对区间 $[t_k - \delta, t_k + \delta]$，积分满足：
-    \[ \abs{\int_{t_k - \delta}^{t_k + \delta} f(t)dt} \geq \frac{\varepsilon_0}{2} \cdot 2\delta = \varepsilon_0 \delta > 0 \]
-    但 $\intlim{0}{f(t)}$ 收敛，当 $k \to \infty$ 时，任意区间的积分应趋于0，矛盾。
-
-    \item \textbf{结论}：反设不成立，故 $\lim_{t \to \infty} f(t) = 0$。
-  \end{enumerate}
-\end{frame}
-
-% ---------------------- 第6页：核心应用 —— 控制理论中的稳定性分析 ----------------------
-\begin{frame}{Barbalat 引理的核心应用：控制理论}
-  Barbalat 引理是**Lyapunov稳定性分析**的重要补充，尤其用于证明“跟踪误差收敛”。
-
-  \vspace{0.5cm}
-  \begin{example}[自适应控制中的误差收敛]
-    考虑跟踪系统：设跟踪误差为 $e(t)$，设计Lyapunov函数 $V(t)$ 满足：
-    \[ \dot{V}(t) \leq -k e^2(t) \quad (k > 0 \text{ 为常数}) \]
-    需证明 $\lim_{t \to \infty} e(t) = 0$，步骤如下：
-    \begin{enumerate}
-      \item 积分 $\dot{V}(t)$：$\int_0^t \dot{V}(\tau)d\tau = V(t) - V(0) \leq -k \int_0^t e^2(\tau)d\tau$；
-      \item 因 $V(t) \geq 0$（Lyapunov函数性质），故 $\int_0^\infty e^2(\tau)d\tau \leq \frac{V(0)}{k}$（积分收敛）；
-      \item 验证一致连续：若系统输入有界，则 $\dot{e}(t)$ 有界 $\Rightarrow e(t)$ 一致连续；
-      \item 应用Barbalat引理：$\int_0^\infty e^2(\tau)d\tau$ 收敛 + $e^2(t)$ 一致连续 $\Rightarrow \lim_{t \to \infty} e^2(t) = 0 \Rightarrow \lim_{t \to \infty} e(t) = 0$。
-    \end{enumerate}
-  \end{example}
-
-  \vspace{0.3cm}
-  \begin{block}{其他应用}
-    - 信号处理：判断滤波后信号的收敛性；
-    - 微分方程：证明解的渐近行为（如扰动系统的稳态误差）。
-  \end{block}
-\end{frame}
-
-% ---------------------- 第7页：总结 ----------------------
-\begin{frame}{总结：Barbalat 引理的核心价值}
-  \begin{center}
-    \begin{tabular}{|c|c|}
-      \hline
-      \textbf{核心问题} & 积分收敛 $\nRightarrow$ 函数收敛（需额外条件） \\
-      \hline
-      \textbf{Barbalat条件} & 1. 函数连续；2. 积分收敛；3. 导数（或函数）一致连续 \\
-      \hline
-      \textbf{关键结论} & 满足条件 $\Rightarrow \lim_{t \to \infty} f(t) = 0$ \\
-      \hline
-      \textbf{核心应用} & 控制理论（Lyapunov稳定性+误差收敛） \\
-      \hline
-    \end{tabular}
-  \end{center}
-
-  \vspace{1cm}
-  \centering
-  \textit{Barbalat引理的本质：用“一致连续性”约束函数的“波动幅度”，避免积分收敛但函数发散的情况。}
-\end{frame}
-
-\begin{frame}{Barbalat's lemma}
-    
-\end{frame}
-
-\begin{frame}{核心思想：积分与函数的“分离性”}
-  \begin{block}{关键区别}
-    积分的“累积效应” ≠ 函数的“点态取值”：
-    \begin{itemize}
-      \item 积分趋于零：只需控制“函数高度 × 非零区间宽度”的乘积趋于零；
-      \item 函数趋于零：需函数在“所有点”（或绝大多数点）的取值均趋于零。
-    \end{itemize}
-  \end{block}
-
-  \vspace{0.5cm}
-  \begin{center}
-    \textbf{核心目标：构造满足“积分→0，但函数不→0”的函数}
-  \end{center}
-\end{frame}
-
-% ---------------------- 第4页：例1 矩形脉冲函数 ----------------------
-\section{场景1：固定区间上的函数序列}
-\begin{frame}{例1：矩形脉冲函数（固定区间$[0,1]$）}
-  \begin{columns}
-    % 左列：函数定义与直观
-    \column{0.45\textwidth}
-    \begin{block}{1. 函数定义}
-      对正整数 $n \to \infty$，定义：
-      \[
-      f_n(x) = 
-      \begin{cases} 
-      n & ,\ x \in \left[0, \frac{1}{n^2}\right] \\
-      0 & ,\ x \in \left(\frac{1}{n^2}, 1\right]
-      \end{cases}
-      \]
-      直观：“窄脉冲”——宽度$\frac{1}{n^2} \to 0$，高度$n \to \infty$。
-    \end{block}
-
-    % 右列：积分计算与趋势
-    \column{0.55\textwidth}
-    \begin{block}{2. 积分趋于零的证明}
-      计算$[0,1]$上的定积分：
-      \[
-      \int_0^1 f_n(x) dx = \int_0^{\frac{1}{n^2}} n \, dx = n \times \frac{1}{n^2} = \frac{1}{n}
-      \]
-      当 $n \to \infty$ 时，$\frac{1}{n} \to 0$，故积分趋于零。
-    \end{block}
-
-    \begin{block}{3. 函数不趋于零的原因}
-      取随$n$变化的点 $x_n = \frac{1}{2n^2}$，则：
-      \[
-      f_n(x_n) = n \to \infty \quad (n \to \infty)
-      \]
-      函数在“移动的窄区间”上取值无界，故不趋于零。
-    \end{block}
-  \end{columns}
-\end{frame}
-
-% ---------------------- 第5页：例2 高频震荡函数 ----------------------
-\begin{frame}{例2：高频震荡函数（固定区间$[0,1]$）}
-  \begin{columns}
-    % 左列：函数定义与直观
-    \column{0.45\textwidth}
-    \begin{block}{1. 函数定义}
-      对正整数 $n \to \infty$，定义：
-      \[
-      f_n(x) = \sqrt{n} \cdot \sin(nx) \quad (x \in [0,1])
-      \]
-      直观：高频震荡的正弦函数——振幅$\sqrt{n} \to \infty$，频率$n \to \infty$。
-    \end{block}
-
-    % 右列：积分计算与趋势
-    \column{0.55\textwidth}
-    \begin{block}{2. 积分趋于零的证明}
-      计算定积分：
-      \[
-      \int_0^1 \sqrt{n}\sin(nx)dx = \sqrt{n} \cdot \left. \frac{-\cos(nx)}{n} \right|_0^1 = \frac{1 - \cos(n)}{\sqrt{n}}
-      \]
-      因 $|\cos(n)| \leq 1$，故 $|1 - \cos(n)| \leq 2$，进而：
-      \[
-      \left| \frac{1 - \cos(n)}{\sqrt{n}} \right| \leq \frac{2}{\sqrt{n}} \to 0 \quad (n \to \infty)
-      \]
-    \end{block}
-
-    \begin{block}{3. 函数不趋于零的原因}
-      取 $x_n = \frac{\pi}{2n}$，则 $\sin(nx_n) = 1$，故：
-      \[
-      f_n(x_n) = \sqrt{n} \to \infty \quad (n \to \infty)
-      \]
-      振幅无界，函数不趋于零。
-    \end{block}
-  \end{columns}
-\end{frame}
-
-% ---------------------- 第6页：例3 无穷区间函数 ----------------------
-\section{场景2：无穷区间上的函数}
-\begin{frame}{例3：傅里叶积分型函数 $f(x) = \sin(x^2)$（区间$[1,+\infty)$）}
-  \begin{block}{1. 函数定义与直观}
-    定义：$f(x) = \sin(x^2)$（$x \in [1,+\infty)$），特点是“频率递增的震荡函数”：
-    - $x^2$ 增速随$x$增大而加快，导致$\sin(x^2)$震荡越来越频繁；
-    - 振幅始终为1（有界但不趋于零）。
-  \end{block}
-
-  \begin{block}{2. 局部积分趋于零（$A \to +\infty$）}
-    计算局部积分 $\int_A^{A+1} \sin(x^2)dx$，作变量代换 $t = x^2$（$dx = \frac{dt}{2\sqrt{t}}$）：
-    \[
-    \int_A^{A+1} \sin(x^2)dx = \int_{A^2}^{(A+1)^2} \frac{\sin t}{2\sqrt{t}} dt
-    \]
-    由积分中值定理，存在 $\xi \in [A^2, (A+1)^2]$ 使：
-    \[
-    \text{积分} = \frac{\sin \xi}{2\sqrt{\xi}} \cdot (2A+1)
-    \]
-    因 $\sqrt{\xi} \geq A$，故 $\frac{2A+1}{2\sqrt{\xi}} \leq \frac{2A+1}{2A} \to 1$，且 $|\sin \xi| \leq 1$，因此：
-    \[
-    |\text{积分}| \leq \frac{2A+1}{2A} \cdot \frac{1}{\sqrt{\xi}} \to 0
-    \]
-  \end{block}
-
-  \begin{block}{3. 函数不趋于零的原因}
-    取点列 $x_k = \sqrt{\frac{\pi}{2} + 2k\pi}$（$k \to +\infty$），则：
-    \[
-    f(x_k) = \sin\left(\frac{\pi}{2} + 2k\pi\right) = 1 \not\to 0
-    \]
-    函数始终在$[-1,1]$震荡，无极限。
-  \end{block}
-\end{frame}
-
-% ---------------------- 第7页：核心总结 ----------------------
-\section{核心总结}
-\begin{frame}{核心总结}
-  \begin{block}{构造“积分→0但函数不→0”的两种核心机制}
-    \begin{enumerate}
-      \item \textbf{脉冲机制}：
-        - 函数仅在“宽度→0”的区间上非零，高度→∞，但“高度×宽度→0”（如矩形脉冲）；
-        - 关键：用“窄区间”抵消“高取值”的累积效应。
-
-      \item \textbf{震荡抵消机制}：
-        - 函数高频震荡，正负面积相互抵消，积分→0，但振幅不→0（如$\sqrt{n}\sin(nx)$、$\sin(x^2)$）；
-        - 关键：用“高频震荡”实现面积抵消。
-    \end{enumerate}
-  \end{block}
-
-  \vspace{0.5cm}
-  \begin{alertblock}{重要结论}
-    \centering
-    \textbf{“积分趋于零”不能推出“函数趋于零”} \\
-    积分收敛反映“累积效应→0”，而非“点态取值→0”。
-  \end{alertblock}
+    那么 有$\lim_{t\to\infty} \dot{V}(t,x)=0$
+  \end{theorem} 
 \end{frame}
