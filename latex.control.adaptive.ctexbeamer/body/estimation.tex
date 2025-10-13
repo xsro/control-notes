@@ -7,3 +7,44 @@
     \end{equation}
     若要得到唯一解，则至少有
 \end{frame}
+
+
+\begin{frame}
+    自适应控制与系统辨识中最基本的问题是，从标量输出 \( y \in \mathbb{R} \) 估计参数向量 \( \theta \in \mathbb{R}^n \)，它们满足线性回归关系
+\[
+y(t) = \phi(t)^\top \theta.
+\]
+
+若要得唯一解，则至少有 \( n \) 个时刻方阵 \( [\phi(t_1), \dots, \phi(t_n)] \) 满秩，这是所谓的可辨识性。在控制问题中我们倾向于持续地在线估计，这样既可保证鲁棒性，又可以在线跟踪缓慢的参数变化。这就要把可辨识性，即 \( [\phi(t_1), \dots, \phi(t_n)] \) 满秩，大体上“一直保持下去”，以上即持续激励的基本出发点。对于以上线性回归问题，最基本的梯度下降法，可得如下线性时变误差系统
+\[
+\dot{\hat{\theta}}= -\gamma \phi(t) y(t)
+\]\[
+\dot{\tilde{\theta}} = -\gamma \phi(t) \phi(t)^\top \tilde{\theta}.
+\]
+\end{frame}
+
+\begin{frame}
+    \begin{itemize}
+    \item 从动力系统稳定性角度来看，以上系统原点指数稳定 \( \Leftrightarrow \phi(t) \) 是持续激励的，即存在常数 \( T, k \) 使得在任意时刻 \( t \) 都有
+    \[
+    \int_{t}^{t+T} \phi(\tau) \phi(\tau)^\top d\tau \geq k I_{n \times n}.
+    \]
+    \item 从几何的角度来看，持续激励是说，在每个时间段 \( [t, t+T] \) 内，\( \phi(t) \) 旋转过方向所张成的空间要能够覆盖整个 \( \mathbb{R}^n \) 空间。显然对于任意时刻 \( \text{rank}\{\phi(t) \phi(t)^\top\} = 1 \)，只有在每个时间段 \( [t, t+T] \) 内，\( \phi(t) \) 旋转过 \( n \) 个线性无关的“方向”，才能让以上持续激励条件成立。
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+    \begin{itemize}
+    \item 从平均理论的角度来说，持续激励是让（时变的）系统矩阵始终为正定。误差系统的平均动力学“看上去”是（ODE教材里有严格的平均分析）
+    \[
+    \dot{\bar{\tilde{\theta}}} = -\gamma \bar{A}(t) \bar{\tilde{\theta}}, \quad \bar{A} := \frac{1}{T} \int_{t}^{t+T} \phi(\tau)\phi(\tau)^\top d\tau
+    \]
+    其中 \( \bar{\tilde{\theta}} \) 是 \( \tilde{\theta} \) 的平均变量。平均系统矩阵 \( \bar{A}(t) \) 在持续激励条件下为正定，状态将收敛至平衡点。
+
+    \item 从频域角度来看，持续激励条件要求系统输入的频谱丰富程度大于等于 \( n \)。最简单的情况就是回归矩阵 \( \phi(t) \) 是由单入单出线性时不变系统产生，那么该LTI系统输入含有不少于 \( n \) 个频谱时，即输入 \( u \) 可以分解为
+    \[
+    u = \sum_{i=1}^{m} \sin(\omega_i t + \psi_i)
+    \]
+    其中 \( m \geq n/2 \)（每个正弦信号提供2个频谱），那么回归矩阵 \( \phi(t) \) 是持续激励的。这也是充分必要条件。
+\end{itemize}
+\end{frame}
