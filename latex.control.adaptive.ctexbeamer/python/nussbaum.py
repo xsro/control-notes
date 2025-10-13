@@ -1,6 +1,9 @@
 from scipy.integrate import solve_ivp
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+if not os.path.exists("out"):
+    os.mkdir("out")
 
 def rhs(t,states,params):
     x=states[0]
@@ -18,6 +21,38 @@ def simulate(params):
     sol=solve_ivp(rhs,t_span,y0,args=(params,),max_step=params['dt'],method='RK45')
     return sol
 
+def plot(params,sol,fileprefix=""):
+    #%%
+    plt.figure(figsize=(6,2))
+    plt.plot(sol.t,sol.y[0,:],label='x(t)')
+    plt.grid()
+    plt.legend()
+    plt.xlim([0,40])
+    plt.savefig(fileprefix+"_x.pdf")
+    plt.figure(figsize=(6,2))
+    plt.plot(sol.t,sol.y[1,:],label='z(t)')
+    plt.grid()
+    plt.legend()
+    plt.xlim([0,40])
+    plt.savefig(fileprefix+"_z.pdf")
+    plt.show()
+    plt.figure(figsize=(6,2))
+    n2=np.array([params['N'](xi) for xi in sol.y[1,:]])
+    plt.plot(sol.t,n2,label='N(z(t))')
+    plt.grid()
+    plt.xlim([0,40])
+    plt.legend()
+    plt.savefig(fileprefix+"_n.pdf")
+    plt.show()
+    plt.figure(figsize=(6,2))
+    u2=np.array([params['N'](xi)*xi for xi in sol.y[1,:]])
+    plt.plot(sol.t,u2,label='u(t)')
+    plt.grid()
+    plt.xlim([0,40])
+    plt.legend()
+    plt.savefig(fileprefix+"_u.pdf")
+    plt.show()
+
 params={}
 params['N']=lambda z:np.sin(3*np.pi*z)*np.exp(0.01*z**2)
 params['g']=1
@@ -25,15 +60,26 @@ params['dt']=0.01
 
 params['t_max']=100
 params['y0']=[1,1]
+
+
+#%%
+x=np.arange(0,16,0.01)
+n=np.array([params['N'](xi) for xi in x])
+plt.figure(figsize=(6,3))
+plt.plot(x,n)
+plt.grid(True)
+plt.xlabel("$s$")
+plt.ylabel("$v$")
+plt.savefig("out/nussbaum.pdf")
+
+
+#%%
 sol=simulate(params)
+plot(params,sol,fileprefix="out/n1")
 
-x=np.linspace(0,1,100)
-n=params['N'](x)
-
-plt.figure()
-plt.plot(sol.t,sol.y[0,:],label='x(t)')
-plt.plot(sol.t,sol.y[1,:],label='z(t)')
-plt.grid()
-plt.legend()
-
-plt.show()
+#%%
+params2=params.copy()
+params2["g"]=-1
+sol2=simulate(params2)
+plot(params2,sol2,fileprefix="out/n2")
+#%%
