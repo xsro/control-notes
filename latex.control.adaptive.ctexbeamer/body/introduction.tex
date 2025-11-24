@@ -1,0 +1,222 @@
+\section{引言}
+\subsection{什么是自适应控制}
+
+\begin{frame}{韦氏词典对“适应”与“适应性”的定义}
+	\begin{itemize}
+		\item According to the Webster’s dictionary, to \textbf{adapt} means:
+		\begin{itemize}
+			\item to adjust oneself to particular conditions
+			\item to bring oneself in harmony with a particular environment
+			\item to bring one’s acts, behaviour in harmony with a particular environment
+		\end{itemize}
+		\item 【中文翻译】根据韦氏词典，“adapt”（适应）的含义是：
+		\begin{itemize}
+			\item 使自己适应特定条件
+			\item 使自己与特定环境相协调
+			\item 使自己的行为举止与特定环境相协调
+		\end{itemize}
+	\end{itemize}
+	\begin{itemize}
+		\item According to the Webster’s dictionary, \textbf{adaptation} means:
+		\begin{itemize}
+			\item adjustment to environmental conditions
+			\item alteration or change in form or structure to better fit the environment
+		\end{itemize}
+		\item 【中文翻译】根据韦氏词典，“adaptation”（适应性）的含义是：
+		\begin{itemize}
+			\item 对环境条件的调整
+			\item 为更好地适应环境而在形式或结构上的改变或调整
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{自适应控制器的定义与理论核心}
+	\begin{itemize}
+		\item An adaptive controller is a \textbf{fixed-structure} controller with \textbf{adjustable parameters} and a mechanism for \textbf{automatically} adjusting those parameters
+		\item 【翻译】自适应控制器是一种\textbf{固定结构}的控制器，具有\textbf{可调参数}以及自动调整这些参数的机制
+		\item In this sense, an adaptive controller is one way of dealing with \textbf{parametric uncertainty}
+		\item 【翻译】从这个意义上说，自适应控制器是应对\textbf{参数不确定性}的一种方法
+		\item Adaptive control theory essentially deals with finding parameter adjustment algorithms that guarantee global \textbf{stability and convergence}
+		\item 【翻译】自适应控制理论本质上是研究寻找能保证\textbf{全局稳定性和收敛性}的参数调整算法
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{什么是自适应控制}
+	Adaptive Control covers a set of techniques which provide a systematic approach for
+	automatic adjustment of controllers in real time, in order to achieve or to maintain
+	a desired level of control system performance when \textbf{the parameters of the plant
+	dynamic model are unknown and/or change in time.}
+	
+	[1] Landau I D, Lozano R, M’Saad M, et al. Adaptive Control: Algorithms, Analysis and Applications[M]. London: Springer London, 2011.
+	
+	\vspace{1cm}
+	
+	\textbf{自适应控制}：通过对于未知模型参数进行\textbf{在线估计}，然后将参数估计值带入并更新控制器的设计。
+	
+	【CAA云讲座预告】北京航空航天大学教授王薇：数据驱动自适应控制理论及应用
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{自适应与自整定}
+	Self-tuning 自整定
+	\begin{itemize}
+		\item Continuous updating of controller parameters 控制器参数的持续更新
+		\item Used for truly time-varying plants 用于真正时变的被控对象
+	\end{itemize}
+	
+	Auto-tuning
+	\begin{itemize}
+		\item Once controller parameters near convergence, adaptation is stopped 一旦控制器参数接近收敛，自适应即停止
+		\item Used for time invariant or very slowly varying processes 用于时不变或变化极慢的过程
+		\item Used for periodic, usually on-demand tuning 用于周期性的、通常为按需的整定
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{自适应与增益调度}
+	
+	\begin{columns}[t]
+		\column{0.48\textwidth}
+		\begin{figure}
+			\includegraphics[height=6cm]{figure/gain_schedualing}
+		\end{figure}
+		
+		\column{0.48\textwidth}
+		自适应控制是 “以变应变的智能调节”，增益调度控制是 “按预设规则的被动切换”。前者适合未知时变场景，后者适合已知工况的规律变化场景。
+		
+		\begin {itemize}\item 时变动态系统的控制\item 若动态特性随运行工况以已知、可预测的方式变化，采用 \textbf {增益调度}\item 若使用固定控制器无法在 \textbf {鲁棒性} 和 \textbf {性能} 之间达成满意的折中，当且仅当此时，才应使用自适应控制。\end {itemize}
+		
+		\textbf {使用满足技术要求的最简单技术}
+	\end{columns}
+	
+\end{frame}
+
+
+\subsection{为什么使用自适应控制}
+
+
+\begin{frame}{传统控制的局限性：为什么需要新方案？}
+	\begin{block}{工业系统的普遍挑战：不确定性}
+		实际工程中，系统往往存在难以预先建模的\textbf{内外部不确定性}，导致传统固定参数控制器失效：
+		\begin{itemize}
+			\item \textbf{内部不确定性}：
+			\begin{itemize}
+				\item 参数时变（如化工反应釜催化剂活性衰减、电机老化导致电阻变化）
+				\item 未建模动态（如高层建筑风振、柔性机械臂弹性形变）
+			\end{itemize}
+			\item \textbf{外部不确定性}：
+			\begin{itemize}
+				\item 环境干扰（如无人机遭遇阵风、电网电压波动）
+				\item 任务切换（如机器人负载突变、飞行器飞行模式转换）
+			\end{itemize}
+		\end{itemize}
+	\end{block}
+	
+	\begin{exampleblock}{传统控制的“困境”}
+		固定参数控制器仅针对“理想工况”设计，当系统特性偏离预设模型时，会出现：
+		\begin{center}
+			控制精度下降 $\to$ 系统稳定性恶化 $\to$ 甚至引发安全事故
+		\end{center}
+	\end{exampleblock}
+\end{frame}
+
+
+
+
+\begin{frame}{自适应控制的核心价值：解决传统方法无法应对的场景}
+	\begin{columns}[t]
+		\column{0.5\textwidth}
+		\begin{block}{传统控制的“被动适应”局限}
+			\begin{itemize}
+				\item 增益调度控制：仅能应对\textbf{已知规律的工况变化}（如预设飞机马赫数-参数表），无法处理突发扰动
+				\item 鲁棒控制：通过“保守设计”保证稳定性，但牺牲了\textbf{动态性能}（如响应速度变慢）
+				\item 最优控制：依赖精确模型，模型失配时会导致\textbf{性能剧烈下降}
+			\end{itemize}
+		\end{block}
+		
+		\column{0.5\textwidth}
+		\begin{block}{自适应控制的“主动调节”优势}
+			针对不确定性，自适应控制通过“在线辨识+实时调参”实现：
+			\begin{itemize}
+				\item 无需预知参数变化规律，自动跟踪\textbf{未知时变特性}
+				\item 在保证稳定性的同时，维持\textbf{高性能指标}（如最小跟踪误差）
+				\item 适用于“模型难以精确建立”的复杂系统（如生物反应器、自动驾驶）
+			\end{itemize}
+		\end{block}
+	\end{columns}
+	
+	\vspace{1em}
+	\begin{center}
+		\textbf{核心差异：从“以不变应万变”到“以变应变”}
+	\end{center}
+\end{frame}
+
+
+
+
+\begin{frame}{实际应用中的迫切需求：自适应控制的不可替代性}
+	\begin{block}{典型场景：为什么必须用自适应控制？}
+		\begin{enumerate}
+			\item \textbf{航空航天领域}：
+			飞行器在宽空域（高度0-30km）、宽速域（马赫数0.3-5）飞行时，气动参数变化可达\textbf{10倍以上}，传统控制器无法全覆盖，需自适应控制保证姿态稳定（如NASA X-43高超声速飞行器）。
+			
+			\item \textbf{工业制造领域}：
+			13万吨级造纸机换产时，纸张定量、湿度等参数突变，自适应控制可将调整时间从传统方法的2小时缩短至\textbf{15分钟}，降低废品率30%（某造纸厂实际案例）。
+			
+			\item \textbf{机器人与智能装备}：
+			服务机器人抓取不同重量物体（0.1-5kg）时，动力学参数剧变，自适应控制可实现无超调的力/位置跟踪，避免传统控制的震荡问题。
+		\end{enumerate}
+	\end{block}
+	
+	\begin{alertblock}{总结：自适应控制的核心目标}
+		在“模型不精确、参数时变、干扰未知”的场景下，实现：
+		\begin{center}
+			稳定运行 $\to$ 性能优化 $\to$ 降低人工干预 $\to$ 扩展系统适用范围
+		\end{center}
+	\end{alertblock}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{没有自适应控制的时候}
+	\begin{figure}
+		\includegraphics[height=6cm]{figure/PID_pure}
+	\end{figure}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{有了自适应控制的时候}
+	\begin{figure}
+		\includegraphics[height=6cm]{figure/PID_adaptive}
+	\end{figure}
+\end{frame}
+
+% \subsection{自适应控制的发展历史}
+
+% \begin{frame}{自适应控制发展历程（一）：理论奠基期（1950s-1960）}
+% 	\begin{itemize}
+% 		\item Mid 1950's: Flight control systems (eventually solved by gain scheduling)
+% 		\item 1957: Bellman develops dynamic programming
+% 		\item 1958: Kalman develops the self-optimizing controller \\
+% 		``which adjusts itself automatically to control an arbitrary dynamic process''
+% 		\item 1960: Feldbaum develops the dual controller in which the control action serves a dual purpose as it is ``directing as well as investigating''
+% 	\end{itemize}
+% \end{frame}
+
+% \begin{frame}{自适应控制发展历程（二）：技术成型与深化期（1960s-1990s）}
+% 	\begin{itemize}
+% 		\item Mid 60's-early 70's: Model reference adaptive systems
+% 		\item Late 60's-early 70's: System identification approach with recursive least-squares
+% 		\item Early 1980's: Convergence and stability analysis
+% 		\item Mid 1980's: Robustness analysis
+% 		\item 1990's: Multimodel adaptive control
+% 		\item 1990's: Iterative control
+% 	\end{itemize}
+% \end{frame}

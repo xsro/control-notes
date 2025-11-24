@@ -7,7 +7,7 @@
     \begin{equation}
         \dot{x}=w(t) \mu +u
     \end{equation}
-    其中$f\in\mathbb{R}$是未知参数，设计控制器为：
+    其中$\mu\in\mathbb{R}$是未知参数，设计控制器为：
     \begin{equation}
         u=-x-w(t)\hat{\mu},
         \quad
@@ -46,7 +46,7 @@ V &= e^2 + \theta^2 \\
 
 应用 Barbalat 引理：当 \( \dot{V} = 0 \) 时，\( t \to \infty \) 时 \( e \to 0 \)。
 
-\textbf{重要提示}：尽管 \( e \to 0 \)，但系统不是渐近稳定（a.s.）的，因为仅证明了 \( \theta \) 是有界的。（非稳定系统也可以解决镇定问题！）
+\textbf{重要提示}：尽管 \( e \to 0 \)，但系统不是渐近稳定（a.s.）的，因为仅证明了 \( \theta \) 是有界的。（非渐近稳定系统也可以解决镇定问题！）
 \end{frame}
 
 
