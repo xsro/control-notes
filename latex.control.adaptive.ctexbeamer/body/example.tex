@@ -1,6 +1,89 @@
-\section{Duffing 系统的自适应控制}
+\section{实例：Duffing 系统的自适应控制}
+
+
+% 1. 模型建立
+\begin{frame}{模型建立：受控Duffing方程}
+  考虑受控Duffing方程，外部扰动重写为余弦/正弦组合：\footnote{Duffing系统 https://zhuanlan.zhihu.com/p/618829679}
+  \[
+  v(t) = \gamma \cos(\omega t + \phi) = \gamma_1 \cos(\omega t) + \gamma_2 \sin(\omega t)
+  \]
+  最终模型为：
+  \begin{align}
+  \dot{x}_1 &= x_2 \\
+  \dot{x}_2 &= -\delta x_2 - \alpha x_1 - \beta x_1^3 + \gamma_1 \cos(\omega t) + \gamma_2 \sin(\omega t) + u. \tag{5.53}
+  \end{align}
+
+  \begin{block}{已知/未知信息}
+    \begin{itemize}
+      \item 未知：$\delta, \alpha, \beta, \gamma_1, \gamma_2$
+      \item 已知：外部信号频率 $\omega$
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+% 2. 状态变换与ISS分析
+\begin{frame}{状态变换与ISS分析}
+  定义新状态变量：
+  \[
+  \mathcal{X}_2 = x_2 + \rho_1 x_1 \quad (\rho_1 > 0)
+  \]
+  则 $x_1$ 的动力学满足：
+  \[
+  \dot{x}_1 = -\rho_1 x_1 + \mathcal{X}_2
+  \]
+  该式关于 $x_1$（状态）和 $\mathcal{X}_2$（输入）是\textbf{输入-状态稳定（ISS）}的。
+
+  \begin{figure}
+    \centering
+    \includegraphics[height=4cm]{figure/mass-spring.png}
+  \end{figure}
+\end{frame}
+
+
+% 3. 新动力学与控制器设计
+\begin{frame}{$\mathcal{X}_2$ 动力学与自适应控制器}
+  $\mathcal{X}_2$ 的动力学方程：
+  \begin{align}
+  \dot{\mathcal{X}}_2 = f_0^\top(x_1, x_2, t)\mu + u \tag{5.54}
+  \end{align}
+  其中向量定义：
+  \[
+  f_0(x_1, x_2, t) = \begin{bmatrix} x_2 \\ x_1 \\ x_1^3 \\ \cos(\omega t) \\ \sin(\omega t) \end{bmatrix}, \quad \mu = \begin{bmatrix} -\delta + \rho_1 \\ -\alpha \\ -\beta \\ \gamma_1 \\ \gamma_2 \end{bmatrix}
+  \]
+
+  根据定理5.4，自适应控制器为：
+  \begin{align}
+  u &= -\rho_2 \mathcal{X}_2 - f_0^\top(x_1, x_2, t)\hat{\mu} \ (\rho_2 > 0) \tag{5.55} \\
+  \dot{\hat{\mu}} &= \Lambda \mathcal{X}_2 f_0(x_1, x_2, t)
+  \end{align}
+\end{frame}
+
+
+% 4. 仿真结果与说明
+\begin{frame}{仿真结果与方法局限性}
+  \begin{block}{仿真参数}
+    $\delta=0.03,\ \alpha=-1,\ \beta=1$，扰动 $v(t)=0.8\cos(0.2t+0.1)$
+  \end{block}
+
+  \begin{itemize}
+    \item 系统状态渐近趋近于平衡点 $x=0$（图5.8）
+    \item 控制信号曲线（图5.9）
+  \end{itemize}
+
+  \begin{alertblock}{方法局限性}
+    本章方法无法处理\textbf{未知的 $\omega$}（因 $\cos(\omega t)/\sin(\omega t)$ 关于 $\omega$ 非线性），第9章的\textbf{内模方法}可解决此问题。
+  \end{alertblock}
+\end{frame}
 
 \begin{frame}
-    \frametitle{Duffing 系统}
-    
+    \frametitle{自适应控制效果}
+    \centering
+    \includegraphics[width=0.75\textwidth]{python/out/duffing-x.pdf}
+\end{frame}
+
+\begin{frame}
+    \frametitle{参数收敛效果}
+    \centering
+    \includegraphics[width=0.75\textwidth]{python/out/duffing-mu.pdf}
 \end{frame}

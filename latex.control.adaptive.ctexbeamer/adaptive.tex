@@ -27,6 +27,18 @@
 \setCJKmainfont{SimSun} % 中文正文字体（宋体）
 \setCJKsansfont{Microsoft YaHei} % 中文标题字体（微软雅黑）
 
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+
 % 课件基本信息
 \title{现代控制理论研讨}
 \subtitle{自适应控制：Barbalat's lemma, PE ...}
@@ -35,6 +47,7 @@
 \date{\today}
 
 \begin{document}
+
 
 
 
@@ -49,10 +62,10 @@
   \frametitle{本ppt主要涉及}
   \begin{enumerate}
     \item Barbalat's Lemma \footnote{\url{http://ele.aut.ac.ir/~abdollahi/Lec_4_N11.pdf}}
-    \item 未知参数自适应控制 \footnote{\url{https://zhuanlan.zhihu.com/p/9450457498}}  $\dot{x}=w(t)\mu +u$
-    \item 未知控制方向自适应控制 \footnote{\url{https://zhuanlan.zhihu.com/p/9910889013}}  $\dot{x}=gu$
+    \item 未知参数自适应控制 \footnote{\url{https://zhuanlan.zhihu.com/p/9450457498}}  $\dot{x}=w(t)\mu +u$ 其中 $\mu$ 未知固定
+    \item 未知控制方向自适应控制 \footnote{\url{https://zhuanlan.zhihu.com/p/9910889013}}  $\dot{x}=gu$ 其中$g$ 未知固定
     \item 系统参数估计\footnote{\url{https://www.zhihu.com/question/266601777/answer/375458125}} $y(t)=\phi(t)^T \theta$
-    \item PE条件 (Persistently Exciting/sufficient enough)
+    \item PE条件 (persistently exciting/sufficiently enough)
   \end{enumerate}
 \end{frame}
 
@@ -76,8 +89,10 @@
 \begin{frame}
   \frametitle{总结}
   \begin{enumerate}
-    \item 1. 在将输出镇定为零的控制问题中，线性系统通常也会将状态镇定为零，而自适应控制中不一定所有的信号最后都收敛到了零，甚至可以有些信号不是渐近稳定的。
-    \item 2. 发散的信号在自适应控制中有大量的应用。
+    \item 一个函数收敛到零，当函数两阶导有界时（充分），其导数收敛到零。（Barbalat's 引理）
+    \item 对于非自治系统，除了需要验证$V\geq 0$, $\dot{V}\leq 0$还需要验证$\ddot{V}$有界（LaSalle-Yoshizawa 定理）
+    \item 在将输出镇定为零的控制问题中，线性系统通常也会将状态镇定为零，而自适应控制中不一定所有的信号最后都收敛到了零。
+    \item 关于状态发散的信号在未知控制方向的自适应控制中有着广泛的应用（Nussbaum）。
   \end{enumerate}
   
 \end{frame}

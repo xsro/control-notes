@@ -131,7 +131,7 @@
 
 \begin{frame}{自适应控制的核心价值：解决传统方法无法应对的场景}
 	\begin{columns}[t]
-		\column{0.5\textwidth}
+		\column{0.45\textwidth}
 		\begin{block}{传统控制的“被动适应”局限}
 			\begin{itemize}
 				\item 增益调度控制：仅能应对\textbf{已知规律的工况变化}（如预设飞机马赫数-参数表），无法处理突发扰动
@@ -140,7 +140,7 @@
 			\end{itemize}
 		\end{block}
 		
-		\column{0.5\textwidth}
+		\column{0.45\textwidth}
 		\begin{block}{自适应控制的“主动调节”优势}
 			针对不确定性，自适应控制通过“在线辨识+实时调参”实现：
 			\begin{itemize}
@@ -158,31 +158,6 @@
 \end{frame}
 
 
-
-
-\begin{frame}{实际应用中的迫切需求：自适应控制的不可替代性}
-	\begin{block}{典型场景：为什么必须用自适应控制？}
-		\begin{enumerate}
-			\item \textbf{航空航天领域}：
-			飞行器在宽空域（高度0-30km）、宽速域（马赫数0.3-5）飞行时，气动参数变化可达\textbf{10倍以上}，传统控制器无法全覆盖，需自适应控制保证姿态稳定（如NASA X-43高超声速飞行器）。
-			
-			\item \textbf{工业制造领域}：
-			13万吨级造纸机换产时，纸张定量、湿度等参数突变，自适应控制可将调整时间从传统方法的2小时缩短至\textbf{15分钟}，降低废品率30%（某造纸厂实际案例）。
-			
-			\item \textbf{机器人与智能装备}：
-			服务机器人抓取不同重量物体（0.1-5kg）时，动力学参数剧变，自适应控制可实现无超调的力/位置跟踪，避免传统控制的震荡问题。
-		\end{enumerate}
-	\end{block}
-	
-	\begin{alertblock}{总结：自适应控制的核心目标}
-		在“模型不精确、参数时变、干扰未知”的场景下，实现：
-		\begin{center}
-			稳定运行 $\to$ 性能优化 $\to$ 降低人工干预 $\to$ 扩展系统适用范围
-		\end{center}
-	\end{alertblock}
-\end{frame}
-
-
 \begin{frame}
 	\frametitle{没有自适应控制的时候}
 	\begin{figure}
@@ -193,6 +168,9 @@
 
 \begin{frame}
 	\frametitle{有了自适应控制的时候}
+	桓宽的《盐铁论》： 明者因时而变，知者随事而制 
+
+	《道德经》：道盅（冲），而用之有弗盈也
 	\begin{figure}
 		\includegraphics[height=6cm]{figure/PID_adaptive}
 	\end{figure}
