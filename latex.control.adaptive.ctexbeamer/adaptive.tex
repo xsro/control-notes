@@ -1,6 +1,6 @@
 \documentclass{beamer}
 % 引用设置
-\usepackage[backend=biber]{biblatex}
+\usepackage[backend=biber,style=authoryear]{biblatex}
 \addbibresource{body/refs.bib} 
 
 \usetheme{Madrid} % 简洁清晰的Beamer主题
@@ -21,6 +21,7 @@
 \usepackage{ctex} % 中文支持
 \usepackage{hyperref} % 超链接
 \usepackage{subcaption}
+\newcommand{\tB}{\textcolor{blue}}
 
 
 % 字体配置
@@ -62,9 +63,9 @@
   \frametitle{本ppt主要涉及}
   \begin{enumerate}
     \item Barbalat's Lemma \footnote{\url{http://ele.aut.ac.ir/~abdollahi/Lec_4_N11.pdf}}
-    \item 未知参数自适应控制 \footnote{\url{https://zhuanlan.zhihu.com/p/9450457498}}  $\dot{x}=w(t)\mu +u$ 其中 $\mu$ 未知固定
-    \item 未知控制方向自适应控制 \footnote{\url{https://zhuanlan.zhihu.com/p/9910889013}}  $\dot{x}=gu$ 其中$g$ 未知固定
-    \item 系统参数估计\footnote{\url{https://www.zhihu.com/question/266601777/answer/375458125}} $y(t)=\phi(t)^T \theta$
+    \item 未知参数自适应控制 \footnote{自适应控制与持续激励条件 \url{https://zhuanlan.zhihu.com/p/9450457498}}  $\dot{x}=w(t)\mu +u$ 其中 $\mu$ 未知固定
+    \item 未知控制方向自适应控制 \footnote{未知增益自适应与Nussbaum函数 \url{https://zhuanlan.zhihu.com/p/9910889013}}  $\dot{x}=gu$ 其中$g$ 未知固定
+    \item 系统参数估计\footnote{自适应控制中的持续激励条件怎么理解？ \url{https://www.zhihu.com/question/266601777/answer/375458125}} $y(t)=\phi(t)^T \theta$
     \item PE条件 (persistently exciting/sufficiently enough)
   \end{enumerate}
 \end{frame}

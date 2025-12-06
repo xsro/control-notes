@@ -1,9 +1,8 @@
 from scipy.integrate import solve_ivp
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-if not os.path.exists("out"):
-    os.mkdir("out")
+from pathlib import Path
+output=Path(__file__).parent.joinpath("out")
 
 def rhs(t,states,params):
     x=states[0]
@@ -28,13 +27,13 @@ def plot(params,sol,fileprefix=""):
     plt.grid()
     plt.legend()
     plt.xlim([0,40])
-    plt.savefig(fileprefix+"_x.pdf")
+    plt.savefig(output.joinpath(fileprefix+"_x.pdf"))
     plt.figure(figsize=(6,2))
     plt.plot(sol.t,sol.y[1,:],label='z(t)')
     plt.grid()
     plt.legend()
     plt.xlim([0,40])
-    plt.savefig(fileprefix+"_z.pdf")
+    plt.savefig(output.joinpath(fileprefix+"_z.pdf"))
     plt.show()
     plt.figure(figsize=(6,2))
     n2=np.array([params['N'](xi) for xi in sol.y[1,:]])
@@ -42,7 +41,7 @@ def plot(params,sol,fileprefix=""):
     plt.grid()
     plt.xlim([0,40])
     plt.legend()
-    plt.savefig(fileprefix+"_n.pdf")
+    plt.savefig(output.joinpath(fileprefix+"_n.pdf"))
     plt.show()
     plt.figure(figsize=(6,2))
     u2=np.array([params['N'](xi)*xi for xi in sol.y[1,:]])
@@ -50,7 +49,7 @@ def plot(params,sol,fileprefix=""):
     plt.grid()
     plt.xlim([0,40])
     plt.legend()
-    plt.savefig(fileprefix+"_u.pdf")
+    plt.savefig(output.joinpath(fileprefix+"_u.pdf"))
     plt.show()
 
 params={}
@@ -70,16 +69,16 @@ plt.plot(x,n)
 plt.grid(True)
 plt.xlabel("$s$")
 plt.ylabel("$v$")
-plt.savefig("out/nussbaum.pdf")
+plt.savefig(output.joinpath("nussbaum.pdf"))
 
 
 #%%
 sol=simulate(params)
-plot(params,sol,fileprefix="out/n1")
+plot(params,sol,fileprefix="n1")
 
 #%%
 params2=params.copy()
 params2["g"]=-1
 sol2=simulate(params2)
-plot(params2,sol2,fileprefix="out/n2")
+plot(params2,sol2,fileprefix="n2")
 #%%

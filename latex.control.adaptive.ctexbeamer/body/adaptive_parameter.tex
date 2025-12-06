@@ -17,36 +17,36 @@
     于是闭环的自适应控制系统可以写作：
     \[
     \begin{cases}
-    \dot{e} = -e + \theta w(t) \\
-    \dot{\theta} = -e w(t)
+    \dot{e} = -e + \tilde{\mu} w(t) \\
+    \dot{\tilde{\mu}} = -e w(t)
     \end{cases}
     \]
 
-    其中，\( e=x \) 是跟踪误差，\( \theta=\hat{\mu}-\mu \) 是参数误差，\( w(t) \) 是一个有界连续函数。
+    其中，\( e=x \) 是跟踪误差，\( \tilde{\mu}=\hat{\mu}-\mu \) 是参数误差，\( w(t) \) 是一个有界连续函数。
 \end{frame}
 
 \begin{frame}
 考虑下方有界函数：
 \[
 \begin{split}
-V &= e^2 + \theta^2 \\
-\dot{V} &= 2e(-e + \theta w) + 2\theta(-ew(t)) = -2e^2 \leq 0
+V &= e^2 + \tilde{\mu}^2 \\
+\dot{V} &= 2e(-e + \tilde{\mu} w) + 2\tilde{\mu}(-ew(t)) = -2e^2 \leq 0
 \end{split}
 \]
-所以 \( V(t) \leq V(0) \)，因此 \( e \) 和 \( \theta \) 是有界的。
+所以 \( V(t) \leq V(0) \)，因此 \( e \) 和 \( \tilde{\mu} \) 是有界的。
 
 由于动力学是非自治的，\textbf{不变集定理}不能用来推断 \( e \) 的收敛性。
 
 为了使用 \textbf{Barbalat 引理}，检查 \( \dot{V} \) 的一致连续性。
 \[
-\ddot{V} = -4e(-e + \theta w)
+\ddot{V} = -4e(-e + \tilde{\mu} w)
 \]
 
-\( \ddot{V} \) 是有界的，因为根据假设 \( w \) 是有界的，且 \( e \) 和 \( \theta \) 已被证明是有界的 \( \rightsquigarrow \dot{V} \) 是一致连续的。
+\( \ddot{V} \) 是有界的，因为根据假设 \( w \) 是有界的，且 \( e \) 和 \( \tilde{\mu} \) 已被证明是有界的 \( \rightsquigarrow \dot{V} \) 是一致连续的。
 
 应用 Barbalat 引理：当 \( \dot{V} = 0 \) 时，\( t \to \infty \) 时 \( e \to 0 \)。
 
-\textbf{重要提示}：尽管 \( e \to 0 \)，但系统不是渐近稳定（a.s.）的，因为仅证明了 \( \theta \) 是有界的。（非渐近稳定系统也可以解决镇定问题！）
+\textbf{重要提示}：尽管 \( e \to 0 \)，但系统不是渐近稳定（a.s.）的，因为仅证明了 \( \tilde{\mu} \) 是有界的。（非渐近稳定系统也可以解决镇定问题！）
 \end{frame}
 
 
@@ -60,11 +60,11 @@ V &= e^2 + \theta^2 \\
 
     \begin{figure}
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\linewidth]{figure/simple-pe.pdf}
+            \includegraphics[width=\linewidth]{python/out/simple-pe.pdf}
             \caption{持续激励信号下}
         \end{subfigure}
         \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\linewidth]{figure/simple-npe.pdf}
+            \includegraphics[width=\linewidth]{python/out/simple-npe.pdf}
             \caption{非持续激励信号}
         \end{subfigure}
     \end{figure}
