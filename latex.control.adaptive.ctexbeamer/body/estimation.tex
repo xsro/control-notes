@@ -49,3 +49,21 @@
         其中 \( m \geq n/2 \)（每个正弦信号提供2个频谱），那么回归矩阵 \( \phi(t) \) 是持续激励的。这也是充分必要条件。
     \end{itemize}
 \end{frame}
+
+\begin{frame}
+    \frametitle{如何保证满足PE}
+
+    工程中如何保证信号满足PE条件很困难！
+    常常需要给一个随机信号。
+
+    于是出现了一些改进的PE条件表述，如PE*\parencite{Jenkins2018}，初始激励/充分激励条件（initial exciting, IE/sufficiently exciting, SE）。
+
+    \begin{enumerate}
+    \item \underline{SE/IE条件}：$\exists T>0 ,s.t. \int_{0}^{T} y(\tau,\omega) y^\top(\tau,\omega) d\tau \succeq \alpha I$
+    \item     \underline{弱持续激励}（$\text{PE}^*(\omega, \Omega)$）：若\tB{存在紧集 $\Omega \subset \mathbb{R}^p$}、$T(\Omega) > 0$ 及 $\alpha(\Omega)$，使得
+    \[
+        \int_{t}^{t+T} y(\tau,\omega) y^\top(\tau,\omega) d\tau \succeq \alpha I
+    \]
+    对所有 $\omega_0 \in \Omega$ 和 $t \geq t_0$ 成立，则称 $y(t,\omega) \in \text{PE}^*(\omega, \Omega)$。
+    \end{enumerate}
+\end{frame}
