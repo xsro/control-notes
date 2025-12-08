@@ -104,4 +104,35 @@
   % allowframebreaks选项允许参考文献跨页显示
 \end{frame}
 
+\begin{frame}
+  \frametitle{那么，代价是什么呢？}
+    未知参数自适应控制需要PE条件，难以保证。
+
+     \[
+    \begin{cases}
+    \dot{e} = -e + \tilde{\mu} w(t) \\
+    \dot{\tilde{\mu}} = -e w(t)
+    \end{cases}
+    \]
+
+    未知控制方向自适应控制的参数通常会大于实际所需，特别是当存在一定扰动的时候，误差累积会影响控制效果。
+
+    \[
+    \dot{x} = g\mathcal{N}(z)x, \quad \dot{z} = x^2
+    \]
+
+    \centering
+     \includegraphics[width=0.45\linewidth]{python/out/n2_n.pdf}
+\end{frame}
+
+% 感谢页（核心内容）
+\begin{frame}[plain] % plain 去除页眉页脚，更简洁
+    \centering
+    
+    % 大标题：感谢聆听
+    {\Huge \textbf{感谢}}\\[2em]
+  
+  
+\end{frame}
+
 \end{document}
