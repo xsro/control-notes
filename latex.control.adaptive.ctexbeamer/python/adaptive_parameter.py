@@ -3,7 +3,13 @@ from scipy.integrate import solve_ivp
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+
+import sys
 output=Path(__file__).parent.joinpath("out")
+def save_or_show(fig,filename):
+    fig.savefig(output.joinpath(filename))
+    if "show" in sys.argv:
+        plt.show()
 
 #%%
 def w1(t):
@@ -19,14 +25,13 @@ def rhs(t,x,w_func):
 
 t_eval=np.arange(0,40,0.01)
 sol=solve_ivp(rhs,[0,40],[-1,1.4],args=(w1,),dense_output=True,t_eval=t_eval)
-plt.figure(figsize=(6,3))
+fig=plt.figure(figsize=(6,3))
 plt.plot(sol.t,sol.y[0,:],label=r"$e$")
 plt.plot(sol.t,sol.y[1,:],"--",label=r"$\tilde{\mu}$")
 plt.plot(sol.t,np.vectorize(w1)(sol.t),"--",label=r"$w(t)$")
 plt.legend()
 plt.grid()
-plt.savefig(output.joinpath("simple-pe.pdf"))
-plt.show()
+save_or_show(fig,"simple-pe.pdf")
 
 
 # %%
@@ -40,12 +45,11 @@ def w2(t):
 
 t_eval=np.arange(0,40,0.01)
 sol=solve_ivp(rhs,[0,40],[-1,1.4],args=(w2,),dense_output=True,t_eval=t_eval)
-plt.figure(figsize=(6,3))
+fig=plt.figure(figsize=(6,3))
 plt.plot(sol.t,sol.y[0,:],label=r"$e$")
 plt.plot(sol.t,sol.y[1,:],label=r"$\tilde{\mu}$")
 plt.plot(sol.t,np.vectorize(w2)(sol.t),"--",label=r"$w(t)$")
 plt.legend()
 plt.grid()
-plt.savefig(output.joinpath("simple-npe.pdf"))
-plt.pause(1)
+save_or_show(fig,output.joinpath("simple-npe.pdf"))
 # %%
