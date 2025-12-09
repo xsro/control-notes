@@ -3,11 +3,11 @@
 \begin{frame}
     \frametitle{参数自适应}
 
-    考虑一个简单的具有未知参数的被控对象的镇定问题：
+    考虑一维镇定问题（$x,w,u\in[0,\infty)\mapsto\mathbb{R}$）：
     \begin{equation}
         \dot{x}=w(t) \mu +u
     \end{equation}
-    其中$\mu\in\mathbb{R}$是未知参数，设计控制器为：
+    其中$\mu\in\mathbb{R}$是未知恒定参数，设计控制器为：
     \begin{equation}
         u=-x-w(t)\hat{\mu},
         \quad
@@ -53,26 +53,23 @@ V &= e^2 + \tilde{\mu}^2 \\
 \begin{frame}
     \frametitle{闭环系统是否稳定}
 
-    \begin{enumerate}
-        \item 持续激励信号：$w(t)=\sin(t)$.
-        \item 非持续激励信号：当 $t< 2\pi$ 时，$w(t)=\sin(t)$；当$t\geq 5$时，$w(t)=0$.
-    \end{enumerate}
+    通过分析已知$e\to 0$, $\dot{e}\to0$(Barbalat's lemma).
 
-    \begin{figure}
-        \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\linewidth]{python/out/simple-pe.pdf}
-            \caption{持续激励信号下}
-        \end{subfigure}
-        \begin{subfigure}[b]{0.45\textwidth}
-            \includegraphics[width=\linewidth]{python/out/simple-npe.pdf}
-            \caption{非持续激励信号}
-        \end{subfigure}
-    \end{figure}
+    \[
+    \begin{cases}
+    \dot{e} = -e + \tilde{\mu} w(t) \\
+    \dot{\tilde{\mu}} = -e w(t)
+    \end{cases}
+    \]
+    第一行：$\tilde{\mu} w(t)=\dot{e}+e\to 0$.
+    第二行：$\dot{\tilde{\mu}} = -e w(t)\to 0$.
 
-    \begin{block}{什么条件能保证系统稳定}
-        \begin{enumerate}
-            \item 猜想1：$w(t)$ 非零信号？
-            \item 猜想2：$w(t)$ 非恒定值信号？
-        \end{enumerate}
+    \begin{block}{$w(t)$需要满足什么条件能够得到$\tilde{\mu}(t)\to 0$}
+        \footnote{示例来源于\cite[Example 2.7]{Chen2015}}
+
+    如果$w(t)$是一个非零的常数，可得$\lim_{t\to\infty}\tilde{\mu}(t)=0$.
+    
+    如果$w(t)=[\sin(\omega t),\sin(\omega t)]^T$的时候，那么显然存在$\tilde{\mu}(t)=[1 -1]^T$的解，不满足$\lim_{t\to\infty}\tilde{\mu}(t)=0$.
+        
     \end{block}
 \end{frame}
