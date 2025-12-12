@@ -24,26 +24,26 @@ def simulate(params):
 def plt_show():
     pass
 
-def plot(params,sol,fileprefix=""):
+def plot(params,sol,fileprefix="",xmax=40):
     #%%
     plt.figure(figsize=(6,2))
     plt.plot(sol.t,sol.y[0,:],label='x(t)')
     plt.grid()
     plt.legend()
-    plt.xlim([0,40])
+    plt.xlim([0,xmax])
     plt.savefig(output.joinpath(fileprefix+"_x.pdf"))
     plt.figure(figsize=(6,2))
     plt.plot(sol.t,sol.y[1,:],label='z(t)')
     plt.grid()
     plt.legend()
-    plt.xlim([0,40])
+    plt.xlim([0,xmax])
     plt.savefig(output.joinpath(fileprefix+"_z.pdf"))
     plt_show()
     plt.figure(figsize=(6,2))
     n2=np.array([params['N'](xi) for xi in sol.y[1,:]])
     plt.plot(sol.t,n2,label='N(z(t))')
     plt.grid()
-    plt.xlim([0,40])
+    plt.xlim([0,xmax])
     plt.legend()
     plt.savefig(output.joinpath(fileprefix+"_n.pdf"))
     plt_show()
@@ -51,7 +51,7 @@ def plot(params,sol,fileprefix=""):
     u2=np.array([params['N'](xi)*xi for xi in sol.y[1,:]])
     plt.plot(sol.t,u2,label='u(t)')
     plt.grid()
-    plt.xlim([0,40])
+    plt.xlim([0,xmax])
     plt.legend()
     plt.savefig(output.joinpath(fileprefix+"_u.pdf"))
     plt_show()
@@ -89,4 +89,4 @@ plot(params2,sol2,fileprefix="n2")
 params2=params.copy()
 params2["delta"]=1
 sol2=simulate(params2)
-plot(params2,sol2,fileprefix="n3delta")
+plot(params2,sol2,fileprefix="n3delta",xmax=5)
