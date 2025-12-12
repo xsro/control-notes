@@ -9,7 +9,8 @@ def rhs(t,states,params):
     z=states[1]
     
     u=params['N'](z)*x
-    dxdt=params['g']*u
+    delta=params.get("delta",0)
+    dxdt=params['g']*u+delta
 
     dzdt=x**2
     return [dxdt,dzdt]
@@ -19,6 +20,9 @@ def simulate(params):
     y0=params['y0']
     sol=solve_ivp(rhs,t_span,y0,args=(params,),max_step=params['dt'],method='RK45')
     return sol
+
+def plt_show():
+    pass
 
 def plot(params,sol,fileprefix=""):
     #%%
@@ -34,7 +38,7 @@ def plot(params,sol,fileprefix=""):
     plt.legend()
     plt.xlim([0,40])
     plt.savefig(output.joinpath(fileprefix+"_z.pdf"))
-    plt.show()
+    plt_show()
     plt.figure(figsize=(6,2))
     n2=np.array([params['N'](xi) for xi in sol.y[1,:]])
     plt.plot(sol.t,n2,label='N(z(t))')
@@ -42,7 +46,7 @@ def plot(params,sol,fileprefix=""):
     plt.xlim([0,40])
     plt.legend()
     plt.savefig(output.joinpath(fileprefix+"_n.pdf"))
-    plt.show()
+    plt_show()
     plt.figure(figsize=(6,2))
     u2=np.array([params['N'](xi)*xi for xi in sol.y[1,:]])
     plt.plot(sol.t,u2,label='u(t)')
@@ -50,7 +54,7 @@ def plot(params,sol,fileprefix=""):
     plt.xlim([0,40])
     plt.legend()
     plt.savefig(output.joinpath(fileprefix+"_u.pdf"))
-    plt.show()
+    plt_show()
 
 params={}
 params['N']=lambda z:np.sin(3*np.pi*z)*np.exp(0.01*z**2)
@@ -82,3 +86,7 @@ params2["g"]=-1
 sol2=simulate(params2)
 plot(params2,sol2,fileprefix="n2")
 #%%
+params2=params.copy()
+params2["delta"]=1
+sol2=simulate(params2)
+plot(params2,sol2,fileprefix="n3delta")
