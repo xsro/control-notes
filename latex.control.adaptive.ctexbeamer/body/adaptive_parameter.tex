@@ -35,23 +35,25 @@ V &= e^2 + \tilde{\mu}^2 \\
 \]
 所以 \( V(t) \leq V(0) \)，因此 \( e \) 和 \( \tilde{\mu} \) 是有界的。
 
+由于系统的$\dot{V}\leq 0$，无法直接保证渐进稳定。
 由于动力学是非自治的，\textbf{不变集定理}不能用来推断 \( e \) 的收敛性。
+因此，需要使用基于Barbalat's 引理的LaSalle-Yoshizawa定理。
 
-为了使用 \textbf{Barbalat 引理}，检查 \( \dot{V} \) 的一致连续性。
+通过$\ddot{V}$的有界性，检查 \( \dot{V} \) 的一致连续性。
 \[
-\ddot{V} = -4e(-e + \tilde{\mu} w)
+\ddot{V} = -4e(-e + \tilde{\mu} w(t))
 \]
 
 \( \ddot{V} \) 是有界的，因为根据假设 \( w \) 是有界的，且 \( e \) 和 \( \tilde{\mu} \) 已被证明是有界的 \( \rightsquigarrow \dot{V} \) 是一致连续的。
 
 应用 Barbalat 引理：当 \( \dot{V} = 0 \) 时，\( t \to \infty \) 时 \( e \to 0 \)。
 
-\textbf{重要提示}：尽管 \( e \to 0 \)，但系统不是渐近稳定（a.s.）的，因为仅证明了 \( \tilde{\mu} \) 是有界的。
+\textbf{重要提示}：尽管 \( e \to 0 \)，但整个系统不是渐近稳定（a.s.）的，因为仅证明了 \( \tilde{\mu} \) 是有界的。
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{闭环系统是否稳定}
+    \frametitle{什么时候观测误差也渐进收敛？}
 
     通过分析已知$e\to 0$, $\dot{e}\to0$(Barbalat's lemma).
 

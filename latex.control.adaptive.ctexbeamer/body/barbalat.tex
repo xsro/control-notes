@@ -1,35 +1,9 @@
 \section{自适应控制相关定理}
 
-\subsection{Barbalat 引理}
+\subsection{Barbalat's 引理}
 
 \begin{frame}
-  \frametitle{Barbalat 引理}
-  \framesubtitle{函数及其导数的渐进性质}
-  $\dot{f}\to 0 $
-  $\nRightarrow$
-  $f$ 收敛
-
-  函数的导数趋于零$\dot{f}\to 0 $并不等价于函数收敛$\exists C\in\mathbb{R},\lim_{t\to\infty}f(t)=C$.
-
-  \begin{block}{example}
-    \begin{enumerate}
-      \item 有界函数：$f_1(t)=\sin(\ln t)$，$\dot{f}_1(t)=\frac{\cos(\ln t)}{t}$
-      \item 无界函数：$f_2(t)=\sqrt{t} \sin(\ln t)$，$\dot{f}_2(t)=\frac{\sin(\ln t)}{2 \sqrt{t}}+ \frac{\cos (\ln t)}{\sqrt{t}}$
-    \end{enumerate}
-
-    这两个函数的导数都趋于零，但是函数不收敛.
-
-    \begin{figure}
-      \centering
-      \includegraphics[height=2.8cm]{python/out/sinlnt.pdf}
-      \quad
-      \includegraphics[height=2.8cm]{python/out/sqrttsinlnt.pdf}
-    \end{figure}
-  \end{block}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Barbalat 引理}
+  \frametitle{Barbalat's 引理}
   \framesubtitle{函数及其导数的渐进性质}
 
   $f$ 收敛
@@ -91,10 +65,38 @@
   \end{corollary}
 \end{frame}
 
-\subsection{LaSalle-Yoshizawa 定理（拉萨尔-吉泽定理）}
+
+% 函数收敛到零  不一定 函数的积分收敛到零 
+% Dirichlet 判别法 Abel 判别法
+% \begin{frame}
+%   \frametitle{那么如果导数收敛到零，积分是否收敛到零呢？}
+%   $\dot{f}\to 0 $
+%   $\nRightarrow$
+%   $f$ 收敛
+
+%   函数的导数趋于零$\dot{f}\to 0 $并不等价于函数收敛$\exists C\in\mathbb{R},\lim_{t\to\infty}f(t)=C$.
+
+%   \begin{block}{example}
+%     \begin{enumerate}
+%       \item 有界函数：$\dot{f}_1(t)=\frac{\cos(\ln t)}{t}$，$f_1(t)=\sin(\ln t)$，
+%       \item 无界函数：$\dot{f}_2(t)=\frac{\sin(\ln t)}{2 \sqrt{t}}+ \frac{\cos (\ln t)}{\sqrt{t}}$，$f_2(t)=\sqrt{t} \sin(\ln t)$，
+%     \end{enumerate}
+
+%     这两个函数的导数都趋于零，但是函数不收敛.
+
+%     \begin{figure}
+%       \centering
+%       \includegraphics[height=2.8cm]{python/out/sinlnt.pdf}
+%       \quad
+%       \includegraphics[height=2.8cm]{python/out/sqrttsinlnt.pdf}
+%     \end{figure}
+%   \end{block}
+% \end{frame}
+
+\subsection{Barbalat's 引理在李亚普诺夫分析中的应用}
 
 \begin{frame}
-  \frametitle{回顾李亚普诺夫第二定理}
+  \frametitle{回顾李亚普诺夫间接法}
 
   考虑自治系统
   \[
@@ -149,13 +151,13 @@
 \parencite[定理 3.5]{khalilNonlinearControl2015}
 设 $D\subset\mathbb{R}^n$ 是包含原点的一个区域，$f(x)$ 是定义在 $D$ 上的局部 Lipschitz 函数，且 $f(0)=0$。设 $V(x)$ 是 $D$ 上连续可微的正定函数，\tB{且在 $D$ 内满足 $\dot{V}(x)\leq 0$}。设 \tB{$S=\{x\in D\mid \dot{V}(x)=0\}$}，并假设除平凡解 $x(t)\equiv 0$ 之外，没有其他解一直保持在 $S$ 内，那么 $\dot{x}=f(x)$ 的原点是渐近稳定的平衡点。
 
-进一步，设紧集 $\Gamma\subset D$ 关于 $\dot{x}=f(x)$ 正向不变，那么 $\Gamma$ 是吸引域的子集。最后，如果 $D=\mathbb{R}^n$，且 $V(x)$ 是径向无界的，那么原点是全局渐近稳定的。
+进一步，设紧集 $\Gamma\subset D$ 关于 $\dot{x}=f(x)$ 正向不变，那么 $\Gamma$ 是吸引域的子集。最后，如果 $D=\mathbb{R}^n$，且 $V(x)$ 是\tB{径向无界}的，那么原点是全局渐近稳定的。
 \end{theorem}
 
 \end{frame}
 
 
-\subsection{Barbalat's 引理在李亚普诺夫分析中的应用}
+
 \begin{frame}
   \frametitle{Barbalat's 引理在李亚普诺夫分析中的应用}
 

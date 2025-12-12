@@ -1,34 +1,34 @@
 \section{引言}
 \subsection{什么是自适应控制}
 
-\begin{frame}{韦氏词典对“适应”与“适应性”的定义}
-	\begin{itemize}
-		\item According to the Webster’s dictionary, to \textbf{adapt} means:
-		\begin{itemize}
-			\item to adjust oneself to particular conditions
-			\item to bring oneself in harmony with a particular environment
-			\item to bring one’s acts, behaviour in harmony with a particular environment
-		\end{itemize}
-		\item 【中文翻译】根据韦氏词典，“adapt”（适应）的含义是：
-		\begin{itemize}
-			\item 使自己适应特定条件
-			\item 使自己与特定环境相协调
-			\item 使自己的行为举止与特定环境相协调
-		\end{itemize}
-	\end{itemize}
-	\begin{itemize}
-		\item According to the Webster’s dictionary, \textbf{adaptation} means:
-		\begin{itemize}
-			\item adjustment to environmental conditions
-			\item alteration or change in form or structure to better fit the environment
-		\end{itemize}
-		\item 【中文翻译】根据韦氏词典，“adaptation”（适应性）的含义是：
-		\begin{itemize}
-			\item 对环境条件的调整
-			\item 为更好地适应环境而在形式或结构上的改变或调整
-		\end{itemize}
-	\end{itemize}
-\end{frame}
+% \begin{frame}{韦氏词典对“适应”与“适应性”的定义}
+% 	\begin{itemize}
+% 		\item According to the Webster’s dictionary, to \textbf{adapt} means:
+% 		\begin{itemize}
+% 			\item to adjust oneself to particular conditions
+% 			\item to bring oneself in harmony with a particular environment
+% 			\item to bring one’s acts, behaviour in harmony with a particular environment
+% 		\end{itemize}
+% 		\item 【中文翻译】根据韦氏词典，“adapt”（适应）的含义是：
+% 		\begin{itemize}
+% 			\item 使自己适应特定条件
+% 			\item 使自己与特定环境相协调
+% 			\item 使自己的行为举止与特定环境相协调
+% 		\end{itemize}
+% 	\end{itemize}
+% 	\begin{itemize}
+% 		\item According to the Webster’s dictionary, \textbf{adaptation} means:
+% 		\begin{itemize}
+% 			\item adjustment to environmental conditions
+% 			\item alteration or change in form or structure to better fit the environment
+% 		\end{itemize}
+% 		\item 【中文翻译】根据韦氏词典，“adaptation”（适应性）的含义是：
+% 		\begin{itemize}
+% 			\item 对环境条件的调整
+% 			\item 为更好地适应环境而在形式或结构上的改变或调整
+% 		\end{itemize}
+% 	\end{itemize}
+% \end{frame}
 
 
 
@@ -37,49 +37,34 @@
 		\item An adaptive controller is a \textbf{fixed-structure} controller with \textbf{adjustable parameters} and a mechanism for \textbf{automatically} adjusting those parameters
 		\item 【翻译】自适应控制器是一种\textbf{固定结构}的控制器，具有\textbf{可调参数}以及自动调整这些参数的机制
 		\item In this sense, an adaptive controller is one way of dealing with \textbf{parametric uncertainty}
-		\item 【翻译】从这个意义上说，自适应控制器是应对\textbf{参数不确定性}的一种方法
+		\item 【翻译】从这个意义上说，自适应控制器是应对\textbf{参数不确定性}的一种方法（有些方法需要将不确定性估计出来\footnote{【CAA云讲座预告】北京航空航天大学教授王薇：数据驱动自适应控制理论及应用}）
 		\item Adaptive control theory essentially deals with finding parameter adjustment algorithms that guarantee global \textbf{stability and convergence}
 		\item 【翻译】自适应控制理论本质上是研究寻找能保证\textbf{全局稳定性和收敛性}的参数调整算法
 	\end{itemize}
 \end{frame}
 
 
-\begin{frame}
-	\frametitle{什么是自适应控制}
-	Adaptive Control covers a set of techniques which provide a systematic approach for
-	automatic adjustment of controllers in real time, in order to achieve or to maintain
-	a desired level of control system performance when \textbf{the parameters of the plant
-	dynamic model are unknown and/or change in time.}
+% \begin{frame}
+% 	\frametitle{什么是自适应控制}
+% 	Adaptive Control covers a set of techniques which provide a systematic approach for
+% 	automatic adjustment of controllers in real time, in order to achieve or to maintain
+% 	a desired level of control system performance when \textbf{the parameters of the plant
+% 	dynamic model are unknown and/or change in time.}
 	
-	[1] Landau I D, Lozano R, M’Saad M, et al. Adaptive Control: Algorithms, Analysis and Applications[M]. London: Springer London, 2011.
+% 	[1] Landau I D, Lozano R, M’Saad M, et al. Adaptive Control: Algorithms, Analysis and Applications[M]. London: Springer London, 2011.
 	
-	\vspace{1cm}
+% 	\vspace{1cm}
 	
-	\textbf{自适应控制}：通过对于未知模型参数进行\textbf{在线估计}，然后将参数估计值带入并更新控制器的设计。
+% 	\textbf{自适应控制}：通过对于未知模型参数进行\textbf{在线估计}，然后将参数估计值带入并更新控制器的设计。
 	
-	【CAA云讲座预告】北京航空航天大学教授王薇：数据驱动自适应控制理论及应用
+% 	【CAA云讲座预告】北京航空航天大学教授王薇：数据驱动自适应控制理论及应用
 	
-\end{frame}
-
-\begin{frame}
-	\frametitle{自适应与自整定}
-	Self-tuning 自整定
-	\begin{itemize}
-		\item Continuous updating of controller parameters 控制器参数的持续更新
-		\item Used for truly time-varying plants 用于真正时变的被控对象
-	\end{itemize}
-	
-	Auto-tuning
-	\begin{itemize}
-		\item Once controller parameters near convergence, adaptation is stopped 一旦控制器参数接近收敛，自适应即停止
-		\item Used for time invariant or very slowly varying processes 用于时不变或变化极慢的过程
-		\item Used for periodic, usually on-demand tuning 用于周期性的、通常为按需的整定
-	\end{itemize}
-\end{frame}
+% \end{frame}
 
 
 \begin{frame}
-	\frametitle{自适应与增益调度}
+	\frametitle{自适应相关名词}
+	Self-tuning 自整定、Auto-tuning 自动整定
 	
 	\begin{columns}[t]
 		\column{0.48\textwidth}
@@ -88,17 +73,16 @@
 		\end{figure}
 		
 		\column{0.48\textwidth}
-		自适应控制是 “以变应变的智能调节”，增益调度控制是 “按预设规则的被动切换”。前者适合未知时变场景，后者适合已知工况的规律变化场景。
 		
-		\begin {itemize}\item 时变动态系统的控制\item 若动态特性随运行工况以已知、可预测的方式变化，采用 \textbf {增益调度}\item 若使用固定控制器无法在 \textbf {鲁棒性} 和 \textbf {性能} 之间达成满意的折中，当且仅当此时，才应使用自适应控制。\end {itemize}
-	
+		\begin {itemize}
+		\item 自适应控制和增益调度控制都用于时变动态系统的控制
+		\item 若动态特性随运行工况已知、可预测的方式变化，采用 \textbf {增益调度}\item 若使用固定控制器无法在 \textbf {鲁棒性} 和 \textbf {性能} 之间达成满意的折中，当且仅当此时，才应使用自适应控制。
+		\end{itemize}
 	\end{columns}
-	
 \end{frame}
 
 
 \subsection{为什么使用自适应控制}
-
 
 \begin{frame}{传统控制的局限性：为什么需要新方案？}
 	\begin{block}{工业系统的普遍挑战：不确定性}
@@ -128,33 +112,33 @@
 
 
 
-\begin{frame}{自适应控制的核心价值：解决传统方法无法应对的场景}
-	\begin{columns}[t]
-		\column{0.45\textwidth}
-		\begin{block}{传统控制的“被动适应”局限}
-			\begin{itemize}
-				\item 增益调度控制：仅能应对\textbf{已知规律的工况变化}（如预设飞机马赫数-参数表），无法处理突发扰动
-				\item 鲁棒控制：通过“保守设计”保证稳定性，但牺牲了\textbf{动态性能}（如响应速度变慢）
-				\item 最优控制：依赖精确模型，模型失配时会导致\textbf{性能剧烈下降}
-			\end{itemize}
-		\end{block}
+% \begin{frame}{自适应控制的核心价值：解决传统方法无法应对的场景}
+% 	\begin{columns}[t]
+% 		\column{0.45\textwidth}
+% 		\begin{block}{传统控制的“被动适应”局限}
+% 			\begin{itemize}
+% 				\item 增益调度控制：仅能应对\textbf{已知规律的工况变化}（如预设飞机马赫数-参数表），无法处理突发扰动
+% 				\item 鲁棒控制：通过“保守设计”保证稳定性，但牺牲了\textbf{动态性能}（如响应速度变慢）
+% 				\item 最优控制：依赖精确模型，模型失配时会导致\textbf{性能剧烈下降}
+% 			\end{itemize}
+% 		\end{block}
 		
-		\column{0.45\textwidth}
-		\begin{block}{自适应控制的“主动调节”优势}
-			针对不确定性，自适应控制通过“在线辨识+实时调参”实现：
-			\begin{itemize}
-				\item 无需预知参数变化规律，自动跟踪\textbf{未知时变特性}
-				\item 在保证稳定性的同时，维持\textbf{高性能指标}（如最小跟踪误差）
-				\item 适用于“模型难以精确建立”的复杂系统（如生物反应器、自动驾驶）
-			\end{itemize}
-		\end{block}
-	\end{columns}
+% 		\column{0.45\textwidth}
+% 		\begin{block}{自适应控制的“主动调节”优势}
+% 			针对不确定性，自适应控制通过“在线辨识+实时调参”实现：
+% 			\begin{itemize}
+% 				\item 无需预知参数变化规律，自动跟踪\textbf{未知时变特性}
+% 				\item 在保证稳定性的同时，维持\textbf{高性能指标}（如最小跟踪误差）
+% 				\item 适用于“模型难以精确建立”的复杂系统（如生物反应器、自动驾驶）
+% 			\end{itemize}
+% 		\end{block}
+% 	\end{columns}
 	
-	\vspace{1em}
-	\begin{center}
-		\textbf{核心差异：从“以不变应万变”到“以变应变”}
-	\end{center}
-\end{frame}
+% 	\vspace{1em}
+% 	\begin{center}
+% 		\textbf{核心差异：从“以不变应万变”到“以变应变”}
+% 	\end{center}
+% \end{frame}
 
 
 \begin{frame}
