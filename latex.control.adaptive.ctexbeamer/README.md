@@ -1,6 +1,7 @@
 # 自适应控制讲义
 
 ```
+uv sync
 uv run python python/runall.py
 ```
 
@@ -9,6 +10,13 @@ uv run python python/runall.py
 - biber adaptive
 - xelatex adaptive
 - xelatex adaptive
+
+# 打包本项目
+
+```shell
+cd latex.control.adaptive.ctexbeamer # change to this folder
+git archive HEAD . -o adaptive.zip
+```
 
 
 ## 资料 
