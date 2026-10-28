@@ -1,9 +1,16 @@
 \chapter{基础案例——一阶系统 bang bang 控制}
 
-本章以一阶系统 $\dot x=-\mathrm{sgn}(x)$ 为案例，围绕 \textbf{滑模控制中非光滑分析工具链、Utkin 等效控制与 Filippov 微分包含的关系} 逐层展开。全文脉络总结如下：
+本章以一阶系统 $\dot x=-\mathrm{sgn}(x) + \delta$ 为案例，围绕 \textbf{Utkin 等效控制与 Filippov 微分包含、滑模控制中非光滑分析工具链} 等话题，试图解释为什么非光滑需要额外引入很多概念。
 
 \begin{enumerate}
-  \item 核心问题：为什么要用\textbf{集值李导数}，而不是普通李导数？
+  \item 为什么引入 Filippov 解，传统的 classical 解为什么不够
+  \begin{itemize}
+    \item 对于系统 $\dot x=-\mathrm{sgn}(x)$，classical 解是足够的，因为当$x=0$后，对应的$\dot{x}=0$，系统的解。
+    \item 但是，当系统存在扰动$\delta(t)$ ($\sup_{t\geq 0}|\delta(t)|\leq \bar{\delta}$)时， $\dot x=-\mathrm{sgn}(x)$，classical 解就不足了，因为当$x=0$后，对应的$\dot{x}=\delta(t)$，不存在一个满足这个微分方程的解。即使引入 Caratheodory 解（只需要几乎处处满足微分方程）也是不够的。
+    \item 因此，需要在Filippov 意义下理解，即方程的解在$x=0$时只需要满足$\dot{x}\in [-1,1] + [-\bar{\delta},\bar{\delta}]$即可。这就导致Filippov意义下可能存在多个解的情况。本例依然是唯一的解。
+    \item classical 的解存在性要求右端Lipschitz 连续，Filippov 的解存在性只要求右端有界。
+  \end{itemize}
+  \item Lyapunov 稳定性分析：为什么要用\textbf{集值李导数}，而不是普通李导数？
     \begin{itemize}
       \item 普通李导数依赖两个前提：右端映射单点、Lyapunov 函数光滑可微。案例若选取 $V=|x|^2$ 则可以满足；
       \item Filippov 框架下，不连续控制使得速度变成集值 $\dot q\in\mathcal K[f]$；非光滑 Lyapunov（如 $V=|x|$）在切换面不可微，梯度替换为 Clarke 集值广义梯度 $\partial V$；链式法则不再有单点定义，因此需要集值李导数。
