@@ -188,4 +188,16 @@
 \node[xst, font=\scriptsize\bfseries] at (-7.4, 8.7) {$\times$};
 \node[cex, text=black] at (-6.85, 8.7) {开区间上不成立};
 
+% =====================================================================
+%  前提说明（图底）：图的适用空间与隐含假设
+% =====================================================================
+\node[font=\scriptsize, text=black!80, anchor=north west, align=left,
+      draw=black!25, dashed, rounded corners=2pt, fill=black!2, inner sep=3pt]
+      at (-7.95, -3.05) {%
+  \textbf{前提}：$f:I\to\mathbb{R}$，$I\subseteq\mathbb{R}$ 为区间，实值（本图是“一维区间”上的结论）；\\
+  “闭区间”指\textbf{有界}闭区间 $[a,b]$（紧集）——上界无界的 $[0,\infty)$ 不适用（$f=x^2$ 连续可导但非 Lipschitz、无界）；\\
+  导数在端点按单侧导数理解；绝对连续、有界变差按 $[a,b]$ 上的通常定义；\\
+  $f'$ 有界 $\iff$ Lipschitz、$f'$ 连续 $\Rightarrow$ Lipschitz 等要用中值定理，故要求定义域是区间（凸集）；\\
+  Rademacher 定理（Lipschitz $\Rightarrow$ a.e.\ 可导且 $|\nabla f|\le L$）在 $\mathbb{R}^n$ 中也成立。};
+
 \end{tikzpicture}
