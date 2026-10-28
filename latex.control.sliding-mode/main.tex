@@ -46,13 +46,11 @@
 \newcommand{\dd}{\operatorname{d}}
 
 
- \usepackage[backend=biber, style=apa,url=false]{biblatex} % 指定后端为biber，引用样式为APA格式
+ \usepackage[backend=biber, style=numeric, sorting=none, url=false]{biblatex} % 数字引用样式：正文 [编号, 定位]，按引用顺序编号
 % tex2ast extract-bib -i main.tex -o main_biber.bib --bib biblatex.bib
 \addbibresource{main_biber.bib}
-\ExecuteBibliographyOptions{annotation=false} % 不打印 .bib 中的 Zotero 注释（如“EI: 是”）
 \renewcommand{\bibname}{参考文献}
-% 统一让 \cite 输出带括号的引用，如 (Khalil, 2002, Theorem 3.1)
-\let\cite\parencite
+% 数字样式下 \cite 直接输出 [编号]；\cite[Lemma 1]{key} 输出 [编号, Lemma 1]
 %  \addbibresource{biblatex.bib} 
 
 \newcommand{\citefrom}[1]{\textcolor{gray}{#1}\\}

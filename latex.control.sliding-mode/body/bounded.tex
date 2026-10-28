@@ -204,9 +204,9 @@ Peano 定理说明连续的向量场可以保证 classical 解存在：
 这与 $t\mapsto\dot{x}(t)$ 连续矛盾。因此不存在 classical 解。
 \end{quote}
 
-\subsection{反例：不连续时经典解仍可能存在}
+\subsection{反例：不连续时仍可能有分段 classical 解}
 
-下例说明不连续向量场也可能有经典解：
+下例说明不连续向量场仍可能有唯一的、物理上合理的分段 classical 解：
 \begin{quote}
 考虑向量场 $\mathcal{X}:\RR\to\RR$，
 \[
@@ -216,18 +216,18 @@ Peano 定理说明连续的向量场可以保证 classical 解存在：
 1,   & x<0,
 \end{cases}
 \]
-其唯一最大解为
+其最大解为
 \[
-\begin{aligned}
-&x(t)=x(0)-t,\quad t\in[0,x(0)), &&\text{若 } x(0)>0,\\
-&x(t)=0,\quad t\in[0,\infty), &&\text{若 } x(0)=0,\\
-&x(t)=x(0)+t,\quad t\in[0,-x(0)), &&\text{若 } x(0)<0 .
-\end{aligned}
+x(t)=\max\{x_0-t,0\}\ (x_0>0),\qquad
+x(t)=\min\{x_0+t,0\}\ (x_0<0),\qquad
+x(t)\equiv0\ (x_0=0).
 \]
 \end{quote}
 这个例子说明：$x=0$ 处的取值 $\mathcal{X}(0)=0$ 恰好与“到达后停住”的物理解一致，
-因此解在几乎处处意义下成立。
-但只要在方程中加入一个非零扰动（例~\eqref{eq:minimal-sgn-dist}），这个巧合就被破坏，经典解随之消失。
+因此该曲线绝对连续、在几乎处处意义下满足方程（Carathéodory/Filippov 意义），
+并且在 $x_0=0$ 时它就是真正的 classical 解 $x\equiv0$。
+但若 $x_0\ne0$，它在到达原点的时刻不可微，因此\textbf{不是}严格意义下的 $C^1$ classical 解。
+只要在方程中加入一个非零扰动（式~\eqref{eq:minimal-sgn-dist}），这个“取值恰好为 0”的巧合就被破坏，必须改用 Filippov 集值化。
 
 \subsection{反例：连续但非单边 Lipschitz 时解可能不唯一}
 
@@ -288,6 +288,81 @@ Dini 导数的定义见 \cite[p.~659, Theorem 3.4 的证明]{khalilNonlinearSyst
   \limsup_{x\to\infty}\sin x=1,\qquad \liminf_{x\to\infty}\sin x=-1 .
 \]
 
+上面定义的是标量函数关于时间 $t$ 的 Dini 导数。在 Lyapunov 分析中，真正需要的是 $V$ 沿系统轨迹的 Dini 导数。
+
+\begin{definition}[沿轨迹的 Dini 导数]\label{def:dini-along-trajectory}
+  设 $V(t,x)$ 连续，$x(t)$ 是 $\dot x=f(t,x)$ 的一个解。称
+  \begin{equation}\label{eq:dini-along}
+    D^+V(t,x(t))=\limsup_{h\to0^+}\frac{V(t+h,x(t+h))-V(t,x(t))}{h}
+  \end{equation}
+  为 $V$ 沿该解的\textbf{上右 Dini 导数}。
+  当 $V$ 连续可微、$f$ 连续时，式~\eqref{eq:dini-along} 退化为普通 Lie 导数
+  \[
+    D^+V(t,x)=\dot V(t,x)=\partial_t V(t,x)+\nabla_x V(t,x)^\top f(t,x).
+  \]
+\end{definition}
+
+下面两个定理是经典 Lyapunov 定理在“$V$ 只需连续且关于 $x$ 局部 Lipschitz”这一设定下的翻版。
+其中 $\mathcal K$ 类函数指连续、严格递增且在 $0$ 处取值为 $0$ 的函数。
+
+\begin{theorem}[Dini 版本的 Lyapunov 定理：稳定性]\label{thm:dini-lyapunov}
+  设 $f(t,x)$ 连续且 $f(t,0)=0$，$V(t,x)$ 连续、关于 $x$ 局部 Lipschitz，并满足
+  \begin{enumerate}
+    \item $V(t,x)\ge a(\norm{x})$，$V(t,0)=0$，其中 $a$ 为 $\mathcal K$ 类函数；
+    \item $D^+V(t,x)\le0$（对每个解都成立）。
+  \end{enumerate}
+  则原点是\textbf{稳定}的。
+  \cite[Theorem II.6.2]{roucheStabilityTheoryLiapunov1977}
+\end{theorem}
+
+\begin{theorem}[Dini 版本的 Lyapunov 定理：一致渐近稳定]\label{thm:dini-lyapunov-asymptotic}
+  在定理~\ref{thm:dini-lyapunov} 的条件下，若还存在 $\mathcal K$ 类函数 $b,c$ 使得
+  \begin{equation}\label{eq:dini-asymptotic}
+    V(t,x)\le b(\norm{x}),\qquad D^+V(t,x)\le -c(\norm{x}),
+  \end{equation}
+  则原点是\textbf{一致渐近稳定}的。
+  若进一步 $\Omega=\RR^n$ 且 $a(r)\to\infty$（$r\to\infty$），则原点是\textbf{一致全局渐近稳定}的。
+  \cite[Theorem II.6.3, Corollary II.6.4]{roucheStabilityTheoryLiapunov1977}
+\end{theorem}
+
+\begin{remark}[与经典 Lyapunov 定理的差别]\label{rem:dini-vs-classical}
+  定理~\ref{thm:dini-lyapunov}、\ref{thm:dini-lyapunov-asymptotic} 与第~\ref{ch:case}章回顾的经典 Lyapunov 定理相比，
+  唯一放宽的要求是：\textbf{$V$ 不必可微，只需连续且关于 $x$ 局部 Lipschitz}。
+  这正是滑模控制最需要的放宽，因为滑模分析中自然的 Lyapunov 函数往往是
+  $V=|s|$、$V=\norm{s}$ 或 $V=\zeta^\top P\zeta$（含 $|s|^{1/2}$）这类带折点/尖点的函数。
+  注意：Lipschitz 条件保证 $D^+V$ 有限且可由式~\eqref{eq:dini-along} 计算；
+  若 $V$ 连 Lipschitz 都不满足，$D^+V$ 可能取 $\pm\infty$。
+\end{remark}
+
+\begin{example}[连续但不可微的 $V=|x|$]\label{ex:dini-x3}
+  考虑
+  \begin{equation}
+    \dot x=-x^3,\qquad V(x)=|x| .
+  \end{equation}
+  $V$ 在 $x=0$ 处不可微，经典 Lyapunov 定理不能直接使用。但当 $x\neq0$ 时
+  \begin{equation}
+    D^+V=\dot x\,\sgn{x}=-x^3\sgn{x}=-|x|^3<0,
+  \end{equation}
+  而在 $x=0$ 处 $D^+V=0$。取 $a(r)=b(r)=r$、$c(r)=r^3$，则定理~\ref{thm:dini-lyapunov-asymptotic} 的条件全部满足，
+  且 $a(r)\to\infty$，故原点一致全局渐近稳定。
+  这里的 $c$ 是 $\mathcal K$ 类函数（$c(r)=r^3$ 严格递增），因此 $D^+V$ 在原点外严格为负。
+\end{example}
+
+\begin{remark}[解不唯一时为什么还需要集值 Lie 导数]\label{rem:dini-filippov}
+  Dini 导数沿\textbf{一条}解计算。若系统的解不唯一，稳定性要求
+  $D^+V\le0$ 对\textbf{所有}解都成立；这不只是“验证麻烦”，而是有的解可能使 $D^+V>0$。
+  以\textbf{不稳定继电器}
+  \begin{equation}
+    \dot x=+\sgn{x}
+  \end{equation}
+  为例：在 $x=0$ 处 Filippov 速度为 $[-1,1]$，从原点出发既有解 $x(t)\equiv0$，也有解 $x(t)=t$（$t\ge0$）。
+  取 $V=|x|$，沿后者 $D^+V(0)=1>0$，因此无法对“所有解”断言 $V$ 不增，原点确实不稳定。
+  若改用下一节的 Clarke 广义梯度与 \textbf{Shevitz--Paden 集值 Lie 导数}，则对每个状态一次性处理所有合法速度：
+  在 $x\neq0$ 处 $\dot{\tilde V}(x)=\{1\}$，在 $x=0$ 处 $\dot{\tilde V}(0)=\{0\}$，正值直接暴露了不稳定，无需逐解讨论。
+  需要强调：Dini 判据并非不能用于非光滑系统，只是要对每个解分别验证；
+  集值 Lie 导数的定位是把“对所有解成立”编码成一个状态空间条件，并配套 Filippov 版 LaSalle。
+\end{remark}
+
 该结论最早出自 Lasalle 的 \cite[Theorem 2]{lasalleStabilityTheoryOrdinary1968}。\par
 Rouche 与 Lasalle 的著作 \cite[p.~243]{roucheStabilityTheoryLiapunov1977} 也收录了这一结果。
 
@@ -303,6 +378,61 @@ Rouche 与 Lasalle 的著作 \cite[p.~243]{roucheStabilityTheoryLiapunov1977} �
   是工程论文中最常用的非光滑 Lyapunov 工具（见第\ref{ch:case}章对“为什么教材偏爱 Dini”的讨论）。
   但它要求 $V$ 沿轨迹的复合函数 $V(x(t))$ 连续，且需要单独验证 $D^+V\le0$。
 \end{remark}
+
+\subsection{常见误解：四条 Lyapunov 路线各自的边界}\label{subsec:tool-scope}
+
+一个常见的总结是：
+\begin{quote}
+经典 Lyapunov 定理需要 $C^1$ 的 $V$；Dini 导数下 $V$ 连续即可；
+但两者都只适用于 classical 解，非光滑系统必须用广义 Lie 导数。
+\end{quote}
+这个说法大方向是对的，但有两处需要修正。
+
+\textbf{第一，Dini 放松的是 $V$ 的正则性，不是解的正则性。}
+Dini 导数沿\textbf{绝对连续}轨迹即可计算，因此 Dini 判据同样适用于 Carathéodory 解与 Filippov 解；
+它并不局限于 classical 解。真正的困难在于：解不唯一时，必须对\textbf{所有}解验证 $D^+V\le0$（见注~\ref{rem:dini-filippov}）。
+另外，本节的定理~\ref{thm:dini-lyapunov}、\ref{thm:dini-lyapunov-asymptotic} 还要求 $V$ 关于 $x$ 局部 Lipschitz，
+否则 $D^+V$ 可能取 $\pm\infty$。
+
+\textbf{第二，非光滑系统并非“必须”使用 Clarke 广义梯度 + 集值 Lie 导数。}
+至少还有三条常用路线：光滑 $V=\frac12s^2$ 配 Utkin 等效控制（第~\ref{ch:case}章）、
+用 $\sat(s/\varepsilon)$ 连续逼近以回到经典框架、以及直接对每个 Filippov 解使用 Dini 导数。
+集值 Lie 导数的定位是：在解不唯一时，把“对所有解成立”编码为一个状态空间判据，并配套 Filippov 版 LaSalle。
+表~\ref{tab:tool-scope} 汇总了四条路线的边界。
+
+\begin{table}[!htb]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}p{2.5cm}|p{3.4cm}|p{4.0cm}|p{3.8cm}@{}}
+    \hline
+    路线 & 对 $V$ 的要求 & 解的概念 & 核心工具与主要局限 \\
+    \hline
+    经典直接法 & $C^1$ & classical（$f$ 连续；Lipschitz 保证唯一） & $\dot V=\nabla V^\top f$；要求 $V$ 可微、$f$ 单点 \\
+    \hline
+    Dini 判据（第~\ref{sec:dini}~节） & 连续，且关于 $x$ 局部 Lipschitz & classical / Carathéodory / Filippov（逐解） & $D^+V$；需对所有解验证，且不自动给出 LaSalle \\
+    \hline
+    Clarke + 集值 Lie 导数（第~\ref{sec:clarke}~节） & 局部 Lipschitz（可非光滑） & Filippov（解可不唯一） & $\partial V$、$\mathbb{K}[f]$、$\dot{\tilde V}$；交集可能为空，仍需存在性与紧不变集 \\
+    \hline
+    Utkin 等效控制 / 饱和逼近（第~\ref{ch:case}~章） & $C^1$（常用 $\frac12s^2$） & 分阶段（趋近 / 滑动）或 classical & 普通 Lie 导数 + $\dot s=0$；依赖仿射结构、单光滑面、横截条件与可达性 \\
+    \hline
+  \end{tabular}
+  \caption{四条 Lyapunov 路线的适用边界}
+  \label{tab:tool-scope}
+\end{table}
+
+\begin{remark}[术语]
+  文献中的“广义 Lie 导数”通常就指 Shevitz--Paden 的\textbf{集值 Lie 导数}（式~\eqref{eq:set-valued-lie}），
+  它是 Clarke 广义梯度 $\partial V$ 与 Filippov 集值化 $\mathbb{K}[f]$ 的组合，并非另一个独立概念。
+\end{remark}
+
+综上，更准确的表述是：
+\begin{quote}
+经典直接法用 $C^1$ 的 $V$ 与普通 Lie 导数；
+把 $V$ 放宽为“连续 + 局部 Lipschitz”后可用 Dini 导数，且 Dini 判据并不限于 classical 解（对 Filippov 解需逐解验证）；
+只有在解不唯一、又需要状态空间判据时，才用 Clarke 广义梯度 + 集值 Lie 导数；
+而常规滑模设计往往只用光滑 $V=\frac12s^2$ + Utkin 等效控制，完全不涉及广义导数。
+\end{quote}
 
 \section{非光滑 Lyapunov 方法（Clarke 广义梯度）}\label{sec:clarke}
 
@@ -400,7 +530,7 @@ Rouche 与 Lasalle 的著作 \cite[p.~243]{roucheStabilityTheoryLiapunov1977} �
 
 \section{本章小结}\label{sec:bounded-summary}
 
-把第\ref{ch:lipschitz}章与本章放在一起，可以得到一张“假设--工具--结论”的对照表：
+把第\ref{ch:lipschitz}章与本章放在一起，可以得到一张“假设--工具--结论”的对照表（更细的四条路线对比见表~\ref{tab:tool-scope}）：
 
 \begin{table}[!htb]
   \centering
@@ -413,7 +543,7 @@ Rouche 与 Lasalle 的著作 \cite[p.~243]{roucheStabilityTheoryLiapunov1977} �
     \hline
     连续、可微 & classical & 普通 Lie 导数 & 同上 \\
     \hline
-    连续、非 Lipschitz & Carathéodory / Filippov & Dini 上导数 & 非光滑 LaSalle \\
+    连续、非 Lipschitz & Carathéodory / Filippov & Dini 上导数 & Dini 版 Lyapunov 定理 / 非光滑 LaSalle \\
     \hline
     不连续、有界 & Filippov & Clarke 广义梯度 + 集值 Lie 导数 & Shevitz--Paden LaSalle \\
     \hline

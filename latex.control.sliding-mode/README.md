@@ -39,5 +39,6 @@ simulation/               仿真脚本与输出图
 ## 约定
 
 - 定理类环境（定理/引理/命题/推论/定义/例/算法/注）按章编号、共用一个计数器；
+- 引用采用 biblatex `numeric` 样式（按首次引用顺序编号），正文中形如 `[3]`、`[3, Theorem 3.1]`；
 - 教材引用约定：`khalilNonlinearSystems` 指 *Nonlinear Systems* (3rd ed., 2002)，`khalilNonlinearControl2015` 指 *Nonlinear Control* (2015)；
 - 第 5 章 STA 已编入正文，但仍是草稿（参数条件与符号约定待核对，见章末 TODO）。

@@ -1,4 +1,4 @@
-
+# run  uv run --no-project --with numpy,matplotlib runall.py
 
 
 def outdir(filename):

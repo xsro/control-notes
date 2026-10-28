@@ -7,16 +7,20 @@
 \begin{enumerate}
   \item 为什么引入 Filippov 解，传统的 classical 解为什么不够
   \begin{itemize}
-    \item 对于系统 $\dot x=-\mathrm{sgn}(x)$，classical 解是足够的，因为当$x=0$后，对应的$\dot{x}=0$，系统的解。
+    \item 对于无扰动的 $\dot x=-\sgn{x}$（约定 $\sgn(0)=0$），严格意义下，$x_0\ne0$ 时并不存在全局 $C^1$ 的 classical 解：右端在 $x=0$ 处不连续，解在到达原点的时刻也不可微。但它的最大解
+    \[
+      x(t)=\max\{x_0-t,\,0\}\quad(x_0>0)
+    \]
+    是\textbf{分段 classical}（绝对连续）的，到达原点后 $\dot x=0$ 并停留，与物理直觉一致。这个例子之所以“看起来 classical 够用”，是因为 $\sgn(0)=0$ 恰好等于 Filippov 集 $[-1,1]$ 中的滑动等效值；并不是因为经典存在唯一性定理在这里适用（它并不适用）。
     \item 但是，当系统存在扰动$\delta(t)$ ($\sup_{t\geq 0}|\delta(t)|\leq \bar{\delta}$)时， $\dot x=-\mathrm{sgn}(x)$，classical 解就不足了，因为当$x=0$后，对应的$\dot{x}=\delta(t)$，不存在一个满足这个微分方程的解。即使引入 Caratheodory 解（只需要几乎处处满足微分方程）也是不够的。
     \item 因此，需要在Filippov 意义下理解，即方程的解在$x=0$时只需要满足$\dot{x}\in [-1,1] + [-\bar{\delta},\bar{\delta}]$即可。这就导致Filippov意义下可能存在多个解的情况。本例依然是唯一的解。
-    \item classical 的解存在性要求右端Lipschitz 连续，Filippov 的解存在性只要求右端有界。
+    \item classical 解的\textbf{存在性}只要求右端连续（Peano 定理），\textbf{唯一性}才需要 Lipschitz（第\ref{ch:lipschitz}章定理~\ref{thm:local-existence}）；Filippov 解的存在性只要求右端可测且局部本性有界（定理~\ref{thm:filippov-existence}）。
   \end{itemize}
   \item Lyapunov 稳定性分析：为什么要用\textbf{集值李导数}，而不是普通李导数？
     \begin{itemize}
       \item 普通李导数依赖两个前提：右端映射单点、Lyapunov 函数光滑可微。案例若选取 $V=|x|^2$ 则可以满足；
       \item Filippov 框架下，不连续控制使得速度变成集值 $\dot q\in\mathbb{K}[f]$；非光滑 Lyapunov（如 $V=|x|$）在切换面不可微，梯度替换为 Clarke 集值广义梯度 $\partial V$；链式法则不再有单点定义，因此需要集值李导数。
-      \item 以一维系统 $\dot x=-\mathrm{sgn}(x),\;V=|x|$ 做实例演算：在 $x=0$ 处普通李导数无定义，而 Shevitz–Paden 交集型集值李导数算出 $\dot{\tilde V}=\{0\}$，正确反映原点仅 Lyapunov 稳定、不渐近稳定的性质；同时点明该交集定义的目的：保证稳定性结论对所有合法次梯度、所有 Filippov 允许速度统一成立。
+      \item 以一维系统 $\dot x=-\sgn{x},\;V=|x|$ 做实例演算：在 $x=0$ 处普通 Lie 导数无定义，而 Shevitz–Paden 交集型集值 Lie 导数算出 $\dot{\tilde V}(0)=\{0\}$；结合 $x\neq0$ 时的 $\dot{\tilde V}=\{-1\}$ 与非光滑 LaSalle 定理，可得原点（有限时间）渐近稳定。同时点明交集定义的目的：既排除并集带来的“伪正值”，又保证结论对所有合法次梯度、所有 Filippov 允许速度统一成立。
     \end{itemize}
   \item 为什么绝大多数滑模教材不引入集值李导数？
     \begin{itemize}
@@ -149,9 +153,15 @@ V(x) = |x|.
 \]
 交集取到 $\{0\}$，意味着对任意 $\xi\in[-1,1]$，总存在 $v\in[-1,1]$（具体取 $v=\xi$ 即可）使得 $\xi^\top v = 0$。
 
-\textbf{物理解释：} $\dot{\tilde V}(0)=\{0\}$ 说明 $V(x)=|x|$ 沿 Filippov 解的导数始终 $\le 0$（$0\in\dot{\tilde V}$ 且所有可能值均为 $0$），因此原点是 Lyapunov 稳定的；但导数不严格小于零，无法推出渐近稳定。事实上，从 $x(0)=0$ 出发的 Filippov 解可以是 $x(t)\equiv 0$（静止在原点），这与物理直觉一致——bang-bang 控制在原点处速度为零，系统仅是停在原点，而不会从外部「滑」进原点后继续收敛。
+\textbf{物理解释：} $\dot{\tilde V}(0)=\{0\}$ 只说明在原点处 $V$ 不增；对 $x\neq0$ 还有 $\dot{\tilde V}(x)=\{-1\}<0$。
+因此 $\dot{\tilde V}\le0$，且使 $0\in\dot{\tilde V}$ 的集合只有 $S=\{0\}$。
+由非光滑 LaSalle 定理（定理~\ref{thm:LaSalle}），每条轨迹都收敛到 $S$ 中的最大不变集 $\{0\}$，即原点渐近稳定；
+实际上 $x(t)=\max\{x_0-t,0\}$ 在有限时间 $|x_0|$ 内到达原点并停留。
+注意：不能因为“原点处导数为 $0$”就断言非渐近稳定——渐近性由 LaSalle/不变集给出。
 
-\textbf{交集定义的用意：} 若采用并集 $\bigcup_{\xi\in\partial V} \xi^\top \mathbb{K}[f]$，则在 $x=0$ 处得到 $[-1,1]$，其中包含正值，会错误地认为 $V$ 可能增加。交集定义排除了这种「最坏情况」的组合，保证：只要存在一种合法的次梯度与速度的搭配使 $V$ 不增，稳定性结论就对所有合法搭配统一成立。这正是非光滑分析中「对所有不确定性鲁棒」的思想体现。
+\textbf{交集定义的用意：} 若采用并集 $\bigcup_{\xi\in\partial V}\xi^\top\mathbb{K}[f]$，在 $x=0$ 处会得到 $[-1,1]$，其中包含正值，从而无法排除“$V$ 增加”的组合。
+交集定义则要求：对\emph{每一个} $\xi\in\partial V$，都存在 $v\in\mathbb{K}[f]$ 使 $\xi^\top v\le0$（本例取 $v=\xi$ 即可），也就是交集里的所有值都不大于 $0$。
+只有这样，才能断言 $V$ 沿所有 Filippov 解不增；这正是非光滑分析中「对所有合法次梯度、所有允许速度统一成立」的思想。
 
 \section{为什么滑模教材不引入集值李导数？}\label{sec:why-textbooks-skip-set-valued}
 
@@ -182,7 +192,7 @@ Utkin 范式的核心思想是把系统运动拆成两个阶段分别处理：
 \[
 D^+ V(x) = \limsup_{h\to 0^+} \frac{V(x+h f(x)) - V(x)}{h},
 \]
-而非 Shevitz–Paden 交集型集值李导数。Dini 导数的定义只依赖函数本身，不需要引入 Filippov 微分包含或 Clarke 广义梯度，配套的 LaSalle 不变集原理也有经典版本可用（见 Rouche 与 LaSalle 的著作）。因此，对于不要求严格 Filippov 框架的场合，Dini 导数足够好用。
+而非 Shevitz–Paden 交集型集值李导数。Dini 导数的定义只依赖函数本身，不需要引入 Filippov 微分包含或 Clarke 广义梯度，配套的 LaSalle 不变集原理也有经典版本可用 \cite{roucheStabilityTheoryLiapunov1977}，Dini 版本的 Lyapunov 定理见第\ref{ch:bounded}章定理~\ref{thm:dini-lyapunov}。因此，对于不要求严格 Filippov 框架的场合，Dini 导数足够好用。
 
 \subsection{Shevitz–Paden 工具的定位}
 
