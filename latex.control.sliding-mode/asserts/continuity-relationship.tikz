@@ -1,0 +1,153 @@
+% =====================================================================
+%  连续性关系图 —— 包含关系 / 蕴含关系总览
+%
+%  阅读约定
+%   · 纵向自下而上：条件由弱到强（下方的集合更大）
+%   · 箭头由强指向弱（$A\Rightarrow B$）；箭头旁的 $\subsetneq$ 按箭头方向
+%     读作“箭尾集合 $\subsetneq$ 箭头集合”，灰色小字为其严格性的反例
+%   · 蓝色 = 闭区间 $[a,b]$；红色 = 开区间 $(a,b)$ 上的差别
+%   · 点线 = 非包含型蕴含（几乎处处可导、Rademacher / Lebesgue 定理）
+%
+%  用法: \input{asserts/continuity-relationship.tikz}
+%  需要: \usepackage{tikz}\usetikzlibrary{arrows.meta}
+% =====================================================================
+\begin{tikzpicture}[
+  % ---------- 节点 ----------
+  cpt/.style={rectangle, rounded corners=2pt, draw=blue!45!black, thick, fill=white,
+              align=center, minimum width=8.2em, minimum height=2.1em, inner sep=2.5pt,
+              font=\footnotesize},
+  % ---------- 箭头（箭头端 = 较弱 / 被蕴含者）----------
+  arr/.style   ={-{Triangle[width=4.5pt,length=5.5pt]}, thick, blue!60!black},
+  arrred/.style={-{Triangle[width=4.5pt,length=5.5pt]}, thick, red!80!black},
+  aimp/.style  ={-{Triangle[width=4.5pt,length=5.5pt]}, thick, densely dotted, blue!45!black},
+  arrh/.style  ={{Triangle[width=4.5pt,length=5.5pt]}-{Triangle[width=4.5pt,length=5.5pt]},
+                 thick, blue!60!black},
+  % ---------- 文字 ----------
+  inel/.style={pos=0.5, right=3pt, anchor=west, font=\footnotesize, inner sep=1pt},
+  cex/.style={font=\scriptsize, text=black!55, anchor=west, inner sep=1pt},
+  nbox/.style={draw=black!30, dashed, rounded corners=2pt, fill=blue!2, align=left,
+               font=\scriptsize, inner sep=3pt},
+]
+
+% =====================================================================
+%  主链（自上而下 = 由强到弱）：
+%  解析 → C^\infty → C^1 → Lipschitz → Hölder → 绝对连续 → 一致连续 → 连续
+% =====================================================================
+\node[cpt] (c0) at (-2.2,  0.0) {连续 $C^0$};
+\node[cpt] (c1) at (-2.2,  1.8) {一致连续};
+\node[cpt] (c2) at (-2.2,  3.6) {绝对连续};
+\node[cpt] (c3) at (-2.2,  5.4) {Hölder 连续};
+\node[cpt] (c4) at (-2.2,  7.2) {Lipschitz 连续};
+\node[cpt] (c5) at (-2.2,  9.0) {$C^1$ 连续可导};
+\node[cpt] (c6) at (-2.2, 10.8) {光滑 $C^\infty$};
+\node[cpt] (c7) at (-2.2, 12.6) {解析 $C^\omega$};
+
+% ---------- 闭区间：一致连续 = 连续（Heine–Cantor 定理）----------
+\draw[arr] (c1) -- (c0)
+      node[inel] {$=$}
+      node[pos=0.5, right=13pt, cex] {闭区间};
+% ---------- 开区间：一致连续 ⊊ 连续 ----------
+\draw[arrred] ([xshift=-0.8cm]c1.west) -- ([xshift=-0.8cm]c0.west);
+\node[cex, font=\scriptsize, anchor=east, align=right, text=red!80!black] at (-4.7, 0.9)
+      {开区间 $\subsetneq$\\（Heine–Cantor 失效）};
+
+% ---------- 主链上的严格包含（灰色小字 = 反例 / 说明）----------
+\draw[arr] (c2) -- (c1)
+      node[inel] {$\subsetneq$}
+      node[pos=0.5, right=13pt, cex] {$x\sin\frac1x$};
+\draw[arr] (c3) -- (c2) node[inel] {$\subsetneq$};
+\draw[arr] (c4) -- (c3)
+      node[inel] {$\subsetneq$}
+      node[pos=0.5, right=13pt, cex] {$\sqrt{|t|}$};
+\draw[arr] (c5) -- (c4)
+      node[inel] {$\subsetneq$}
+      node[pos=0.5, right=13pt, cex] {$|t|$};
+\draw[arr] (c6) -- (c5)
+      node[inel] {$\subsetneq$}
+      node[pos=0.5, right=13pt, cex] {$x^3\sin\frac1{x^2}$；$C^k$ 同理};
+\draw[arr] (c7) -- (c6)
+      node[inel] {$\subsetneq$}
+      node[pos=0.5, right=13pt, cex] {$e^{-1/x^2}$};
+
+% =====================================================================
+%  右支：处处可导 / 几乎处处可导
+% =====================================================================
+\node[cpt] (d0) at (2.0, 1.8) {处处可导};
+\node[cpt] (ae) at (2.0, 5.4) {几乎处处可导};
+
+% ---------- C^1 的定义：可导 且 f' 连续 ----------
+\node[cpt] (dc) at (2.0, 9.0) {可导且 $f'$ 连续};
+\draw[arrh] (c5) -- (dc)
+      node[midway, above=2pt, font=\footnotesize] {$=$\,定义};
+
+\draw[arr] (d0) -- (c0) node[pos=0.55, above=1pt, font=\footnotesize, fill=white,
+      inner sep=1pt] {$\subsetneq$};
+
+\draw[aimp] (d0) -- (ae)
+      node[pos=0.32, left=4pt, anchor=east, cex, fill=white] {a.e. 成立};
+\draw[aimp] (c2) -- (ae) node[pos=0.68, above=1pt, font=\scriptsize, fill=white,
+      inner sep=1pt] {Lebesgue 定理};
+\draw[aimp] (c4) -- (ae) node[pos=0.68, above=1pt, font=\scriptsize, fill=white,
+      inner sep=1pt] {Rademacher 定理};
+
+% =====================================================================
+%  注释 1（左）：绝对连续 = Lebesgue 原函数
+% =====================================================================
+\node[nbox] at (-5.95, 3.4) {%
+  \textbf{绝对连续 $\iff$ Lebesgue 原函数}\\
+  $f(t)=f(a)+\int_a^t f'(s)\,\mathrm{d}s$\\
+  $f'\in L^1$（Newton–Leibniz）};
+
+% =====================================================================
+%  注释 2（左）：Hölder 的指数 α
+% =====================================================================
+\node[nbox] at (-5.95, 6.35) {%
+  \textbf{Hölder $C^{0,\alpha}$}\\
+  $|f(x)-f(y)|\le C|x-y|^{\alpha}$\\
+  $\alpha=1$：即 Lipschitz\\
+  $\alpha\to0^+$：只保证有界\\
+  $\bigcup_{\alpha>0}C^{0,\alpha}\subsetneq$ 绝对连续};
+
+% =====================================================================
+%  注释 3（右上）：导数有界 ↔ Lipschitz，C^1 ⊊ {f' 有界}
+% =====================================================================
+\node[nbox] at (5.7, 10.0) {%
+  \textbf{导数有界}\quad $f$ 处处可导时\\
+  $f'\in L^\infty\iff$ Lipschitz\\
+  $C^1\subsetneq\{f'\,\text{有界}\}$（$x^2\sin\frac1x$）\\
+  开区间：$C^1\not\subset$ Lipschitz（$1/x$）};
+
+% =====================================================================
+%  注释 4（右下）：单调 / 有界变差 / a.e. 导数可积
+% =====================================================================
+\node[nbox] at (5.3, 3.9) {%
+  \textbf{单调 $\Rightarrow$ BV $\Rightarrow$ a.e. 可导}\\
+  BV：$f=g-h$（两单调函数之差）\\
+  绝对连续 $\subsetneq$ BV，BV $\Rightarrow f'\in L^1$\\
+  a.e. 可导 $\not\Rightarrow f'\in L^1$};
+
+% =====================================================================
+%  注释 5（右下）：与微分方程解的联系（经典解 / Filippov 解）
+% =====================================================================
+\node[nbox] at (4.6, -1.7) {%
+  \textbf{与 $\dot x=f(x)$ 解的联系}\\
+  经典解 $x(t)\in C^1$：要求 $f$ 连续\\
+  Filippov 解 $x(t)$ 绝对连续：\\
+  \quad $f$ 可测、局部本质有界\\
+  唯一性：$f$ 局部 Lipschitz};
+
+% =====================================================================
+%  图例（左上空白区）
+% =====================================================================
+\node[font=\scriptsize\bfseries, anchor=west] at (-7.8, 12.2) {图例：箭头由强到弱};
+\draw[arr]    (-7.8, 11.4) -- (-7.0, 11.4);
+\node[cex, text=black] at (-6.85, 11.4) {$\subsetneq$：严格包含};
+\draw[arrh]   (-7.8, 10.6) -- (-7.0, 10.6);
+\node[cex, text=black] at (-6.85, 10.6) {$=$：定义 / 等价};
+\draw[arrred] (-7.8,  9.8) -- (-7.0,  9.8);
+\node[cex, text=black] at (-6.85,  9.8) {开区间 $(a,b)$ 的差别};
+\draw[aimp]   (-7.8,  9.0) -- (-7.0,  9.0);
+\node[cex, text=black] at (-6.85,  9.0) {非包含型蕴含};
+\node[cex, text=black] at (-7.8,  8.2) {灰色小字：说明严格性的反例};
+
+\end{tikzpicture}

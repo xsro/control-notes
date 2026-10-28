@@ -55,14 +55,51 @@
 }
 \end{figure}
 
+\subsection{连续性的关系}\label{subsec:continuity-relationships}
+
+在闭区间\([a,b]\)上的实值函数中，连续性的包含关系为：
+\[
+\boxed{\text{光滑}(C^\infty)\subsetneq \text{连续可导}(C^1)\subsetneq \text{可导} \subsetneq \text{连续}}
+\]
+\[
+\boxed{\text{Lipschitz连续} \subsetneq \text{绝对连续} \subsetneq \text{一致连续} = \text{连续}}
+\]
+
+在开区间上的实值函数中，连续性的包含关系为：
+\[
+\boxed{\text{光滑}(C^\infty)\subsetneq \text{连续可导}(C^1)\subsetneq \text{可导} \subsetneq \text{连续}}
+\]
+\[
+\boxed{\text{Lipschitz连续} \subsetneq \text{绝对连续} \subsetneq \text{一致连续} \subsetneq \text{连续}}
+\]
+
+注意在开区间上两条链的每一环都是严格的（包括“一致连续\(\subsetneq\)连续”，因为Heine-Cantor定理此时不适用）。
+
+\paragraph{两条链的联系与几乎处处可导}
+\begin{itemize}
+  \item 在闭区间上，连续可导（\(C^1\)）蕴含Lipschitz连续：导数连续故有界，从而\(|f(x_1)-f(x_2)|\le \sup|f'|\cdot|x_1-x_2|\)。但反之不成立（如\(f(x)=|x|\)是Lipschitz连续但在0处不可导）。即 \(C^1 \subsetneq \text{Lipschitz连续}\)。
+  \item 对可导函数而言，导数处处有界 \(\iff\) Lipschitz连续。而 \(C^1 \subsetneq \{\text{可导且导数有界}\}\)，因为存在导数有界但导函数不连续的可导函数（如\(x^2\sin\frac{1}{x}\)在0附近）。
+  \item \textbf{几乎处处可导}：Lipschitz连续函数几乎处处可导且导数几乎处处有界；绝对连续函数几乎处处可导且导数Lebesgue可积，并满足牛顿-莱布尼茨公式 \(f(t)=f(a)+\int_a^t f'(s)\,ds\)。注意“几乎处处可导”弱于“处处可导”，也不蕴含导数连续。
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+\input{asserts/continuity-relationship.tikz}
+\caption{连续性诸概念之间的关系（蓝色：闭区间 $[a,b]$；红色：开区间 $(a,b)$ 上的差别；
+  箭头由强到弱，即 $A\to B$ 表示 $A\Rightarrow B$，边上的 $\subsetneq$ 读作“箭尾集合 $\subsetneq$ 箭头集合”，
+  $=$ 表示定义或等价；灰色小字为说明严格性的反例）}
+\label{fig:continuity-poset}
+\end{figure}
+
+
 \subsection{区间连续与区间一致连续（连续、绝对连续、Lipschitz连续、Hölder连续）}
 
 如果在区间上每一点都连续，就称函数在该区间上连续，如果区间包括端点，那么在右端点连续是指左连续，在左端点连续是指右连续。
 
-\begin{definition}[区间连续]
+\begin{definition}[一致连续]
 设函数\(f(x)\)在区间\(I\)上有定义.
 如果对于任意给定的正数\(\epsilon\)，总存在正数
-\(\delta\)，是的对于区间\(I\)上的任意两点\(x_1,x_2\)，当\(|x_1-x_2|<\delta\)时，
+\(\delta\)，使得对于区间\(I\)上的任意两点\(x_1,x_2\)，当\(|x_1-x_2|<\delta\)时，
 有 \[
 |f(x_1)-f(x_2)|<\epsilon
 \] 那么称函数\(f(x)\)在区间\(I\)上\textbf{一致连续}。
@@ -80,9 +117,9 @@ a_1<b_1\leq a_2 <b_2 \leq \dots \leq a_n < b_n,
 则称\(f(x)\)是\([a,b]\)上\textbf{绝对连续}函数，或称\(f(x)\)在\([a,b]\)上绝对连续。
 \end{definition}
 
-等价的，如果存在一个Lebesgue可积函数\(\kappa:[a,b]\to \mathbb{R}\)
-使得下式成立，那么\(\gamma\)是一个绝对连续函数。 \[
-\gamma(t)=\gamma(a)+\int^t_a \kappa(s)d s,\quad t\in [a,b]
+等价的，如果存在一个Lebesgue可积函数\(k:[a,b]\to \mathbb{R}\)
+使得下式成立，那么\(f\)是一个绝对连续函数。 \[
+f(t)=f(a)+\int^t_a k(s)d s,\quad t\in [a,b]
 \]
 
 \begin{definition}[Lipschitz连续]
@@ -90,7 +127,7 @@ a_1<b_1\leq a_2 <b_2 \leq \dots \leq a_n < b_n,
 \[
 |f(x_1)-f(x_2)|\leq L|x_1-x_2|
 \]
-那么称函数\(f(x)\)满足Lipschitz连续条件，并称L为\(f(x)\)的lipschitz常数。
+那么称函数\(f(x)\)满足Lipschitz连续条件，并称L为\(f(x)\)的Lipschitz常数。
 \end{definition}
 
 \begin{itemize}
@@ -98,7 +135,7 @@ a_1<b_1\leq a_2 <b_2 \leq \dots \leq a_n < b_n,
 \item
   从局部看：我们可以取两个充分接近的点，如果这个时候斜率的极限存在的话，这个斜率的极限就是这个点的导数。也就是说函数可导，又是Lipschitz连续，那么导数有界。反过来，如果可导函数，导数有界，可以推出函数Lipschitz连续。
 \item
-  从整体看：Lipschitz连续要求函数在无限的区间上不能有超过线性的增长，所以这些x\textsuperscript{\{2\}和e}\{2\}函数在无限区间上不是Lipschitz连续的。
+  从整体看：Lipschitz连续要求函数在无限的区间上不能有超过线性的增长，所以这些\(x^2\)和\(e^x\)函数在无限区间上不是Lipschitz连续的。
 \end{itemize}
 
 \begin{quote}
@@ -116,7 +153,7 @@ a_1<b_1\leq a_2 <b_2 \leq \dots \leq a_n < b_n,
 
 \begin{table}\centering
   \begin{tabular}{c|c|c}
-    一直连续但是不绝对连续 & 
+    一致连续但是不绝对连续 & 
     \(
       f_1(x)=\begin{cases}
         0, &x=0\\
@@ -141,12 +178,12 @@ a_1<b_1\leq a_2 <b_2 \leq \dots \leq a_n < b_n,
 \end{figure}
 
 
-如下绝对值函数\(f_2(x)\)绝对连续但是在0处不连续可微 \[
+如下绝对值函数\(f_2(x)\)绝对连续但是在0处不可导 \[
 f_2(x)=|x|, x\in [-1,1]
 \]
 
 如下根号函数绝对连续但是在0处不是局部Lipschitz连续的 \[
-f_3(t)=\sqrt(t),t\in [0,0]
+f_4(t)=\sqrt{|t|},t\in [0,1]
 \]
 
 \section{连续可微和光滑}
