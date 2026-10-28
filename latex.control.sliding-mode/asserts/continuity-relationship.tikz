@@ -5,8 +5,9 @@
 %   · 纵向自下而上：条件由弱到强（下方的集合更大）
 %   · 箭头由强指向弱（$A\Rightarrow B$）；箭头旁的 $\subsetneq$ 按箭头方向
 %     读作“箭尾集合 $\subsetneq$ 箭头集合”，灰色小字为其严格性的反例
-%   · 蓝色 = 闭区间 $[a,b]$；红色 = 开区间 $(a,b)$ 上的差别
+%   · 蓝色 = 闭区间 $[a,b]$；红色 = 开区间 $(a,b)$；黑色 = 两种区间上关系相同
 %   · 点线 = 非包含型蕴含（几乎处处可导、Rademacher / Lebesgue 定理）
+%   · 有差别的边画蓝、红并列双箭头（两端接框）：红箭头上打 $\times$ = 开区间上不成立
 %
 %  用法: \input{asserts/continuity-relationship.tikz}
 %  需要: \usepackage{tikz}\usetikzlibrary{arrows.meta}
@@ -17,16 +18,22 @@
               align=center, minimum width=8.2em, minimum height=2.1em, inner sep=2.5pt,
               font=\footnotesize},
   % ---------- 箭头（箭头端 = 较弱 / 被蕴含者）----------
+  %  蓝 = 闭区间 $[a,b]$；红 = 开区间 $(a,b)$；黑色 = 两种区间上关系相同
   arr/.style   ={-{Triangle[width=4.5pt,length=5.5pt]}, thick, blue!60!black},
   arrred/.style={-{Triangle[width=4.5pt,length=5.5pt]}, thick, red!80!black},
-  aimp/.style  ={-{Triangle[width=4.5pt,length=5.5pt]}, thick, densely dotted, blue!45!black},
+  aimp/.style  ={-{Triangle[width=4.5pt,length=5.5pt]}, thick, densely dotted, black!70},
   arrh/.style  ={{Triangle[width=4.5pt,length=5.5pt]}-{Triangle[width=4.5pt,length=5.5pt]},
-                 thick, blue!60!black},
+                 thick, black!90},
+  arrk/.style  ={-{Triangle[width=5.5pt,length=6.5pt]}, very thick, black!90},
   % ---------- 文字 ----------
   inel/.style={pos=0.5, right=3pt, anchor=west, font=\footnotesize, inner sep=1pt},
+  inelr/.style={pos=0.5, left=3pt, anchor=east, font=\footnotesize, inner sep=1pt,
+                text=red!80!black},
   cex/.style={font=\scriptsize, text=black!55, anchor=west, inner sep=1pt},
-  nbox/.style={draw=black!30, dashed, rounded corners=2pt, fill=blue!2, align=left,
+  cexr/.style={font=\scriptsize, text=red!80!black, anchor=east, align=right, inner sep=1pt},
+  nbox/.style={draw=black!30, dashed, rounded corners=2pt, fill=black!2, align=left,
                font=\scriptsize, inner sep=3pt},
+  xst/.style={font=\normalsize\bfseries, text=red!80!black, fill=white, inner sep=0.8pt},
 ]
 
 % =====================================================================
@@ -42,53 +49,79 @@
 \node[cpt] (c6) at (-2.2, 10.8) {光滑 $C^\infty$};
 \node[cpt] (c7) at (-2.2, 12.6) {解析 $C^\omega$};
 
-% ---------- 闭区间：一致连续 = 连续（Heine–Cantor 定理）----------
-\draw[arr] (c1) -- (c0)
-      node[inel] {$=$}
-      node[pos=0.5, right=13pt, cex] {闭区间};
-% ---------- 开区间：一致连续 ⊊ 连续 ----------
-\draw[arrred] ([xshift=-0.8cm]c1.west) -- ([xshift=-0.8cm]c0.west);
-\node[cex, font=\scriptsize, anchor=east, align=right, text=red!80!black] at (-4.7, 0.9)
-      {开区间 $\subsetneq$\\（Heine–Cantor 失效）};
+% =====================================================================
+%  主链的边：
+%   · 开、闭区间上关系相同的边：一条黑色粗箭头（通用）
+%   · 两种区间上有差别的边：蓝、红两个并列箭头（$\pm0.45$cm，两端接框边），
+%     蓝 = 闭区间 $[a,b]$，红 = 开区间 $(a,b)$，红箭头上 $\times$ = 开区间上不成立
+% =====================================================================
 
-% ---------- 主链上的严格包含（灰色小字 = 反例 / 说明）----------
-\draw[arr] (c2) -- (c1)
-      node[inel] {$\subsetneq$}
-      node[pos=0.5, right=13pt, cex] {$x\sin\frac1x$};
-\draw[arr] (c3) -- (c2) node[inel] {$\subsetneq$};
-\draw[arr] (c4) -- (c3)
-      node[inel] {$\subsetneq$}
-      node[pos=0.5, right=13pt, cex] {$\sqrt{|t|}$};
-\draw[arr] (c5) -- (c4)
-      node[inel] {$\subsetneq$}
-      node[pos=0.5, right=13pt, cex] {$|t|$};
-\draw[arr] (c6) -- (c5)
+% ---------- 一致连续 → 连续：闭区间 $=$（Heine–Cantor）；开区间 $\subsetneq$ ----------
+\draw[arr] ([xshift=0.45cm]c1.south) -- ([xshift=0.45cm]c0.north) node[inel] {$=$};
+\draw[arrred] ([xshift=-0.45cm]c1.south) -- ([xshift=-0.45cm]c0.north)
+      node[inelr] {$\subsetneq$};
+\node[cexr] at (-3.3, 0.9) {开区间更弱（Heine–Cantor 失效）\\如 $\sin\frac1x$ 在 $(0,1)$};
+
+% ---------- 连续 → 有界：闭区间成立（有界性定理）；开区间不成立 ----------
+\node[cpt] (bd) at (-2.2, -2.4) {有界};
+\draw[arr] ([xshift=0.45cm]c0.south) -- ([xshift=0.45cm]bd.north)
+      node[pos=0.5, right=4pt, cex] {有界性定理};
+\draw[arrred] ([xshift=-0.45cm]c0.south) -- ([xshift=-0.45cm]bd.north)
+      node[pos=0.5, xst] {$\times$};
+\node[cexr] at (-3.3, -1.2) {开区间 $\not\Rightarrow$ 有界\\（$1/x$ 在 $(0,1)$ 无界）};
+
+% ---------- 绝对连续 → 一致连续（两种区间上相同：黑粗箭头）----------
+\draw[arrk] (c2) -- (c1)
+      node[inel] {$\subsetneq$} node[pos=0.5, right=13pt, cex] {$x\sin\frac1x$};
+
+% ---------- Hölder → 绝对连续（两种区间上相同：黑粗箭头）----------
+\draw[arrk] (c3) -- (c2) node[inel] {$\subsetneq$};
+
+% ---------- Lipschitz → Hölder（两种区间上相同：黑粗箭头）----------
+\draw[arrk] (c4) -- (c3)
+      node[inel] {$\subsetneq$} node[pos=0.5, right=13pt, cex] {$\sqrt{|t|}$};
+
+% ---------- $C^1$ → Lipschitz：闭区间 $\subsetneq$；开区间不成立 ----------
+\draw[arr] ([xshift=0.45cm]c5.south) -- ([xshift=0.45cm]c4.north)
+      node[inel] {$\subsetneq$} node[pos=0.5, right=13pt, cex] {$|t|$};
+\draw[arrred] ([xshift=-0.45cm]c5.south) -- ([xshift=-0.45cm]c4.north)
+      node[pos=0.5, xst] {$\times$};
+\node[cexr] at (-3.3, 8.1) {开区间 $\not\Rightarrow$ Lipschitz（$1/x$）};
+
+% ---------- 光滑 → $C^1$（两种区间上相同：黑粗箭头）----------
+\draw[arrk] (c6) -- (c5)
       node[inel] {$\subsetneq$}
       node[pos=0.5, right=13pt, cex] {$x^3\sin\frac1{x^2}$；$C^k$ 同理};
-\draw[arr] (c7) -- (c6)
-      node[inel] {$\subsetneq$}
-      node[pos=0.5, right=13pt, cex] {$e^{-1/x^2}$};
+
+% ---------- 解析 → 光滑（两种区间上相同：黑粗箭头）----------
+\draw[arrk] (c7) -- (c6)
+      node[inel] {$\subsetneq$} node[pos=0.5, right=13pt, cex] {$e^{-1/x^2}$};
 
 % =====================================================================
 %  右支：处处可导 / 几乎处处可导
 % =====================================================================
 \node[cpt] (d0) at (2.0, 1.8) {处处可导};
 \node[cpt] (ae) at (2.0, 5.4) {几乎处处可导};
+\node[cpt] (aeb) at (2.0, 7.2) {a.e.\ 可导\\ 且 $|f'|\le L$ a.e.\\
+      {\scriptsize （Rademacher 定理）}};
 
 % ---------- C^1 的定义：可导 且 f' 连续 ----------
 \node[cpt] (dc) at (2.0, 9.0) {可导且 $f'$ 连续};
 \draw[arrh] (c5) -- (dc)
       node[midway, above=2pt, font=\footnotesize] {$=$\,定义};
 
-\draw[arr] (d0) -- (c0) node[pos=0.55, above=1pt, font=\footnotesize, fill=white,
+% ---------- 可导 ⇒ 连续（与区间开、闭无关）：黑粗箭头 ----------
+\draw[arrk] (d0) -- (c0) node[pos=0.55, above=1pt, font=\footnotesize, fill=white,
       inner sep=1pt] {$\subsetneq$};
 
 \draw[aimp] (d0) -- (ae)
       node[pos=0.32, left=4pt, anchor=east, cex, fill=white] {a.e. 成立};
 \draw[aimp] (c2) -- (ae) node[pos=0.68, above=1pt, font=\scriptsize, fill=white,
       inner sep=1pt] {Lebesgue 定理};
-\draw[aimp] (c4) -- (ae) node[pos=0.68, above=1pt, font=\scriptsize, fill=white,
-      inner sep=1pt] {Rademacher 定理};
+% ---------- Lipschitz ⇒ a.e. 可导 且导数 a.e. 有界 |f'| ≤ L ----------
+\draw[aimp] (c4) -- (aeb);
+\draw[arrk] (aeb) -- (ae)
+      node[pos=0.5, right=3pt, font=\footnotesize, fill=white, inner sep=1pt] {$\subsetneq$};
 
 % =====================================================================
 %  注释 1（左）：绝对连续 = Lebesgue 原函数
@@ -139,15 +172,20 @@
 % =====================================================================
 %  图例（左上空白区）
 % =====================================================================
-\node[font=\scriptsize\bfseries, anchor=west] at (-7.8, 12.2) {图例：箭头由强到弱};
-\draw[arr]    (-7.8, 11.4) -- (-7.0, 11.4);
-\node[cex, text=black] at (-6.85, 11.4) {$\subsetneq$：严格包含};
-\draw[arrh]   (-7.8, 10.6) -- (-7.0, 10.6);
-\node[cex, text=black] at (-6.85, 10.6) {$=$：定义 / 等价};
-\draw[arrred] (-7.8,  9.8) -- (-7.0,  9.8);
-\node[cex, text=black] at (-6.85,  9.8) {开区间 $(a,b)$ 的差别};
-\draw[aimp]   (-7.8,  9.0) -- (-7.0,  9.0);
-\node[cex, text=black] at (-6.85,  9.0) {非包含型蕴含};
-\node[cex, text=black] at (-7.8,  8.2) {灰色小字：说明严格性的反例};
+\node[font=\scriptsize\bfseries, anchor=west] at (-7.8, 12.9) {图例（箭头由强到弱）};
+\draw[arrk]   (-7.8, 12.3) -- (-7.0, 12.3);
+\node[cex, text=black] at (-6.85, 12.3) {黑：两种区间上相同};
+\draw[arr]    (-7.8, 11.7) -- (-7.0, 11.7);
+\node[cex, text=black] at (-6.85, 11.7) {蓝色：闭区间 $[a,b]$};
+\draw[arrred] (-7.8, 11.1) -- (-7.0, 11.1);
+\node[cex, text=black] at (-6.85, 11.1) {红色：开区间 $(a,b)$};
+\draw[aimp]   (-7.8, 10.5) -- (-7.0, 10.5);
+\node[cex, text=black] at (-6.85, 10.5) {点线：非包含型蕴含};
+\draw[arrh]   (-7.8,  9.9) -- (-7.0,  9.9);
+\node[cex, text=black] at (-6.85,  9.9) {$=$：定义 / 等价};
+\node[cex, text=black] at (-7.8,   9.3) {灰色小字：反例};
+\draw[arrred] (-7.8, 8.7) -- (-7.0, 8.7);
+\node[xst, font=\scriptsize\bfseries] at (-7.4, 8.7) {$\times$};
+\node[cex, text=black] at (-6.85, 8.7) {开区间上不成立};
 
 \end{tikzpicture}

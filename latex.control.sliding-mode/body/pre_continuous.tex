@@ -92,12 +92,19 @@
         注意“几乎处处可导”弱于“处处可导”，也不蕴含导数连续。
 \end{itemize}
 
+\paragraph{有界性：开区间与闭区间的差别}
+闭区间 $[a,b]$ 上连续的函数\textbf{一定}有界（有界性定理），且能取到最大值与最小值
+（Weierstrass 最值定理）；而开区间 $(a,b)$ 上连续的函数\textbf{不一定}有界，
+反例 $f(x)=1/x$ 在 $(0,1)$ 上连续却无界（$x\to0^+$ 时趋于无穷）。
+
 \begin{figure}[!htbp]
 \centering
 \input{asserts/continuity-relationship.tikz}
-\caption{连续性诸概念之间的关系（蓝色：闭区间 $[a,b]$；红色：开区间 $(a,b)$ 上的差别；
-  箭头由强到弱，即 $A\to B$ 表示 $A\Rightarrow B$，边上的 $\subsetneq$ 读作“箭尾集合 $\subsetneq$ 箭头集合”，
-  $=$ 表示定义或等价；灰色小字为说明严格性的反例）}
+\caption{连续性诸概念之间的关系（箭头由强到弱，即 $A\to B$ 表示 $A\Rightarrow B$；
+  黑色（粗箭头、点线、双向箭头）表示该关系与区间是开还是闭无关；有差别的边则并排画出蓝、红两个箭头，
+  蓝 = 闭区间 $[a,b]$，红 = 开区间 $(a,b)$，红箭头上的 $\times$ 表示该蕴含在开区间上不成立（并给出反例）；
+  边上的 $\subsetneq$ 读作“箭尾集合 $\subsetneq$ 箭头集合”，$=$ 表示定义或等价，
+  灰色小字为说明严格性的反例，点线为非包含型蕴含）}
 \label{fig:continuity-poset}
 \end{figure}
 
