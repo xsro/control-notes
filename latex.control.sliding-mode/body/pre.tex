@@ -1,14 +1,14 @@
-\chapter{前言}
+\chapter{前言：从滑模控制到非光滑系统}\label{ch:intro}
 
 非线性动态系统理论是滑模控制的重要理论基础，也是我学习滑模的最大障碍。
 我决定花一些时间从工科本科数学知识出发整理非光滑（非连续）动态系统中的一些概念。
-这篇笔记主要回顾连续性的定义，同时介绍传统的连续可微的classical解在应对非连续系统时存在性与唯一性的缺陷。
+这篇笔记首先回顾连续性与 Lipschitz 连续的定义，说明传统连续可微的 classical 解在应对非连续系统时存在性与唯一性上的缺陷，然后再引入 Filippov 等非光滑解概念。
 
-\section{引子}
+\section{引子：一个绕不开的问题}
 
-最近在看滑模控制的文章，其中对于非连续系统的论述多有不解，比如如下Filippov微分包含到底是什么，比如我总是可以看到Filippov 这个定义，但是却对里面的数学分析、控制理论术语一窍不通。
+最近在看滑模控制的文章，其中对于非连续系统的论述多有不解，比如如下 Filippov 微分包含到底是什么，比如我总是可以看到 Filippov 这个定义，但是却对里面的数学分析、控制理论术语一窍不通。
 \begin{quote}
-  Filippov 微分包含的解的所有广为人知的性质(existence,extendability
+  Filippov 微分包含的解的所有广为人知的性质(existence, extendability
   etc)但是不包含唯一性(uniqueness)。
 \end{quote}
 因此，我决定参考网络上的一些资料
@@ -17,12 +17,50 @@
     知乎讨论：请问filippov解大概是什么意思？是怎么定义的？有什么作用？
     \url{https://www.zhihu.com/question/55951952} 文中推荐参看\cite{cortesDiscontinuousDynamicalSystems2008,hanTheoryControlSystems2016}
   \item
+    我检索到的一些文献，做一个简单的梳理。
+    本文中关于解的存在唯一性的主要依据是 Khalil 的两本教材：
+    \cite{khalilNonlinearSystems}（第三版，下称“Khalil 2002”）与
+    \cite{khalilNonlinearControl2015}（下称“Khalil 2015”）。
 \end{enumerate}
-以及我检索到的一些文献，做一个简单的梳理。
-本文主要是翻译自\cite{cortesDiscontinuousDynamicalSystems2008}。
+第\ref{ch:bounded}章关于非连续系统解的定义与存在性讨论，主要是翻译自 \cite{cortesDiscontinuousDynamicalSystems2008}。
+
+\section{本书的阅读路线}\label{sec:reading-guide}
+
+整本笔记围绕一个问题展开：\textbf{当控制器（或系统右端）不再连续时，微分方程的“解”到底是什么，稳定性又该如何定义？}
+为此，笔记按“先连续、后非连续”的顺序组织，见表~\ref{tab:roadmap}。
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{@{}c|p{5.6cm}|p{7.0cm}@{}}
+    \hline
+    章节 & 内容 & 回答的问题 \\
+    \hline
+    第\ref{ch:intro}章 & 前言、符号约定、连续性谱系 & 连续、一致连续、绝对连续、Lipschitz 连续之间是什么关系？\\
+    \hline
+    第\ref{ch:lipschitz}章 & 非线性系统：右端 Lipschitz 连续 & 经典解在什么条件下存在且唯一？为什么它只是“入场券”？\\
+    \hline
+    第\ref{ch:bounded}章 & 非光滑控制系统：右端有界 & 右端不连续时，用 Carathéodory / Filippov / sample-and-hold 如何定义解？稳定性怎么证？\\
+    \hline
+    第\ref{ch:case}章 & 一阶 bang-bang 案例 & Utkin 等效控制与 Filippov 微分包含各自成立的条件与边界在哪里？\\
+    \hline
+    第\ref{ch:sta}章 & 经典 STA 算法（草稿） & 具体算法层面的增益条件与 Lyapunov 证明 \\
+    \hline
+  \end{tabular}
+  \caption{全书阅读路线}
+  \label{tab:roadmap}
+\end{table}
+
+其中的逻辑主线是：
+
+\begin{enumerate}
+  \item 经典（classical）解要求右端函数关于状态\textbf{局部 Lipschitz 连续}，这就是第\ref{ch:lipschitz}章的主题；
+  \item 滑模控制中的 $\sgn{s}$、bang-bang 控制、继电器等恰恰\textbf{破坏}了 Lipschitz 条件，于是经典解可能不存在、不唯一，必须换一套解的定义，这是第\ref{ch:bounded}章的主题；
+  \item 新解的定义会带来新的“链式法则”问题（非光滑 Lyapunov 函数），于是需要 Dini 导数、Clarke 广义梯度与集值 Lie 导数；
+  \item 最后用最简单的一阶系统把上述概念串起来，辨析 Utkin 等效控制与 Filippov 微分包含的适用边界（第\ref{ch:case}章）。
+\end{enumerate}
+
+建议第一次阅读时跳过标为“证明思路”的部分，先建立“右端越不光滑，需要的数学工具越重”这一直觉，再回头补证明。
 
 \input{body/pre_notation.tex}
 \input{body/pre_continuous.tex}
-
-
-

@@ -1,6 +1,8 @@
-\chapter{基础案例——一阶系统 bang bang 控制}
+\chapter{案例：一阶系统 bang-bang 控制}\label{ch:case}
 
 本章以一阶系统 $\dot x=-\mathrm{sgn}(x) + \delta$ 为案例，围绕 \textbf{Utkin 等效控制与 Filippov 微分包含、滑模控制中非光滑分析工具链} 等话题，试图解释为什么非光滑需要额外引入很多概念。
+前两章已经给出“右端 Lipschitz”（第\ref{ch:lipschitz}章）与“右端有界”（第\ref{ch:bounded}章）两套理论，本章把它们落到一个可以手算的例子上：
+凡是本章用到的严格定义与定理（Filippov 集值化、Clarke 广义梯度、集值 Lie 导数、非光滑 LaSalle），都已在第\ref{ch:bounded}章给出，这里不再重复，只讨论“为什么需要”以及“各自成立的条件”。
 
 \begin{enumerate}
   \item 为什么引入 Filippov 解，传统的 classical 解为什么不够
@@ -13,7 +15,7 @@
   \item Lyapunov 稳定性分析：为什么要用\textbf{集值李导数}，而不是普通李导数？
     \begin{itemize}
       \item 普通李导数依赖两个前提：右端映射单点、Lyapunov 函数光滑可微。案例若选取 $V=|x|^2$ 则可以满足；
-      \item Filippov 框架下，不连续控制使得速度变成集值 $\dot q\in\mathcal K[f]$；非光滑 Lyapunov（如 $V=|x|$）在切换面不可微，梯度替换为 Clarke 集值广义梯度 $\partial V$；链式法则不再有单点定义，因此需要集值李导数。
+      \item Filippov 框架下，不连续控制使得速度变成集值 $\dot q\in\mathbb{K}[f]$；非光滑 Lyapunov（如 $V=|x|$）在切换面不可微，梯度替换为 Clarke 集值广义梯度 $\partial V$；链式法则不再有单点定义，因此需要集值李导数。
       \item 以一维系统 $\dot x=-\mathrm{sgn}(x),\;V=|x|$ 做实例演算：在 $x=0$ 处普通李导数无定义，而 Shevitz–Paden 交集型集值李导数算出 $\dot{\tilde V}=\{0\}$，正确反映原点仅 Lyapunov 稳定、不渐近稳定的性质；同时点明该交集定义的目的：保证稳定性结论对所有合法次梯度、所有 Filippov 允许速度统一成立。
     \end{itemize}
   \item 为什么绝大多数滑模教材不引入集值李导数？
@@ -52,15 +54,32 @@
 \end{enumerate}
 当两条前提同时成立时，$\dot V(x)$ 是单点值，经典的 Lyapunov 定理可以直接套用。
 
+\subsection{回顾：经典 Lyapunov 定理}
+
+作为对照，先把经典（光滑）版本的结论写清楚 \cite[Theorem 4.1]{khalilNonlinearSystems}。
+考虑自治系统 $\dot x=f(x)$，$f$ 在包含原点的区域 $D$ 上局部 Lipschitz，$f(0)=0$。
+若存在连续可微函数 $V:D\to\RR$ 满足
+\begin{enumerate}
+  \item $V(0)=0$，且 $V(x)>0$（$x\in D,\ x\neq0$）；
+  \item $\dot V(x)=\nabla V(x)^\top f(x)\le0$（$x\in D$），
+\end{enumerate}
+则原点是\textbf{稳定}的；若进一步 $\dot V(x)<0$（$x\neq0$），则原点是\textbf{渐近稳定}的；
+若还有 $V(x)\to\infty$（$\norm{x}\to\infty$），则原点是\textbf{全局渐近稳定}的。
+
+这个定理的每个字都依赖“$f$ 单点、$V$ 可微”：
+若 $f$ 在滑模面上是集合 $\mathbb{K}[f]$，或 $V=|x|$ 在原点不可微，
+则 $\dot V$ 根本无从计算。下面两小节分别说明这两个前提是如何被滑模控制打破的。
+更一般的非自治版本（需要 $\mathcal K$ 类函数与 $\mathcal{KL}$ 类函数）见 \cite[§4.5]{khalilNonlinearSystems}。
+
 \subsection{Filippov 框架下速度变成集值}
 
 滑模控制的本质是不连续控制：控制量 $u = -\mathrm{sgn}(s)$ 在滑模面 $s=0$ 处发生跳变。直接把这样的 $u$ 代入系统 $\dot x = f(x) + g(x)u$，右端 $f(x) + g(x)(-\mathrm{sgn}(s(x)))$ 在 $s=0$ 处不连续，经典解的存在唯一性定理（右端局部 Lipschitz）不再适用。
 
 Filippov 的处理方式是\textbf{不把不连续点当作病态，而是把该点处的右端替换为一个集合}——取该点任意小邻域内向量场取值的凸闭包（忽略零测集），定义 Filippov 微分包含
 \[
-\dot x \in \mathcal K[f](x) \triangleq \bigcap_{\delta>0}\; \bigcap_{\mu(N)=0}\; \overline{\mathrm{co}}\, f\big(B(x,\delta)\setminus N\big).
+\dot x \in \mathbb{K}[f](x) \triangleq \bigcap_{\delta>0}\; \bigcap_{\mu(N)=0}\; \overline{\mathrm{co}}\, f\big(B(x,\delta)\setminus N\big).
 \]
-在滑模面 $s=0$ 上，$\mathcal K[f](x)$ 一般不是单点，而是一个\textbf{集值映射}（set-valued map）：它给出该点处所有「允许的速度」，系统的解只要在绝对连续意义下满足 $\dot x(t)\in\mathcal K[f](x(t))$ 几乎处处成立即可。
+在滑模面 $s=0$ 上，$\mathbb{K}[f](x)$ 一般不是单点，而是一个\textbf{集值映射}（set-valued map）：它给出该点处所有「允许的速度」，系统的解只要在绝对连续意义下满足 $\dot x(t)\in\mathbb{K}[f](x(t))$ 几乎处处成立即可。
 
 于是，第一个前提（右端单点）在滑模面上被打破。
 
@@ -85,14 +104,14 @@ V(x)=|x|,\qquad \partial V(0) = [-1,1].
 \[
 \frac{\mathrm d}{\mathrm d t} V(x(t)) = \nabla V(x(t))^\top \dot x(t).
 \]
-当 $\dot x(t)$ 取值于集合 $\mathcal K[f](x)$、$\nabla V(x)$ 取值于集合 $\partial V(x)$ 时，乘积
+当 $\dot x(t)$ 取值于集合 $\mathbb{K}[f](x)$、$\nabla V(x)$ 取值于集合 $\partial V(x)$ 时，乘积
 \[
-\xi^\top v,\qquad \xi\in\partial V(x),\; v\in\mathcal K[f](x)
+\xi^\top v,\qquad \xi\in\partial V(x),\; v\in\mathbb{K}[f](x)
 \]
 不再是一个单点，而是一个集合。Shevitz 与 Paden 定义的\textbf{交集型集值李导数}为
 \[
-\dot{\tilde V}(x) \triangleq \bigcap_{\xi\in\partial V(x)} \xi^\top \mathcal K[f](x)
-      = \bigcap_{\xi\in\partial V(x)} \{\xi^\top v \mid v\in\mathcal K[f](x)\}.
+\dot{\tilde V}(x) \triangleq \bigcap_{\xi\in\partial V(x)} \xi^\top \mathbb{K}[f](x)
+      = \bigcap_{\xi\in\partial V(x)} \{\xi^\top v \mid v\in\mathbb{K}[f](x)\}.
 \]
 这里的关键是\textbf{交集}而非并集：它要求对\emph{每一个}合法的次梯度 $\xi$，都存在某个合法的 Filippov 速度 $v$ 使得内积落在该集合中，从而保证稳定性结论对所有可能的不确定性统一成立。
 
@@ -110,9 +129,9 @@ V(x)=|x|,\qquad \partial V(0) = [-1,1].
 V(x) = |x|.
 \]
 
-\textbf{Filippov 微分包含：} 按 Filippov 定义，在 $x\neq0$ 处 $\mathcal K[f](x) = \{-\mathrm{sgn}(x)\}$（单点）；在 $x=0$ 处，任意小邻域内向量场取 $\{-1,1\}$（忽略 $x=0$ 处的零值），凸闭包为
+\textbf{Filippov 微分包含：} 按 Filippov 定义，在 $x\neq0$ 处 $\mathbb{K}[f](x) = \{-\mathrm{sgn}(x)\}$（单点）；在 $x=0$ 处，任意小邻域内向量场取 $\{-1,1\}$（忽略 $x=0$ 处的零值），凸闭包为
 \[
-\mathcal K[f](0) = \overline{\mathrm{co}}\{-1,\,1\} = [-1,\,1].
+\mathbb{K}[f](0) = \overline{\mathrm{co}}\{-1,\,1\} = [-1,\,1].
 \]
 
 \textbf{Clarke 广义梯度：} $V(x)=|x|$ 在 $x\neq0$ 处可微，$\nabla V(x) = \mathrm{sgn}(x)$；在 $x=0$ 处不可微，所有可达梯度极限为 $\{-1,1\}$，凸闭包为
@@ -132,7 +151,7 @@ V(x) = |x|.
 
 \textbf{物理解释：} $\dot{\tilde V}(0)=\{0\}$ 说明 $V(x)=|x|$ 沿 Filippov 解的导数始终 $\le 0$（$0\in\dot{\tilde V}$ 且所有可能值均为 $0$），因此原点是 Lyapunov 稳定的；但导数不严格小于零，无法推出渐近稳定。事实上，从 $x(0)=0$ 出发的 Filippov 解可以是 $x(t)\equiv 0$（静止在原点），这与物理直觉一致——bang-bang 控制在原点处速度为零，系统仅是停在原点，而不会从外部「滑」进原点后继续收敛。
 
-\textbf{交集定义的用意：} 若采用并集 $\bigcup_{\xi\in\partial V} \xi^\top \mathcal K[f]$，则在 $x=0$ 处得到 $[-1,1]$，其中包含正值，会错误地认为 $V$ 可能增加。交集定义排除了这种「最坏情况」的组合，保证：只要存在一种合法的次梯度与速度的搭配使 $V$ 不增，稳定性结论就对所有合法搭配统一成立。这正是非光滑分析中「对所有不确定性鲁棒」的思想体现。
+\textbf{交集定义的用意：} 若采用并集 $\bigcup_{\xi\in\partial V} \xi^\top \mathbb{K}[f]$，则在 $x=0$ 处得到 $[-1,1]$，其中包含正值，会错误地认为 $V$ 可能增加。交集定义排除了这种「最坏情况」的组合，保证：只要存在一种合法的次梯度与速度的搭配使 $V$ 不增，稳定性结论就对所有合法搭配统一成立。这正是非光滑分析中「对所有不确定性鲁棒」的思想体现。
 
 \section{为什么滑模教材不引入集值李导数？}\label{sec:why-textbooks-skip-set-valued}
 
@@ -167,7 +186,7 @@ D^+ V(x) = \limsup_{h\to 0^+} \frac{V(x+h f(x)) - V(x)}{h},
 
 \subsection{Shevitz–Paden 工具的定位}
 
-Shevitz–Paden 交集型集值李导数是\textbf{专门为 Filippov 版本 LaSalle 不变集原理}设计的工具。它的出现是为了在 Filippov 微分包含的严格框架下，给出与经典 LaSalle 定理平行的不变集结论——即定理~\ref{thm:LaSalle}（详见 body/bounded.tex）。这套理论属于学术论文的分支，目标读者是做非光滑系统理论研究的学者，因此并未成为滑模教材的标配。
+Shevitz–Paden 交集型集值李导数是\textbf{专门为 Filippov 版本 LaSalle 不变集原理}设计的工具。它的出现是为了在 Filippov 微分包含的严格框架下，给出与经典 LaSalle 定理平行的不变集结论——即定理~\ref{thm:LaSalle}。这套理论属于学术论文的分支，目标读者是做非光滑系统理论研究的学者，因此并未成为滑模教材的标配。
 
 简而言之：教材教你怎么「用」滑模控制（Utkin 等效控制 + 光滑 $V$），论文讨论滑模控制的「数学基础」（Filippov 微分包含 + 集值李导数）。二者分工不同。
 
@@ -189,7 +208,7 @@ Utkin 等效控制常被教材当作滑模阶段的定义直接给出：「滑�
   \item \textbf{可达性成立：} 存在控制律使状态能在有限时间内到达 $s=0$。
 \end{enumerate}
 
-当上述条件全部满足时，Utkin 等效控制 $u_\mathrm{eq} = -(\nabla s^\top g)^{-1}\nabla s^\top f$ 是\textbf{严格结论}：它等价于 Filippov 微分包含在滑模面上的唯一切向滑动解。换言之，Filippov 框架下，所有满足 $\dot x \in \mathcal K[f+gu](x)$ 且停留在 $s=0$ 上的解，其速度必为
+当上述条件全部满足时，Utkin 等效控制 $u_\mathrm{eq} = -(\nabla s^\top g)^{-1}\nabla s^\top f$ 是\textbf{严格结论}：它等价于 Filippov 微分包含在滑模面上的唯一切向滑动解。换言之，Filippov 框架下，所有满足 $\dot x \in \mathbb{K}[f+gu](x)$ 且停留在 $s=0$ 上的解，其速度必为
 \[
 \dot x = f(x) + g(x) u_\mathrm{eq}(x),
 \]
@@ -246,7 +265,7 @@ Utkin 的单点等效动力学 $u_\mathrm{eq} = -(\nabla s^\top g)^{-1}\nabla s^
 
 Filippov 微分包含不受此影响。在 $s=0$ 上，控制 $u = -\mathrm{sgn}(s)$ 在 $s=0$ 处的 Filippov 集值化为 $[-1,1]$，于是
 \[
-\mathcal K[f+gu](x) = f(x) + g(x)\,[-1,1]
+\mathbb{K}[f+gu](x) = f(x) + g(x)\,[-1,1]
                     = \begin{bmatrix} -x_2 \\ x_1 \end{bmatrix} + \begin{bmatrix} 1 \\ 1 \end{bmatrix} [-1,1]
                     = \begin{bmatrix} -x_2 + [-1,1] \\ x_1 + [-1,1] \end{bmatrix}.
 \]
@@ -272,7 +291,7 @@ Filippov 微分包含不受此影响。在 $s=0$ 上，控制 $u = -\mathrm{sgn}
     \hline
     适用条件 & 仿射系统、单光滑滑模面、$\nabla s^\top g\neq0$、可达性 & 只要 $f$ 可测且局部本质有界即可定义 Filippov 解 \\
     \hline
-    滑模面上的行为 & 单点等效动力学 $\dot x = f + g u_\mathrm{eq}$（降维连续系统） & 集值速度集合 $\mathcal K[f+gu](x)$，可能包含多个滑动方向 \\
+    滑模面上的行为 & 单点等效动力学 $\dot x = f + g u_\mathrm{eq}$（降维连续系统） & 集值速度集合 $\mathbb{K}[f+gu](x)$，可能包含多个滑动方向 \\
     \hline
     能处理的场景 & 常规单滑模面仿射系统 & 单滑模面、多滑模面相交、横截条件破坏、奇异控制等复杂情形 \\
     \hline
@@ -290,4 +309,8 @@ Filippov 微分包含不受此影响。在 $s=0$ 上，控制 $u = -\mathrm{sgn}
   \item 二者并非对立，而是\textbf{互补}关系：Utkin 方法是 Filippov 框架在「好条件」下的工程简化，Filippov 框架是 Utkin 方法在「坏条件」下的数学 rescue。
 \end{itemize}
 
-本章通过一阶 bang-bang 系统的案例，从普通李导数的局限出发，依次引入集值李导数、Utkin 等效控制及其失效反例，最终落脚于两种范式的对比。后续章节将在此基础上，分别讨论非光滑 Lyapunov 方法的 Dini 导数路线（body/continuous.tex）与 Filippov 解的严格理论（body/bounded.tex），以及它们在超螺旋滑模等具体控制算法中的应用（body/sta.tex）。
+本章通过一阶 bang-bang 系统的案例，从普通李导数的局限出发，依次引入集值李导数、Utkin 等效控制及其失效反例，最终落脚于两种范式的对比。
+本章的定位是\textbf{把前两章的理论用在最小的例子上}：
+第\ref{ch:lipschitz}章回答“经典解什么时候存在且唯一”，第\ref{ch:bounded}章回答“右端不连续时解与稳定性如何定义”，
+本章回答“在具体的滑模控制问题里，应该选哪一套、各自的前提是什么”。
+更接近算法层面的内容（超螺旋算法的增益条件与严格 Lyapunov 证明）见第\ref{ch:sta}章。

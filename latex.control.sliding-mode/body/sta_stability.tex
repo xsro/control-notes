@@ -6,7 +6,7 @@
 
 \subsection{稳定性条件概览}
 
-为了尽可能地兼顾一般性和行文简便，这里将\eqref{eq sta s}写为：
+为了尽可能地兼顾一般性和行文简便，这里将\eqref{eq:sta-s}写为：
 \begin{equation}
 	\begin{cases}
 		\dot{s}=-k_1 \sig{s}^{1/2}+w+\varrho_1\\
@@ -17,11 +17,14 @@
 事实上，这里的第一通道扰动可以合并到第二通道，
 即记$w'=w+\varrho_1$这样$\dot{w}'=\dot{w}+\dot{\varrho_1}=-k_2 \sgn{s}+\varrho_2+\dot{\varrho_1}$.
 于是，系统可以转化为$\varrho_1'=0$, $\varrho_2'=\varrho_2+\dot{\varrho}_1$.
-因此，表\ref{table sta gain selection}给出了已有文献对增益选择的要求。
+因此，表\ref{tab:sta-gain}给出了已有文献对增益选择的要求。
 
 \begin{table}[!htb]
 	\centering
-	\begin{tabular}{c|c|c}
+	\footnotesize
+	\setlength{\tabcolsep}{3pt}
+	\resizebox{\textwidth}{!}{%
+	\begin{tabular}{@{}c|c|c@{}}
 		\hline
 		code & 参数条件  & 出处 \\\hline
 		Levant1998 &
@@ -40,7 +43,7 @@
 			$k_1>2\sqrt{k_2-\sqrt{k_2^2-L^2}}$, $k_2>L$
 		&
 			\makecell{
-			原文为算法\ref{algo sta moreno}\cite[algorithm 1]{morenoStrictLyapunovFunctions2012}，\\
+			原文为算法\ref{algo:sta-moreno}\cite[algorithm 1]{morenoStrictLyapunovFunctions2012}，\\
 			由\cite{seeberStabilityProofWellestablished2017}推导得到本条件
 		}
 		\\\hline
@@ -73,21 +76,21 @@
 		$k_2>L$&
 		改写自多体文献\cite{chenDistributedFinitetimeDifferentiator2024}
 		\\\hline
-	\end{tabular}
+	\end{tabular}}
 	\caption{STA收敛条件对比，在第一通道无扰动$\varrho_1=0$，$|\varrho_2|\leq L$的参数对比}
-	\label{table sta gain selection}
+	\label{tab:sta-gain}
 \end{table}
-从表中可以发现，$k_1$的条件与$k_2$和$L$都有关系，直观可以从图\ref{fig sta gain selection}看出取值范围的大致界限。
+从表中可以发现，$k_1$的条件与$k_2$和$L$都有关系，直观可以从图\ref{fig:sta-gain}看出取值范围的大致界限。
 图中，可以明显看到当$k_2$较大的时候，$k_1$可以取到小于$k_2$的值。
 
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[height=6cm]{simulation/out/k1-k2}
-	\caption{不同文献中关于STA算法增益选取的讨论，图中x标记为\ref{fig basic sta}所使用的稳定的参数$L=0.1,k_1=0.18,k_2=0.2$，可以发现目前文献中的参数选取标准仍然是保守的。}
-	\label{fig sta gain selection}
+	\caption{不同文献中关于STA算法增益选取的讨论，图中x标记为\ref{fig:sta-basic}所使用的稳定的参数$L=0.1,k_1=0.18,k_2=0.2$，可以发现目前文献中的参数选取标准仍然是保守的。}
+	\label{fig:sta-gain}
 \end{figure}
 
-\begin{algo}\label{algo sta moreno}
+\begin{algo}\label{algo:sta-moreno}
 	当 $\varrho_2=0$ 时，$k_1>0$并且 $k_2>0$ ，
 	当 $\varrho_2>0$ 时，通过以下规则确定
 	\begin{enumerate}
@@ -119,14 +122,16 @@
 		\dot{w}=-k_2 \sgn{s}+\delta(t),\quad 
 		|\delta(t)|<\Delta.
 	\end{equation}
-	其中， 增益的选择为$k_2>\Delta$,$k_1>\sqrt{2k_1}$.
+	其中， 增益的选择为 $k_2>\Delta$，
+	$k_1$ 需满足本节末推导出的条件 $k_1>\sqrt{\dfrac{2\nu}{k_2-\Delta}}\,\Delta$
+	（原文此处为 $k_1>\sqrt{2k_1}$，与推导不符，待核对）。
 \end{proposition}
 
 \begin{proof}
 	
 	选取Lyapunov 函数为
 	\begin{equation}
-		\label{eq V zeta}
+		\label{eq:V-zeta}
 		V=\zeta^T P \zeta + (\gamma_1 +\gamma_2)k_2 |s|\quad 
 		P=\frac12 \begin{bmatrix}
 			\gamma_2 k_1^2  & -\gamma_2 k_1\\
@@ -151,7 +156,7 @@
 			\sig{s}^{1/2}-w
 		\end{bmatrix}
 	\end{equation}
-	在求导的时候，实际上还是使用\eqref{eq V zeta}的展开形式更加直观，所以这里将它展开为：
+	在求导的时候，实际上还是使用\eqref{eq:V-zeta}的展开形式更加直观，所以这里将它展开为：
 	\begin{gather*}
 		V=V_1+V_2\\
 		V_1=\frac12 \gamma_2 k_1^2 |s|
@@ -217,34 +222,27 @@
 		-\left( \gamma_2 \mu^{-1/2}k_1-(\gamma_1+\gamma_2)\Delta\right)
 		|\chi_2|
 	\end{equation}
-	基于此，我们可以指导要使得整个系统的V导数负定，只需要
+	基于此，我们可以知道要使整个系统的 $\dot V$ 负定，只需要
 	\begin{equation}
 		k_2>\Delta,\quad 
 		k_1>\frac{(\gamma_1+\gamma_2)\Delta\mu^{1/2}}{\gamma_2}
 		=\frac{1+\frac{2\mu}{\nu }(k_2 -\Delta) }{\frac{2\mu}{\nu }(k_2 -\Delta) }\Delta \mu^{1/2}
 	\end{equation}
-	因为$\mu$可以任意选取，因此，$k1$只需要大于右侧最小值$\min_{\mu>0} \frac{1+\frac{2\mu}{\nu }(k_2 -\Delta) }{\frac{2\mu}{\nu }(k_2 -\Delta) }\Delta \mu^{1/2}$，
+	因为 $\mu$ 可以任意选取，因此 $k_1$ 只需要大于右侧最小值$\min_{\mu>0} \frac{1+\frac{2\mu}{\nu }(k_2 -\Delta) }{\frac{2\mu}{\nu }(k_2 -\Delta) }\Delta \mu^{1/2}$，
 	其最小值点在$\mu=\mu^*=\frac{\nu}{2(k_2-\Delta)}$，
 	于是有
 	\begin{equation}
 		k_1> \sqrt{\frac{2\nu}{k_2 -\Delta}}\Delta
 	\end{equation}
-	
-	
-	\begin{quote}
-		微分同胚英文是“diffeomorphism”。理解微分同胚可以从以下方面入手：
+\end{proof}
+
+\begin{quote}
+	\textbf{附注（微分同胚）}微分同胚英文是“diffeomorphism”。理解微分同胚可以从以下方面入手：
 		
 		从几何角度看，两个流形（比如曲线、曲面等几何对象）如果是微分同胚的，那么它们在“光滑”的意义下是一样的。它是一种特殊的同胚映射。同胚简单说就是一种连续的双射（一一对应），并且它的逆映射也是连续的。而微分同胚在此基础上还要求这个映射和它的逆映射都是可微的（光滑的）。
 		
 		例如，一个圆和一个椭圆在拓扑意义下是同胚的，它们可以通过连续变形从一个得到另一个。如果这个变形过程是光滑的，而且逆变形过程也是光滑的，那么它们就是微分同胚的。
-	\end{quote}
-	
-	
-\end{proof}
-
-
-
-
+\end{quote}
 
 \section{高阶滑模和高阶微分器}
 

@@ -1,7 +1,35 @@
-\section{符号约定}
+\section{符号约定}\label{sec:notation}
+
+本笔记尽量沿用 \cite{khalilNonlinearSystems} 的符号习惯，常用记号见表~\ref{tab:notation}。
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{c|p{10cm}}
+    \hline
+    记号 & 含义 \\
+    \hline
+    $\RR$, $\RR^n$ & 实数集、$n$ 维实向量空间 \\
+    $\norm{x}$ & 向量 $x$ 的 2-范数 $\sqrt{x^\top x}$；对矩阵为诱导范数 \\
+    $B(x_0,r)$ 或 $N(x_0,r)$ & 以 $x_0$ 为心、$r$ 为半径的开球 $\{x:\norm{x-x_0}<r\}$ \\
+    $\overline{co}(S)$ & 集合 $S$ 的凸闭包（convex closure） \\
+    $C^k$, $C^\infty$ & $k$ 阶连续可微、光滑函数类 \\
+    $D^+ V(t)$ & $V$ 的上右 Dini 导数（见第\ref{ch:bounded}章） \\
+    $\partial V(x)$ & Clarke 广义梯度（见第\ref{ch:bounded}章） \\
+    $\dot{\tilde V}$ & Shevitz--Paden 集值 Lie 导数（见第\ref{ch:bounded}章） \\
+    $\mathbb{K}[f](x)$ & $f$ 在 $x$ 处的 Filippov 集值化 \\
+    \hline
+  \end{tabular}
+  \caption{常用记号}
+  \label{tab:notation}
+\end{table}
+
+全文默认 $x\in\RR^n$，$t\geq 0$，$f(t,x)$ 取值于 $\RR^n$；
+$t$ 表示时间，$x$ 表示状态，$u$ 表示控制输入，$s$ 表示滑模变量。
 
 \subsection{分数幂奇函数}
-本文常用的符号为符号函数和sig 函数，对于标量，其几何意义为符号函数，对于标量其定义为：
+
+本文常用的符号为符号函数和 sig 函数，对于标量，其几何意义为符号函数，对于标量其定义为：
 \begin{equation}
     \sig{x}^0=\sgn{x}=\begin{cases}
     	1   & x>0\\
@@ -9,16 +37,16 @@
     	0  & x=0\\
     \end{cases}
 \end{equation}
-基于此，我们定义$\sig{x}^q=|x|^q \sgn{x}$.
+基于此，我们定义 $\sig{x}^q=|x|^q \sgn{x}$。
 
-类似的，相关定义可以拓展到向量形式，其几何意义为向量$\vec{x}$的单位向量：
+类似的，相关定义可以拓展到向量形式，其几何意义为向量 $\vec{x}$ 的单位向量：
 \begin{equation}
 	\sig{\vec{x}}^0=\sgn{\vec{x}}=\begin{cases}
 		\frac{\vec{x}}{\norm{\vec{x}}}, & \norm{\vec{x}}\neq 0\\
 		\vec{0}   & \norm{\vec{x}}=0
 	\end{cases}
 \end{equation}
-基于此，我们定义$\sig{\vec{x}}^q=\|\vec{x}\|^q \sgn{\vec{x}}$.
+基于此，我们定义 $\sig{\vec{x}}^q=\|\vec{x}\|^q \sgn{\vec{x}}$。
 
 下面介绍对几个常见的求导运算，使用多维向量的情况。
 \begin{equation}
@@ -40,8 +68,15 @@
 	=q|x|^{q-1}\dot{x},
 \end{equation}
 
+\begin{remark}[$q=0$ 与 $q<1$ 的奇异性]
+上面两式在 $q=0$ 与 $q<1$ 时在 $x=0$ 处不成立：
+$q=0$ 时 $\sig{x}^0=\sgn{x}$ 在原点跳变；
+$q=1/2$ 时导数 $q|x|^{q-1}$ 在原点无界（见图~\ref{fig:frac-power}）。
+这正是超螺旋算法（STA）能在有限时间收敛、但也会带来抖振/数值刚性的根源：
+它用“无限斜率”换取“有限时间”。
+\end{remark}
 
-\begin{figure}
+\begin{figure}[!htb]
 	\centering
 	\begin{tikzpicture}
 		\draw[->] (-2.2,0) -- (2.2,0) node[right] {$x$};
@@ -65,4 +100,41 @@
 		\node[cyan] at (2.4,1) {$\dot{y}_2=1/2|x|^{-1/2}$};
 	\end{tikzpicture}
 	\caption{两个分数幂函数及其导数}
+	\label{fig:frac-power}
 \end{figure}
+
+\subsection{常用不等式}\label{sec:inequalities}
+
+后续证明反复用到下面几个不等式。
+
+\begin{lemma}[Young 不等式]\label{lem:young}
+对任意 $a,b\geq 0$ 与任意 $\varepsilon>0$，有
+\begin{equation}
+  2ab \leq \varepsilon a^2 + \frac{b^2}{\varepsilon},
+  \qquad\text{等价地}\qquad
+  ab \leq \frac{a^p}{p}+\frac{b^q}{q}\ \ (p,q>1,\ \tfrac1p+\tfrac1q=1).
+\end{equation}
+\end{lemma}
+
+\begin{remark}[一个常用的变体]\label{rem:young-variant}
+由 Lemma~\ref{lem:young}，对任意 $\mu>0$ 与 $z\in\RR$、$|s|>0$，取 $a=|z|$、$b=1$、$\varepsilon=\mu^{-1/2}$ 可得
+\begin{equation}
+  \frac{|z|^2}{\sqrt{|s|}} \geq -\mu^{-1}\sqrt{|s|} + 2\mu^{-1/2}|z| .
+\end{equation}
+两边同乘 $\sqrt{|s|}$ 即化为 $|z|^2 \ge -\mu^{-1}|s| + 2\mu^{-1/2}|z|\sqrt{|s|}$，
+这正是 AM--GM 不等式。该式在 STA 的 Lyapunov 证明中用于处理交叉项。
+\end{remark}
+
+\begin{lemma}[Gronwall--Bellman 不等式]\label{lem:gronwall}
+设 $u(t),v(t)$ 是 $[a,b]$ 上的非负连续函数，$c\geq 0$，且
+\begin{equation}
+  u(t) \le c + \int_a^t v(s)u(s)\,\dd s,\qquad t\in[a,b],
+\end{equation}
+则
+\begin{equation}
+  u(t) \le c\exp\left(\int_a^t v(s)\,\dd s\right),\qquad t\in[a,b].
+\end{equation}
+\end{lemma}
+
+Gronwall 不等式是第\ref{ch:lipschitz}章证明唯一性与连续依赖性的核心工具，
+也是滑模控制中估计“扰动下的偏差”的标准手段。

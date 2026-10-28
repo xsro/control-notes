@@ -1,10 +1,30 @@
-\chapter{经典STA算法}
+\chapter{经典 STA 算法}\label{ch:sta}
 
-超螺旋滑模控制（Super-Twisting Sliding Mode Control）作为一种先进的非线性控制策略，在诸多领域有着广泛应用，它在传统滑模控制基础上进行改进，有效减少了抖振现象等问题，提高了系统的控制性能与鲁棒性。
-STA 算法由Levant (\url{https://www.tau.ac.il/~levant/})首度提出。
-本文将整理STA算法的主要结果，详细论证可以参见相关参考文献。
+\begin{quote}
+\textbf{本章状态：已编入正文的草稿。}
+本章依赖第\ref{ch:bounded}章的非光滑 Lyapunov 工具，但推导与参数条件仍在校对中，未核对之处见章末 TODO。
+\end{quote}
 
-\section{基本STA算法}
+超螺旋滑模控制（Super-Twisting Sliding Mode Control）作为一种先进的非线性控制策略，在诸多领域有着广泛应用，
+它在传统滑模控制基础上进行改进，有效减少了抖振现象，提高了系统的控制性能与鲁棒性。
+STA 算法由 Levant（\url{https://www.tau.ac.il/~levant/}）首度提出。
+本章整理 STA 算法的主要结果，详细论证可以参见相关参考文献。
+
+本章使用第\ref{ch:bounded}章的 Filippov 解与广义梯度框架：
+式~\eqref{eq:sta-s} 的右端在 $s=0$ 处不连续（含 $\sgn s$），因此其解应在 Filippov 意义下理解；
+而 $V=\zeta^\top P\zeta$ 中出现了 $\sig{s}^{1/2}$，在 $s=0$ 处不可微，故 Lyapunov 分析需要 Dini 导数或 Clarke 广义梯度。
+
+\section{基本 STA 算法}
 \input{body/sta_basic}
-\section{STA算法稳定性}
+\section{STA 算法稳定性}\label{sec:sta-stability}
 \input{body/sta_stability}
+
+\section*{本章 TODO}
+\addcontentsline{toc}{section}{本章 TODO}
+\begin{enumerate}
+  \item 核对 \S\ref{sec:sta-stability} 中 Moreau--Moreno 型 Lyapunov 函数的增益条件与推导结论是否一致
+        （命题中的 $k_1>\sqrt{2k_1}$ 明显是笔误，末段推导给出的是 $k_1>\sqrt{2\nu/(k_2-\Delta)}\,\Delta$）。
+  \item 补充有限时间收敛时间的显式估计，并与第\ref{ch:lipschitz}章例~\ref{ex:reaching-time} 的到达时间公式对照。
+  \item 把仿真（\texttt{simulation/sta/*.py}）与正文参数表对齐，并注明所用离散化方法。
+  \item 核对式~\eqref{eq:sta-s} 与最终控制律中 $-\dot d(t)$、$+d(t)$ 的符号约定是否自洽（文中称 $w(t)+d(t)=0$）。
+\end{enumerate}

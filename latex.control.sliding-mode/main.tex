@@ -1,10 +1,12 @@
 \documentclass[UTF8]{ctexbook}
-%\includeonly{body/sta}
+%\includeonly{body/nonlinear}
 
 \usepackage[margin={2.5cm,1.5cm}]{geometry}
+\emergencystretch=3em % 允许少量行内公式/中文混排拉伸，减少 Overfull\hbox
 
 \usepackage{xcolor}
-\usepackage[]{hyperref}
+\usepackage[hidelinks]{hyperref} % 隐藏链接边框（否则 PDF 中出现彩色方框）
+\usepackage{xurl} % 允许长 URL 在任意字符处换行
 \usepackage{graphicx} % 用于插入图片（仿真展示可能用到）
 \usepackage{caption} % 图片标题相关设置
 \usepackage{subcaption} % 处理子图情况
@@ -18,11 +20,21 @@
 %\newcommand{\sig}[1]{\mathop{\mathrm{sig}} (#1)}
 \newcommand{\sig}[1]{\lfloor #1 \rceil}
 \usepackage{amsthm}
-\newtheorem{theorem}{定理}
-\newtheorem{definition}{定义}
-\newtheorem{lemma}{引理}
-\newtheorem{algo}{算法}
-\newtheorem{proposition}{提案}
+
+% 定理类环境统一定义：按章编号，定理/引理/命题/推论/定义/例/算法/注共用一个计数器，
+% 这样引用编号（如“定理 3.1”）与 Khalil 教材的编号习惯一致，也便于跨章交叉引用。
+\theoremstyle{plain}
+\newtheorem{theorem}{定理}[chapter]
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{corollary}[theorem]{推论}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{example}[theorem]{例}
+\newtheorem{algo}[theorem]{算法}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{注}
+
 \newcommand\norm[1]{\left\lVert#1\right\rVert}
 \newcommand\normx[1]{\Vert#1\Vert}
 \newcommand{\NN}[0]{\mathbb{N}}
@@ -36,7 +48,11 @@
 
  \usepackage[backend=biber, style=apa,url=false]{biblatex} % 指定后端为biber，引用样式为APA格式
 % tex2ast extract-bib -i main.tex -o main_biber.bib --bib biblatex.bib
-\addbibresource{main_biber.bib} 
+\addbibresource{main_biber.bib}
+\ExecuteBibliographyOptions{annotation=false} % 不打印 .bib 中的 Zotero 注释（如“EI: 是”）
+\renewcommand{\bibname}{参考文献}
+% 统一让 \cite 输出带括号的引用，如 (Khalil, 2002, Theorem 3.1)
+\let\cite\parencite
 %  \addbibresource{biblatex.bib} 
 
 \newcommand{\citefrom}[1]{\textcolor{gray}{#1}\\}
@@ -53,13 +69,26 @@
 
 	\maketitle
 	\tableofcontents
-	
+
+	% ===== 第一部分：数学准备 =====
+	\part{数学准备：从连续到非连续}
+	% 第1章：为什么需要非光滑分析（动机与阅读路线）
 	\include{body/pre}
-	\include{body/motivation}
+
+	% ===== 第二部分：解的存在性与唯一性 =====
+	\part{解的存在性与唯一性}
+	% 第2章：非线性系统：右端 Lipschitz 连续（经典解）
 	\include{body/nonlinear}
-    \include{body/bounded}
+	% 第3章：非光滑控制系统：右端有界（Carathéodory / Filippov 解）
+	\include{body/bounded}
+
+	% ===== 第三部分：案例与算法 =====
+	\part{案例与算法}
+	% 第4章：一阶 bang-bang 案例：Utkin 等效控制 vs. Filippov 微分包含
+	\include{body/motivation}
+
+	% 第5章：超螺旋算法（STA），已编入正文（草稿，TODO 见章末）。
+	\include{body/sta}
 	
-	% \include{body/sta}
-	
-	\printbibliography % 打印参考文献列表
+	\printbibliography[heading=bibintoc,title={参考文献}] % 打印参考文献列表
 \end{document}

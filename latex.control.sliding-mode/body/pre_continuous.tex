@@ -1,51 +1,55 @@
+\section{回顾：连续性}\label{sec:continuity}
 
+那么什么是 Lipschitz 连续呢，各种连续的关系又是什么呢，我们讨论的非连续动态微分方程又如何定义呢？
+为了简便，这里用的是标量函数来叙述，实际控制理论中大多为多维到多维的向量函数。
+如果是多变量函数或者泛函，只需把绝对值 $|\cdot|$ 换成相应的范数 $\norm{\cdot}$，把“区间”换成 $\RR^n$ 中的区域。
 
+先澄清一个常见混淆：一元情形下“可微”与“可导”是等价的；
+多元情形下，可微（存在线性主部）是比“偏导数存在”更强的概念，即
+\[
+\text{可微}\ \Longrightarrow\ \text{偏导数存在}\ \Longrightarrow\ \text{连续}.
+\]
+但反向均不成立。后文出现的 $C^1$、$C^\infty$ 都是在“可微”意义下讨论的。
 
-\section{回顾：连续性}\label{ux56deux987eux8fdeux7eedux6027}
-
-那么什么是Lipschitz连续呢，各种连续的关系又是什么呢，我们讨论的非连续动态微分方程又如何定义呢？
-为了简便，这里用的是函数来叙述，实际控制理论中大多为多维到多维的向量函数。如果是多变量函数或者泛函需要使用范数替代绝对值。
-
-可微必可导。
-可微是可导的充分条件。
-只不过在一元情况下，由于两点确定一条直线，导致可微的线性替代就相当于求导（斜率确定 点确定 相当于直线确定）
-
-\subsection{点连续与间断点}
+\subsection{点连续与间断点}\label{subsec:continuity-points}
 
 \begin{definition}[点连续]
-设函数\(y=f(x)\)在点\(x_0\)的某一邻域内有定义，
-并且\(\lim_{x\to x_0}f(x)=f(x_0)\)，
-那么就称函数\(f(x)\)在点\(x_0\)处连续。
+设函数 $y=f(x)$ 在点 $x_0$ 的某一邻域内有定义，
+并且 $\lim_{x\to x_0}f(x)=f(x_0)$，
+那么就称函数 $f(x)$ 在点 $x_0$ 处连续。
 \end{definition}
 
 借此可以定义函数不连续和间断点的概念：
-\begin{definition}
-设函数\(f(x)\)在点\(x_0\)的某\textbf{去心}领域内有定义，
-在此前提下，如果函数\(f(x)\)有一下三种情形之一 
+\begin{definition}[间断点]
+设函数 $f(x)$ 在点 $x_0$ 的某\textbf{去心}邻域内有定义，
+在此前提下，如果函数 $f(x)$ 有以下三种情形之一
 \begin{enumerate}
-  \item 在\(x=x_0\)处没有定义；
-  \item 在\(x=x_0\)处有定义，但\(\lim_{x\to x_0} f(x)\)不存在；
-  \item 在\(x=x_0\)处有定义，\(\lim_{x\to x_0} f(x)\)存在,但\(\lim_{x\to x_0}\neq f(x_0)\)
+  \item 在 $x=x_0$ 处没有定义；
+  \item 在 $x=x_0$ 处有定义，但 $\lim_{x\to x_0} f(x)$ 不存在；
+  \item 在 $x=x_0$ 处有定义，$\lim_{x\to x_0} f(x)$ 存在，但 $\lim_{x\to x_0}f(x)\neq f(x_0)$，
 \end{enumerate}
-那么函数\(f(x)\)在点\(x_0\)为不连续，\(x_0\)是函数\(f(x)\)的\textbf{间断点}。
+那么函数 $f(x)$ 在点 $x_0$ 为不连续，$x_0$ 是函数 $f(x)$ 的\textbf{间断点}。
 \end{definition}
 
-
-
-函数的间断点可以分为 
+函数的间断点可以分为
 \begin{enumerate}
-  \item 第一类间断点：左右极限都存在 
+  \item 第一类间断点：左右极限都存在
   \begin{enumerate}
-    \item 可去间断点：左右极限都存在且相等 
-    \item 跳跃间断点：左右极限都存在但不等 
+    \item 可去间断点：左右极限都存在且相等
+    \item 跳跃间断点：左右极限都存在但不等
   \end{enumerate}
-  \item 第二类间断点：左右极限至少有一个不存在 
+  \item 第二类间断点：左右极限至少有一个不存在
   \begin{enumerate}
-    \item 震荡间断点：\(\lim_{x\to\ x_0} f(x)\)振荡不存在 
-    \item 无穷间断点：\(\lim_{x\to\ x_0^+} f(x)=\infty\)或\(\lim_{x\to\ x_0^-} f(x)=\infty\)
+    \item 震荡间断点：$\lim_{x\to x_0} f(x)$ 振荡不存在
+    \item 无穷间断点：$\lim_{x\to x_0^+} f(x)=\infty$ 或 $\lim_{x\to x_0^-} f(x)=\infty$
   \end{enumerate}
 \end{enumerate}
 
+\begin{remark}[跳跃间断点为什么在控制里最麻烦]
+滑模控制中最常见的不连续就是\textbf{跳跃间断}：$\sgn{s}$ 在 $s=0$ 处从 $-1$ 跳到 $+1$。
+它既不是可去间断（左右极限不等），也不是无穷间断（值有界），
+因此“右端有界”这一条仍然满足——这正是 Filippov 解存在性定理的前提（见第\ref{ch:bounded}章）。
+\end{remark}
 
 \begin{figure}[!hbp]
 \centering
@@ -57,7 +61,7 @@
 
 \subsection{连续性的关系}\label{subsec:continuity-relationships}
 
-在闭区间\([a,b]\)上的实值函数中，连续性的包含关系为：
+在闭区间 $[a,b]$ 上的实值函数中，连续性的包含关系为：
 \[
 \boxed{\text{光滑}(C^\infty)\subsetneq \text{连续可导}(C^1)\subsetneq \text{可导} \subsetneq \text{连续}}
 \]
@@ -65,7 +69,7 @@
 \boxed{\text{Lipschitz连续} \subsetneq \text{绝对连续} \subsetneq \text{一致连续} = \text{连续}}
 \]
 
-在开区间上的实值函数中，连续性的包含关系为：
+在开区间 $(a,b)$ 上的实值函数中，连续性的包含关系为：
 \[
 \boxed{\text{光滑}(C^\infty)\subsetneq \text{连续可导}(C^1)\subsetneq \text{可导} \subsetneq \text{连续}}
 \]
@@ -73,13 +77,19 @@
 \boxed{\text{Lipschitz连续} \subsetneq \text{绝对连续} \subsetneq \text{一致连续} \subsetneq \text{连续}}
 \]
 
-注意在开区间上两条链的每一环都是严格的（包括“一致连续\(\subsetneq\)连续”，因为Heine-Cantor定理此时不适用）。
+注意在开区间上两条链的每一环都是严格的（包括“一致连续 $\subsetneq$ 连续”，因为 Heine--Cantor 定理此时不适用）。
 
 \paragraph{两条链的联系与几乎处处可导}
 \begin{itemize}
-  \item 在闭区间上，连续可导（\(C^1\)）蕴含Lipschitz连续：导数连续故有界，从而\(|f(x_1)-f(x_2)|\le \sup|f'|\cdot|x_1-x_2|\)。但反之不成立（如\(f(x)=|x|\)是Lipschitz连续但在0处不可导）。即 \(C^1 \subsetneq \text{Lipschitz连续}\)。
-  \item 对可导函数而言，导数处处有界 \(\iff\) Lipschitz连续。而 \(C^1 \subsetneq \{\text{可导且导数有界}\}\)，因为存在导数有界但导函数不连续的可导函数（如\(x^2\sin\frac{1}{x}\)在0附近）。
-  \item \textbf{几乎处处可导}：Lipschitz连续函数几乎处处可导且导数几乎处处有界；绝对连续函数几乎处处可导且导数Lebesgue可积，并满足牛顿-莱布尼茨公式 \(f(t)=f(a)+\int_a^t f'(s)\,ds\)。注意“几乎处处可导”弱于“处处可导”，也不蕴含导数连续。
+  \item 在闭区间上，连续可导（$C^1$）蕴含 Lipschitz 连续：导数连续故有界，从而
+        $|f(x_1)-f(x_2)|\le \sup|f'|\cdot|x_1-x_2|$。
+        但反之不成立（如 $f(x)=|x|$ 是 Lipschitz 连续但在 $0$ 处不可导），即 $C^1 \subsetneq \text{Lipschitz连续}$。
+  \item 对可导函数而言，导数处处有界 $\iff$ Lipschitz 连续（在凸区间上）。
+        而 $C^1 \subsetneq \{\text{可导且导数有界}\}$，因为存在导数有界但导函数不连续的可导函数（如 $x^2\sin\frac{1}{x}$ 在 $0$ 附近补定义为 $0$）。
+  \item \textbf{几乎处处可导}：Lipschitz 连续函数几乎处处可导且导数几乎处处有界；
+        绝对连续函数几乎处处可导且导数 Lebesgue 可积，并满足牛顿--莱布尼茨公式
+        $f(t)=f(a)+\int_a^t f'(s)\,\dd s$。
+        注意“几乎处处可导”弱于“处处可导”，也不蕴含导数连续。
 \end{itemize}
 
 \begin{figure}[!htbp]
@@ -92,123 +102,128 @@
 \end{figure}
 
 
-\subsection{区间连续与区间一致连续（连续、绝对连续、Lipschitz连续、Hölder连续）}
+\subsection{区间连续与区间一致连续（连续、绝对连续、Lipschitz 连续、Hölder 连续）}
 
 如果在区间上每一点都连续，就称函数在该区间上连续，如果区间包括端点，那么在右端点连续是指左连续，在左端点连续是指右连续。
 
 \begin{definition}[一致连续]
-设函数\(f(x)\)在区间\(I\)上有定义.
-如果对于任意给定的正数\(\epsilon\)，总存在正数
-\(\delta\)，使得对于区间\(I\)上的任意两点\(x_1,x_2\)，当\(|x_1-x_2|<\delta\)时，
+设函数 $f(x)$ 在区间 $I$ 上有定义。
+如果对于任意给定的正数 $\epsilon$，总存在正数 $\delta$，使得对于区间 $I$ 上的任意两点 $x_1,x_2$，当 $|x_1-x_2|<\delta$ 时，
 有 \[
-|f(x_1)-f(x_2)|<\epsilon
-\] 那么称函数\(f(x)\)在区间\(I\)上\textbf{一致连续}。
+|f(x_1)-f(x_2)|<\epsilon,
+\] 那么称函数 $f(x)$ 在区间 $I$ 上\textbf{一致连续}。
 \end{definition}
 
-绝对连续表示函数的光滑性质，比连续和一致连续条件都要严格，比Lipschitz条件宽松，是一类极为重要的函数。绝对连续函数几乎处处可微，是它的导函数的广义原函数。
+绝对连续表示函数的光滑性质，比连续和一致连续条件都要严格，比 Lipschitz 条件宽松，是一类极为重要的函数。绝对连续函数几乎处处可微，是它的导函数的广义原函数。
 
 \begin{definition}[绝对连续]
-设\(f(x)\)是\([a,b]\)上的函数，若对任意\(\epsilon>0\)，存在\(\delta>0\)使得对于
-\([a,b]\)中的任意一组分点： \[
+设 $f(x)$ 是 $[a,b]$ 上的函数，若对任意 $\epsilon>0$，存在 $\delta>0$ 使得对于
+$[a,b]$ 中的任意一组分点： \[
 a_1<b_1\leq a_2 <b_2 \leq \dots \leq a_n < b_n,
-\] 只要\(\sum_{i=1}^n(b_i-a_i)<\delta\)，便有 \[
-\sum_{i=1}^n|f(b_i)-f(a_i)|<\epsilon
+\] 只要 $\sum_{i=1}^n(b_i-a_i)<\delta$，便有 \[
+\sum_{i=1}^n|f(b_i)-f(a_i)|<\epsilon,
 \]
-则称\(f(x)\)是\([a,b]\)上\textbf{绝对连续}函数，或称\(f(x)\)在\([a,b]\)上绝对连续。
+则称 $f(x)$ 是 $[a,b]$ 上\textbf{绝对连续}函数，或称 $f(x)$ 在 $[a,b]$ 上绝对连续。
 \end{definition}
 
-等价的，如果存在一个Lebesgue可积函数\(k:[a,b]\to \mathbb{R}\)
-使得下式成立，那么\(f\)是一个绝对连续函数。 \[
-f(t)=f(a)+\int^t_a k(s)d s,\quad t\in [a,b]
+等价的，如果存在一个 Lebesgue 可积函数 $k:[a,b]\to \mathbb{R}$，
+使得下式成立，那么 $f$ 是一个绝对连续函数。 \[
+f(t)=f(a)+\int^t_a k(s)\,\dd s,\quad t\in [a,b].
 \]
 
-\begin{definition}[Lipschitz连续]
-对于函数\(f(x)\)，如果存在一个常数L，使得对\(f(x)\)定义域上（可为实数也可以为复数）的任意两个值满足如下条件：
+\begin{definition}[Lipschitz 连续]
+对于函数 $f(x)$，如果存在一个常数 $L\ge 0$，使得对 $f(x)$ 定义域上（可为实数也可以为复数）的任意两个值满足如下条件：
 \[
-|f(x_1)-f(x_2)|\leq L|x_1-x_2|
+|f(x_1)-f(x_2)|\leq L|x_1-x_2|,
 \]
-那么称函数\(f(x)\)满足Lipschitz连续条件，并称L为\(f(x)\)的Lipschitz常数。
+那么称函数 $f(x)$ 满足 Lipschitz 连续条件，并称 $L$ 为 $f(x)$ 的 Lipschitz 常数。
 \end{definition}
 
 \begin{itemize}
-
 \item
-  从局部看：我们可以取两个充分接近的点，如果这个时候斜率的极限存在的话，这个斜率的极限就是这个点的导数。也就是说函数可导，又是Lipschitz连续，那么导数有界。反过来，如果可导函数，导数有界，可以推出函数Lipschitz连续。
+  从局部看：我们可以取两个充分接近的点，如果这个时候斜率的极限存在的话，这个斜率的极限就是这个点的导数。
+  也就是说函数可导，又是 Lipschitz 连续，那么导数有界。
+  反过来，如果可导函数导数有界，可以推出函数 Lipschitz 连续。
 \item
-  从整体看：Lipschitz连续要求函数在无限的区间上不能有超过线性的增长，所以这些\(x^2\)和\(e^x\)函数在无限区间上不是Lipschitz连续的。
+  从整体看：Lipschitz 连续要求函数在无限的区间上不能有超过线性的增长，
+  所以 $x^2$ 和 $e^x$ 这类函数在无限区间上不是 Lipschitz 连续的。
 \end{itemize}
 
-\begin{quote}
-对于函数\(f(x)\)，如果存在一个非负常数\(C,\alpha\)，
-使得对\(f(x)\)定义域上（可为实数也可以为复数）的任意两个值满足如下条件：
+\begin{definition}[Hölder 连续]
+对于函数 $f(x)$，如果存在非负常数 $C$ 与 $\alpha>0$，
+使得对 $f(x)$ 定义域上的任意两个值满足
 \[
-|f(x_1)-f(x_2)|\leq C|x_1-x_2|^\alpha
-\] 那么称函数\(f(x)\)满足Hölder连续条件。
-当\(\alpha=0\)时表示有界，当\(\alpha=1\)时表示满足Lipschitz条件
-\end{quote}
+|f(x_1)-f(x_2)|\leq C|x_1-x_2|^\alpha,
+\]
+那么称函数 $f(x)$ 满足 Hölder 连续条件。
+当 $\alpha=1$ 时即为 Lipschitz 条件；当 $\alpha>1$ 且 $f$ 定义在区间上时，$f$ 必为常数，
+因此通常只讨论 $0<\alpha\le 1$。
+\end{definition}
 
-\subsection{区间上连续性的关系}\label{ux533aux95f4ux4e0aux8fdeux7eedux6027ux7684ux5173ux7cfb}
+注意：$|x|^\alpha$（$0<\alpha<1$）在原点处是 Hölder 连续但不是 Lipschitz 连续的，
+这解释了第\ref{ch:lipschitz}章中 $x^{1/3}$、$\sqrt{|x|}$ 这两个反例的由来。
 
-\begin{table}\centering
-  \begin{tabular}{c|c|c}
-    一致连续但是不绝对连续 & 
-    \(
-      f_1(x)=\begin{cases}
-        0, &x=0\\
-        x \sin\frac{\pi}{x}, &0 < x\leq 1
-      \end{cases}
-    \)& 
-    \\\hline
-    绝对连续但是不Lipschitz连续&
-    \(f_3(t)=\sqrt{|t|},t\in [-1,1]\)&
-    绝对连续但是在0处不Lipschitz连续
-    \\\hline
-    Lipschitz连续但是不可导&
-    \(f(t)=|t|,t\in[-1,1]\)&
-    在0处局部Lipschitz但在零处不可导\\
+\subsection{区间上连续性的关系}\label{subsec:continuity-examples}
+
+\begin{table}[!htb]\centering
+  \small
+  \begin{tabular}{@{}p{3.0cm}|p{5.0cm}|p{6.2cm}@{}}
+    \hline
+    关系 & 例子 & 说明 \\
+    \hline
+    一致连续但不绝对连续 &
+    Cantor--Lebesgue 函数 $\mathcal{C}(x)$，$x\in[0,1]$ &
+    连续（故一致连续）、单调、导数几乎处处为 $0$，但 $\mathcal{C}(1)-\mathcal{C}(0)=1\neq\int_0^1 0\,\dd x$，故不绝对连续 \\
+    \hline
+    绝对连续但不 Lipschitz 连续 &
+    $f_3(t)=\sqrt{|t|}$，$t\in[-1,1]$ &
+    绝对连续（可写成 Lebesgue 积分），但在 $0$ 处不 Lipschitz 连续 \\
+    \hline
+    Lipschitz 连续但不可导 &
+    $f(t)=|t|$，$t\in[-1,1]$ &
+    在 $0$ 处局部 Lipschitz（$L=1$），但在 $0$ 处不可导 \\
+    \hline
   \end{tabular}
+  \caption{连续性包含关系严格性的标准反例}
+  \label{tab:continuity-examples}
 \end{table}
-
-
-如下绝对值函数\(f_2(x)\)绝对连续但是在0处不可导 \[
-f_2(x)=|x|, x\in [-1,1]
-\]
-
-如下根号函数绝对连续但是在0处不是局部Lipschitz连续的 \[
-f_4(t)=\sqrt{|t|},t\in [0,1]
-\]
 
 \section{连续可微和光滑}
 
-连续可微（Continuously differentiable），用泛函表示就是函数\(f\in C^1\)，意味着函数的导数是连续的，当然可微保证其本身也是连续的。
+连续可微（Continuously differentiable），用泛函表示就是函数 $f\in C^1$，意味着函数的导数是连续的，当然可微保证其本身也是连续的。
 
 光滑函数（英语：Smooth function）在数学中特指无穷可导的函数，不存在尖点，也就是说所有的有限阶导数都存在。例如，指数函数就是光滑的，因为指数函数的导数是指数函数本身。
 
 \begin{definition}[光滑函数]
-  若一函数是连续的，则称其为\(C^{0}\)函数；
-  若函数存在导函数，且其导函数连续，则称为连续可导，记为\(C^1\)函数；
-  若一函数n阶可导，并且其n阶导函数连续，则为\(C^{n}\)函数（\(n\geq 1\)）。
-  而光滑函数是对所有n都属于\(C^{n}\)函数，特称其为\(C^{\infty }\)函数。
+  若一函数是连续的，则称其为 $C^{0}$ 函数；
+  若函数存在导函数，且其导函数连续，则称为连续可导，记为 $C^1$ 函数；
+  若一函数 $n$ 阶可导，并且其 $n$ 阶导函数连续，则为 $C^{n}$ 函数（$n\geq 1$）。
+  而光滑函数是对所有 $n$ 都属于 $C^{n}$ 函数，特称其为 $C^{\infty}$ 函数。
 \end{definition}
 
+\section{内容概要}\label{sec:continuity-summary}
 
-\section{内容概要}
-
-从这个图可以看出在经典解中解$x(t)$是$f(x(t))$的积分，而Filippov解中$x(t)$是$f(x(t))$的Lebsgue积分。
-经典解中的解是连续可导的，连续可导的意思是可导并且其导数连续，这与存在性条件$f(x(t))$连续一致。
-类似地，Filippov解中解是绝对连续的，这与存在性条件$f(x(t))$可测并且局部本质有界一致。
+从这个图可以看出在经典解中解 $x(t)$ 是 $f(x(t))$ 的积分，而 Filippov 解中 $x(t)$ 是 $f(x(t))$ 的 Lebesgue 积分。
+经典解中的解是连续可导的，连续可导的意思是可导并且其导数连续，这与存在性条件 $f(x(t))$ 连续一致。
+类似地，Filippov 解中解是绝对连续的，这与存在性条件 $f(x(t))$ 可测并且局部本质有界一致。
 
 \begin{table}[!htp]
   \centering
+  \small
   \begin{tabular}{|c|c|c|c|}
     \hline
-    & 解$x(t)$的连续性 & 存在性条件 & 唯一性条件 \\\hline
-    经典解 & 连续可导 & 
-    $f(x)$连续 & $f(x)$ Lipschitz连续\\\hline
-    Filippov解 & 绝对连续 & 
-    $f(x)$ 可测并且局部本质有界 & $f(x)$ Lipschitz连续 \\\hline
+    & 解 $x(t)$ 的连续性 & 存在性条件 & 唯一性条件 \\\hline
+    经典解（classical） & 连续可导 &
+    $f(x)$ 连续 & $f(x)$ 局部 Lipschitz 连续\\\hline
+    Carathéodory 解 & 绝对连续 &
+    $f(t,x)$ 关于 $x$ 连续、关于 $t$ 可测 & 通常需要额外条件\\\hline
+    Filippov 解 & 绝对连续 &
+    $f(x)$ 可测并且局部本质有界 & 一般\textbf{不保证}（需额外条件）\\\hline
   \end{tabular}
-  \caption{微分方程$\dot{x}=f(x)$Filippov解}
+  \caption{微分方程 $\dot{x}=f(x)$ 三种解概念的对比}
+  \label{tab:solution-concepts}
 \end{table}
 
-Every vector field that is locally Lipschitz at $x$ satisfies the one-sided Lipschitz condition on a neighborhood of $x$, but the converse is not true.
+这张表是全书的总纲：第\ref{ch:lipschitz}章填满第一行，第\ref{ch:bounded}章填满后两行。
+需要强调的是，Filippov 解的存在性门槛最低（只要求右端有界），但代价是\textbf{唯一性消失}，
+这也正是为什么滑模控制的理论分析必须额外讨论“滑动模态是否良定”的原因。

@@ -1,79 +1,670 @@
-\chapter{非线性系统：右端Lipschtz连续}
-
-一般的非线性自治系统可以用如下方程表示：
-\begin{equation}\label{eq:nonlinear}
-    \dot{x}=f(t,x).
-\end{equation}
-其中,$x$为系统状态，$t\geq 0$为时间。
-$f(t,x)$ 是关于时间$t$分段连续的，关于状态$x$是局部Lipschitz连续的。
-is \strong{piecewise continuous in $t$} and \strong{locally Lipshitz in $x$} over the domain of interest
-
-
-经典非线性系统的解存在性和唯一性需要微分方程右端Lipschitz连续，
-一个使用较多的数学表述是khalil的非线性控制的\textbf{引理1.3}：
+\chapter{非线性系统：右端 Lipschitz 连续}\label{ch:lipschitz}
 
 \begin{quote}
-设\(f(t,x)\)关于\(t\)是\textbf{分段连续}的，
-并且对所有\(t\ge t_0\)，在关于\(x\)的区域\(D\subset \mathbb{R}^n\)上\(f(t,x)\)是局部\textbf{Lipschitz连续}的。
-设\(W\)是\(D\)中的一个紧子集，\(x_0\in W\)，并进一步设 \[
-\dot{x}=f(t,x),x(t_0)=x_0
-\] 的解\(t\ge t_0\)时都在\(W\)内，那么这个解是\(t\ge t_0\)的唯一解。
+本章的结论可以压缩成一句话：\textbf{右端函数关于状态局部 Lipschitz 连续，是经典解存在且唯一的“入场券”。}
 \end{quote}
 
-    $f(t,x)$ is piecewise continuous in $t$ on interval $J\subset \RR$ 
-    if for every bounded subinterval $J_0\subset J$, 
-    $f$ is continuous in $t$ for all $t\in J_0$, 
-    except, possibly, 
-    at a finite number of points where $f$ may have finite-jump discontinuities.
+本章回答三个问题：
+\begin{enumerate}
+  \item 什么叫（局部/全局）Lipschitz 连续？它与第\ref{ch:intro}章中的连续、一致连续、绝对连续是什么关系？
+  \item 怎样估计一个给定向量场的 Lipschitz 常数？
+  \item Lipschitz 条件能推出什么？——局部存在唯一、全局存在唯一、解对初值与参数的连续依赖，以及用于估计的积分不等式。
+\end{enumerate}
+所有结论与编号均取自 Khalil 的两本教材 \cite{khalilNonlinearSystems,khalilNonlinearControl2015}：
+“Khalil 2002”指《Nonlinear Systems》第三版第 3 章，“Khalil 2015”指《Nonlinear Control》第 1 章。
+教材中的证明被移到附录，这里只保留可读的证明思路。
 
-    $f(t,x)$ is \textcolor{blue}{locally Lipschitz} in $x$ \textcolor{red}{at a point $x_0$} 
-    if there is a neighborhood $N(x_0,r)=\{x\in \RR^n \big| \norm{x-x_0}<r\}$ 
-    where $f(t,x)$ satisfies the Lipschitz condition
-    \[\norm{f(t,x)-f(t,y)}\le \norm{x-y},L>0\] 
+\section{为什么从 Lipschitz 开始：滑模控制恰好破坏了它}\label{sec:why-lipschitz}
 
-    A function $f(t,x)$ is \textcolor{blue}{locally Lipschitz} in $x$ 
-    \textcolor{purple}{on a domain} (open and connected set) $D\subset\RR^n$ 
-    if it is locally Lipschitz at every point $x_0\in D$
+第\ref{ch:intro}章已经看到，滑模控制的核心是开关控制
+\begin{equation}\label{eq:sgn-control}
+  u = -\beta\,\sgn{s(x)},
+\end{equation}
+它使闭环右端在滑模面 $s(x)=0$ 上发生跳跃。
+Khalil 在讨论滑模控制时明确指出：
 
-    \begin{lemma}[lemma 1.1 \cite{khalilNonlinearControl2015}]
-        Let $f(t,x)$ be piecewise continuous in $t$ and \strong{locally} Lipschitz 
-        in $x$ at $x_0$,
-        for all $t\in [t_0,t_1]$.
-        Then, there is $\delta >0$ such that the state equation $\dot{x}=f(t,x)$,
-         with $x(t_0)=x_0$,
-        has a unique solution over $[t_0,t_0+\delta]$.
-    \end{lemma}
+\begin{quote}
+The sliding mode controller contains the discontinuous signum function $\mathrm{sgn}(s_i)$, which raises some theoretical as well as practical issues.
+\textbf{Theoretical issues like existence and uniqueness of solutions and validity of Lyapunov analysis will have to be examined in a framework that does not require the state equation to have locally Lipschitz right-hand-side functions.}
+\cite[§14.1.2]{khalilNonlinearSystems}
+\end{quote}
 
-    \begin{lemma}[lemma 1.3]
-        Let $f(t,x)$ be piecewise continuous in $t$ and 
-        \strong{locally Lipschitz} in $x$ for all $t\in [t_0,\infty)$
-        and all $x$ in a domain $D\subset \RR^n$.
-        Let $W$ be a compact subset of $D$, 
-        and suppose that every solution of 
-        \[\dot{x}=f(t,x), x(t_0)=x_0\]
-        with $x_0\in W$ lies entirely in $W$. 
-        Then, there is a unique solution that is defined for all $t\ge t_0$
-    \end{lemma}
+换句话说，只要控制律里出现 $\sgn{\cdot}$，本章的所有定理就\textbf{不再适用}；
+而只要把 $\sgn{\cdot}$ 换成饱和函数 $\sat(s/\varepsilon)$，右端重新 Lipschitz，本章定理又全部可用（代价是只能得到最终有界与“边界层内”收敛，而不能精确到达 $s=0$）。
+这条“连续逼近 vs. 理想切换”的张力贯穿全书，本章先给出“Lipschitz 这一侧”的完整理论。
 
-    \begin{theorem}[Lyapunov's theorem (3.3)]
-        If there is $V(x)$ such that 
-            \begin{itemize}
-                \item[1] $V(0)=0$
-                \item[2] $V(x)>0, \ \forall \ x \in D \ with\ x\neq 0$
-                \item[3] $\dot{V}(x) \le 0, \forall\ x\in D$
-            \end{itemize}
-            then the origin is \strong{stable}
+一个最小的例子可以说明问题的严重性。考虑
+\begin{equation}\label{eq:minimal-sgn}
+  \dot x = -\sgn{x},\qquad x(0)=x_0>0 .
+\end{equation}
+在 $x>0$ 上解为 $x(t)=x_0-t$，在 $t=x_0$ 处到达 $x=0$；若约定 $\sgn{0}=0$，则之后 $x(t)\equiv 0$。
+这条曲线是“分段 $C^1$”的，但不是本章意义下的经典解（在 $t=x_0$ 处不可导）。
+更糟的是，若存在常值扰动 $\delta$：
+\begin{equation}\label{eq:minimal-sgn-dist}
+  \dot x = -\sgn{x}+\delta,\qquad |\delta|>0,
+\end{equation}
+则在 $x=0$ 处要求 $\dot x=\delta\ne 0$，而 $\sgn{0}$ 提供不了任何值，方程在经典意义下\textbf{无解}。
+第\ref{ch:bounded}章将用 Filippov 集值化把 $\sgn{0}$ 替换为 $[-1,1]$，从而恢复可解性。
 
-        Moreover, If 
-        \[\dot{V}(x)<0,\ \forall \ x\in D \ with\ x\neq 0\]
-        then the origin is \strong{asymptotically stable}
+\section{系统描述与 Lipschitz 条件}\label{sec:lipschitz-def}
 
-        Furthermore, if $V(x)>0, \forall \ x\neq 0$,
-        \[\norm{x}\to \infty \rightarrow V(x) \to \infty\]
-        and $\dot{V}(x)<0,\forall\ x\neq 0$, then the origin is \strong{globally asymptotically stable}
-    \end{theorem} 
+\subsection{状态方程与基本术语}
 
-    \begin{theorem}[Lyapunov's Theorem]
-        The origin is stable if there is a continuously differentiable positive definite function $V(x)$ so that $\dot{V}(x)$ is negative definite. 
-        It is globally asymptotically stable if the conditions for asymptotic stable hold globally and ${V}(x)$ is radially unbounded.
-    \end{theorem}
+一般的非线性非自治系统可以写成
+\begin{equation}\label{eq:nonlinear}
+    \dot{x}=f(t,x),
+\end{equation}
+其中 $x\in\RR^n$ 为系统状态，$t\geq 0$ 为时间，$f:[0,\infty)\times D\to\RR^n$，$D\subset\RR^n$ 为定义域。
+若 $f$ 不显含 $t$，则称系统\textbf{自治}（autonomous）或时不变，记为 $\dot x=f(x)$；
+否则称为\textbf{非自治}（nonautonomous）或时变。
+满足 $f(t,x^\ast)\equiv 0$ 的常值 $x^\ast$ 称为\textbf{平衡点}（equilibrium point）。
+对自治系统，平衡点就是代数方程 $f(x)=0$ 的实根 \cite[§1.1]{khalilNonlinearControl2015}。
+
+\begin{definition}[关于 $t$ 分段连续]\label{def:piecewise-continuous}
+  对固定的 $x$，称 $f(t,x)$ 在区间 $J\subset\RR$ 上关于 $t$ \textbf{分段连续}（piecewise continuous），
+  是指：对每个有界子区间 $J_0\subset J$，$f$ 在 $J_0$ 上关于 $t$ 连续，
+  至多在有限个点上发生\textbf{有限跳跃}（finite-jump discontinuities）。
+\end{definition}
+
+分段连续允许 $f$ 依赖于可能发生阶跃变化的输入 $u(t)$，
+这是把“控制器”纳入状态方程时必须的假设。
+注意：分段连续是“关于 $t$”的要求，与“关于 $x$”的 Lipschitz 要求是两件独立的事。
+
+\begin{definition}[局部 Lipschitz]\label{def:local-lipschitz}
+  称 $f(t,x)$ 在点 $x_0$ 处关于 $x$ \textbf{局部 Lipschitz 连续}，
+  是指存在邻域 $N(x_0,r)=\{x:\norm{x-x_0}<r\}$ 与常数 $L>0$，使得
+  \begin{equation}\label{eq:lipschitz}
+    \norm{f(t,x)-f(t,y)}\le L\norm{x-y},
+    \qquad \forall t\in J,\ \forall x,y\in N(x_0,r).
+  \end{equation}
+  若 $f$ 在区域 $D$（开连通集）中每一点都局部 Lipschitz，则称 $f$ 在 $D$ 上\textbf{局部 Lipschitz}。
+  若式~\eqref{eq:lipschitz} 对 $x,y\in\RR^n$ 全部成立且 $L$ 与 $t$ 无关，则称 $f$ \textbf{全局 Lipschitz}。
+\end{definition}
+
+\begin{remark}[局部、集上与全局]\label{rem:lipschitz-terminology}
+  教材中的三种说法需要区分 \cite[§3.1]{khalilNonlinearSystems}：
+  \begin{itemize}
+    \item \textbf{在点上局部 Lipschitz}：只要求存在某个邻域；
+    \item \textbf{在集合 $W$ 上 Lipschitz}：式~\eqref{eq:lipschitz} 对 $W$ 中所有点成立，且用\textbf{同一个}常数 $L$；
+    \item \textbf{在区域 $D$ 上局部 Lipschitz} $\not\Rightarrow$ \textbf{在 $D$ 上 Lipschitz}，
+          因为不同点的 Lipschitz 常数可能无上界；但 $\Rightarrow$ \textbf{在 $D$ 的每个紧子集上 Lipschitz}
+          （教材习题 3.19）。
+  \end{itemize}
+  对 $f(t,x)$，上述定义还要求 Lipschitz 常数关于 $t$ 在给定时间区间上\textbf{一致}。
+  另外，由范数等价性，选用哪种范数不影响“是否 Lipschitz”，只影响常数 $L$ 的大小。
+\end{remark}
+
+\begin{remark}[Lipschitz 常数不唯一]
+  若式~\eqref{eq:lipschitz} 对某个 $L>0$ 成立，则对任何 $L'>L$ 也成立。
+  因此通常取“最小的可行常数”，但理论分析中我们只关心某个可用的上界。
+\end{remark}
+
+\subsection{与连续性的关系}
+
+Lipschitz 连续强于（一致）连续，弱于连续可微：
+\begin{equation}
+  C^1 \ \subsetneq\ \text{Lipschitz 连续}\ \subsetneq\ \text{绝对连续}\ \subsetneq\ \text{一致连续}\ \subsetneq\ \text{连续}.
+\end{equation}
+严格性的反例见第\ref{ch:intro}章表~\ref{tab:continuity-examples}。
+对本章而言，最重要的推论是：
+
+\begin{quote}
+\textbf{不连续函数在其间断点处一定不是局部 Lipschitz 的。}
+\end{quote}
+
+因此 $\sgn{s}$、继电器特性、理想 bang-bang 控制都无法通过本章的定理获得解的存在唯一性。
+反之，任何 $C^1$ 函数都是局部 Lipschitz 的（见引理~\ref{lem:c1-locally-lipschitz}），
+所以本章的定理覆盖了绝大多数物理系统的名义模型。
+
+\section{Lipschitz 常数的估计}\label{sec:lipschitz-constant}
+
+\subsection{一元情形：斜率有界}
+
+当 $f:\RR\to\RR$ 时，Lipschitz 条件可写成
+\begin{equation}
+  \frac{|f(y)-f(x)|}{|y-x|}\le L .
+\end{equation}
+几何上，函数图像上任意两点连线的斜率绝对值不超过 $L$。
+因此：
+\begin{itemize}
+  \item 若 $f$ 在某点处斜率为无穷（如 $x^{1/3}$、$\sqrt{|x|}$ 在原点），则 $f$ 在该点不是局部 Lipschitz 的；
+  \item 若 $f$ 在区间上可导且 $|f'(x)|\le k$，则 $f$ 在该区间上 Lipschitz，$L=k$。
+\end{itemize}
+
+\subsection{多元情形：Jacobian 有界}
+
+\begin{lemma}[由 Jacobian 估计 Lipschitz 常数]\label{lem:jacobian-lipschitz}
+  设 $f:[a,b]\times D\to\RR^m$ 连续，$D\subset\RR^n$ 为区域，且偏导数矩阵 $[\partial f/\partial x]$ 在 $[a,b]\times D$ 上存在且连续。
+  若 $W\subset D$ 是\textbf{凸}子集，且存在常数 $L\ge 0$ 使得
+  \begin{equation}
+    \left\|\frac{\partial f}{\partial x}(t,x)\right\|\le L,
+    \qquad \forall (t,x)\in[a,b]\times W,
+  \end{equation}
+  则
+  \begin{equation}
+    \norm{f(t,x)-f(t,y)}\le L\norm{x-y},
+    \qquad \forall t\in[a,b],\ x,y\in W .
+  \end{equation}
+  \cite[Lemma 3.1]{khalilNonlinearSystems}
+\end{lemma}
+
+\begin{proof}[证明思路]
+固定 $t$，令 $\gamma(s)=(1-s)x+sy$（$s\in[0,1]$）。由 $W$ 凸，$\gamma(s)\in W$。
+取与所用向量范数对偶的单位向量 $z$，令 $g(s)=z^\top f(t,\gamma(s))$，则 $g$ 是一元可微函数。
+由中值定理，存在 $s_1\in(0,1)$ 使
+\[
+  z^\top[f(t,y)-f(t,x)] = g(1)-g(0)=g'(s_1)
+  = z^\top\frac{\partial f}{\partial x}(t,\gamma(s_1))(y-x).
+\]
+由 Hölder 不等式与 $\norm{z}_q=1$ 得
+$\norm{f(t,y)-f(t,x)}\le L\norm{y-x}$。由于对每个方向都能取到这样的 $z$，结论成立。
+\end{proof}
+
+\begin{lemma}[$C^1$ 蕴含局部 Lipschitz]\label{lem:c1-locally-lipschitz}
+  若 $f(t,x)$ 与 $[\partial f/\partial x](t,x)$ 在 $[a,b]\times D$ 上连续，则 $f$ 在 $[a,b]\times D$ 上关于 $x$ 局部 Lipschitz。
+  \cite[Lemma 3.2]{khalilNonlinearSystems}
+\end{lemma}
+
+\begin{proof}[证明思路]
+对任意 $x_0\in D$，取足够小的 $r$，使闭球 $D_0=\{x:\norm{x-x_0}\le r\}\subset D$。
+$D_0$ 是紧凸集，连续函数 $\partial f/\partial x$ 在 $[a,b]\times D_0$ 上有界，设界为 $L_0$。
+由引理~\ref{lem:jacobian-lipschitz}，$f$ 在 $[a,b]\times D_0$ 上 Lipschitz，常数为 $L_0$。
+\end{proof}
+
+\begin{lemma}[全局 Lipschitz 的判别]\label{lem:global-lipschitz-criterion}
+  若 $f(t,x)$ 与 $[\partial f/\partial x](t,x)$ 在 $[a,b]\times\RR^n$ 上连续，
+  则 $f$ 在 $[a,b]\times\RR^n$ 上关于 $x$ 全局 Lipschitz
+  $\iff$ $[\partial f/\partial x]$ 在 $[a,b]\times\RR^n$ 上\textbf{一致有界}。
+  \cite[Lemma 3.3]{khalilNonlinearSystems}
+\end{lemma}
+
+\subsection{算例}
+
+\begin{example}[多项式型向量场：局部而非全局]\label{ex:lipschitz-poly}
+  考虑
+  \begin{equation}
+    f(x)=\begin{bmatrix}
+      -x_1+x_1x_2\\
+      x_2-x_1x_2
+    \end{bmatrix}.
+  \end{equation}
+  它在 $\RR^2$ 上连续可微，故局部 Lipschitz。
+  但 Jacobian
+  \begin{equation}
+    \left[\frac{\partial f}{\partial x}\right]
+    =\begin{bmatrix}
+      -1+x_2 & x_1\\
+      -x_2 & 1-x_1
+    \end{bmatrix}
+  \end{equation}
+  的元素无界，故 $f$ 不是全局 Lipschitz 的。
+  若只关心方体 $W=\{|x_1|\le a_1,|x_2|\le a_2\}$（凸紧集），用 $\norm{\cdot}_\infty$ 得
+  \begin{equation}
+    \left\|\frac{\partial f}{\partial x}\right\|_\infty
+    =\max\{|-1+x_2|+|x_1|,\ |x_2|+|1-x_1|\}
+    \le 1+a_1+a_2,
+  \end{equation}
+  故在 $W$ 上可以取 $L=1+a_1+a_2$。
+  \cite[Example 3.1]{khalilNonlinearSystems}
+\end{example}
+
+\begin{example}[不可微但 Lipschitz：饱和环节]\label{ex:lipschitz-sat}
+  考虑
+  \begin{equation}
+    f(x)=\begin{bmatrix}
+      x_2\\
+      -\sat(x_1+x_2)
+    \end{bmatrix},
+  \end{equation}
+  它在 $\RR^2$ 上不连续可微（$\sat$ 在 $\pm1$ 处有折点）。
+  但利用 $|\sat(\eta)-\sat(\xi)|\le|\eta-\xi|$ 可得
+  \begin{align}
+    \norm{f(x)-f(y)}_2^2
+    &\le (x_2-y_2)^2+(x_1+x_2-y_1-y_2)^2 \notag\\
+    &=(x_1-y_1)^2+2(x_1-y_1)(x_2-y_2)+2(x_2-y_2)^2 \notag\\
+    &=\begin{bmatrix}a\\b\end{bmatrix}^\top
+      \begin{bmatrix}1&1\\1&2\end{bmatrix}
+      \begin{bmatrix}a\\b\end{bmatrix}
+    \le \lambda_{\max}\left\{\begin{bmatrix}1&1\\1&2\end{bmatrix}\right\}\norm{\begin{bmatrix}a\\b\end{bmatrix}}_2^2,
+  \end{align}
+  其中 $a=x_1-y_1$，$b=x_2-y_2$。
+  于是 $f$ 在 $\RR^2$ 上全局 Lipschitz，$L=\sqrt{2.618}$。
+  若改用更粗的估计 $a^2+2ab+2b^2\le 3(a^2+b^2)$，则得 $L=\sqrt{3}$（保守但更简单）。
+  \cite[Example 3.2]{khalilNonlinearSystems}
+\end{example}
+
+\begin{example}[三个“不 Lipschitz”的典型]\label{ex:not-lipschitz}
+  \begin{enumerate}
+    \item $f(x)=\sgn{x}$：在 $x=0$ 处不连续，故不局部 Lipschitz；
+    \item $f(x)=x^{1/3}$：连续，但 $f'(x)=\tfrac13 x^{-2/3}\to\infty$（$x\to0$），故在 $0$ 处不局部 Lipschitz。
+          方程 $\dot x=x^{1/3},\,x(0)=0$ 有两个解：$x\equiv0$ 与 $x(t)=(2t/3)^{3/2}$；
+    \item $f(x)=\sqrt{|x|}$：连续且在 $0$ 外局部 Lipschitz，但在 $0$ 处只 Hölder 连续（指数 $1/2$），不局部 Lipschitz。
+          方程 $\dot x=\sqrt{|x|},\,x(0)=0$ 有无穷多解 $x_a(t)=0$（$t\le a$）、$(t-a)^2/4$（$t>a$），$a\ge0$。
+  \end{enumerate}
+\end{example}
+
+这三个例子说明：\textbf{连续性不足以保证唯一性，Lipschitz 才是关键。}
+
+\section{局部存在唯一性}\label{sec:local-existence}
+
+\begin{theorem}[局部存在唯一性]\label{thm:local-existence}
+  设 $f(t,x)$ 关于 $t$ 分段连续，且对 $x$ 满足 Lipschitz 条件
+  \begin{equation}\label{eq:local-lipschitz-thm}
+    \norm{f(t,x)-f(t,y)}\le L\norm{x-y},
+    \qquad \forall x,y\in B=\{x:\norm{x-x_0}\le r\},\ \forall t\in[t_0,t_1].
+  \end{equation}
+  则存在 $\delta>0$，使得状态方程 $\dot x=f(t,x)$、$x(t_0)=x_0$ 在 $[t_0,t_0+\delta]$ 上有唯一解。
+  该结论见 \cite[Theorem 3.1]{khalilNonlinearSystems}；\cite[Lemma 1.1]{khalilNonlinearControl2015} 给出了同一结论。
+\end{theorem}
+
+\begin{proof}[证明思路：Picard 迭代 + 压缩映射]
+  解与积分方程等价：
+  \begin{equation}\label{eq:integral-equation}
+    x(t)=x_0+\int_{t_0}^{t}f(s,x(s))\,\dd s .
+  \end{equation}
+  在空间 $C([t_0,t_0+\delta],B)$ 上（配以一致范数）定义 Picard 算子
+  \begin{equation}
+    (Tx)(t)=x_0+\int_{t_0}^{t}f(s,x(s))\,\dd s .
+  \end{equation}
+  设 $M=\max\{\norm{f(t,x)}:(t,x)\in[t_0,t_1]\times B\}$。
+  \begin{itemize}
+    \item \textbf{自映射}：若 $\delta\le r/M$，则 $\norm{(Tx)(t)-x_0}\le M\delta\le r$，故 $T$ 把球映回球；
+    \item \textbf{压缩}：由 Lipschitz 条件，
+          $\norm{(Tx)(t)-(Ty)(t)}\le L\int_{t_0}^{t}\norm{x(s)-y(s)}\,\dd s\le L\delta\norm{x-y}_\infty$。
+          取 $\delta<1/L$，则 $T$ 是压缩映射；
+    \item \textbf{不动点}：由 Banach 压缩映射定理，$T$ 有唯一不动点 $x$，即积分方程~\eqref{eq:integral-equation} 的唯一连续解。
+  \end{itemize}
+  由积分方程右端关于 $t$ 分段连续可微，$x$ 是分段连续可微的。
+  详细证明见 \cite[Appendix C.1]{khalilNonlinearSystems}。
+\end{proof}
+
+\begin{remark}[为什么必须有“分段”二字]
+  若 $f$ 仅关于 $t$ 可测，$x(t)$ 一般只能做到绝对连续（Carathéodory 解）；
+  若 $f$ 关于 $x$ 也只是可测有界，则连唯一性都失去（Filippov 解）。
+  解的光滑性与对 $f$ 的正则性要求是一一对应的，见第\ref{ch:intro}章表~\ref{tab:solution-concepts}。
+\end{remark}
+
+\begin{remark}[$\delta$ 不可控]
+  定理只保证解在某个（可能非常小的）$[t_0,t_0+\delta]$ 上存在，
+  $\delta$ 依赖 $x_0$ 与 $f$ 在局部的大小，我们无法预先指定它。
+  下一节讨论如何把解延拓出去。
+\end{remark}
+
+\begin{corollary}[唯一性]\label{cor:uniqueness}
+  在定理~\ref{thm:local-existence} 的条件下，若 $x(t),y(t)$ 都是 $[t_0,t_0+\delta]$ 上的解且 $x(t_0)=y(t_0)$，则 $x\equiv y$。
+\end{corollary}
+
+\begin{proof}
+  由积分方程，
+  $\norm{x(t)-y(t)}\le L\int_{t_0}^{t}\norm{x(s)-y(s)}\,\dd s$。
+  对 $u(t)=\norm{x(t)-y(t)}$ 与 $c=0$ 用 Gronwall 不等式（引理~\ref{lem:gronwall}）得 $u\equiv0$。
+\end{proof}
+
+\section{解的延拓、最大存在区间与有限逃逸时间}\label{sec:maximal-interval}
+
+局部定理只给出很短的区间。以 $t_0+\delta$ 为新初值反复应用定理~\ref{thm:local-existence}，
+可以把解一段段拼接、不断向右延拓。把所有这些延拓的并称为\textbf{最大解}（maximal solution），
+其定义区间必形如 $[t_0,T)$，其中 $T\in(0,\infty]$。
+
+\begin{lemma}[有限时刻离开紧集]\label{lem:leaves-compact}
+  若最大存在区间为 $[t_0,T)$ 且 $T<\infty$，则当 $t\to T^-$ 时，解 $x(t)$ 离开 $D$ 的任意紧子集。
+  \cite[Exercise 3.26]{khalilNonlinearSystems}
+\end{lemma}
+
+\begin{example}[有限逃逸时间]\label{ex:finite-escape}
+  考虑标量系统
+  \begin{equation}
+    \dot x=-x^2,\qquad x(0)=-1 .
+  \end{equation}
+  $f(x)=-x^2$ 在 $\RR$ 上局部 Lipschitz，故每个紧区间上 Lipschitz。
+  解为
+  \begin{equation}
+    x(t)=\frac{1}{t-1},
+  \end{equation}
+  只存在于 $[0,1)$。当 $t\to1^-$ 时 $x(t)\to-\infty$，离开了任何紧集。
+  这种现象称为\textbf{有限逃逸时间}（finite escape time）。
+  \cite[Example 3.3]{khalilNonlinearSystems}\cite[Example 1.3]{khalilNonlinearControl2015}
+\end{example}
+
+\begin{remark}[滑模中的“有限时间”是另一回事]
+  有限逃逸时间指\textbf{状态发散到无穷}；滑模控制追求的“有限时间收敛”指状态在有限时间内\textbf{到达并停留在滑模面}。
+  两者数学上都表现为“有限时刻处的非连续性”，但前者是病态，后者是设计目标，不要混淆。
+\end{remark}
+
+\section{全局存在唯一性}\label{sec:global-existence}
+
+要让解对一切 $t\ge t_0$ 存在，直觉上有两条路：
+\begin{enumerate}
+  \item 加强 $f$ 的条件（全局 Lipschitz）——简单但保守；
+  \item 保持局部 Lipschitz，但\textbf{事先知道解不会跑出某个紧集}——灵活，且正好与 Lyapunov 方法对接。
+\end{enumerate}
+
+\subsection{全局 Lipschitz 条件}
+
+\begin{theorem}[全局存在唯一性]\label{thm:global-existence}
+  设 $f(t,x)$ 关于 $t$ 分段连续，且
+  \begin{equation}
+    \norm{f(t,x)-f(t,y)}\le L\norm{x-y},
+    \qquad \forall x,y\in\RR^n,\ \forall t\in[t_0,t_1].
+  \end{equation}
+  则 $\dot x=f(t,x)$、$x(t_0)=x_0$ 在 $[t_0,t_1]$ 上有唯一解。
+  \cite[Theorem 3.2]{khalilNonlinearSystems}\cite[Lemma 1.2]{khalilNonlinearControl2015}
+\end{theorem}
+
+\begin{proof}[证明思路]
+  沿用定理~\ref{thm:local-existence} 的 Picard 迭代，此时压缩条件在整个 $\RR^n$ 上一致成立，
+  可在整个 $[t_0,t_1]$ 上构造不动点。
+  另一种看法：由
+  \[
+    \norm{x(t)}\le\norm{x_0}+\int_{t_0}^{t}\big(\norm{f(s,0)}+L\norm{x(s)}\big)\,\dd s
+  \]
+  与 Gronwall 不等式，$\norm{x(t)}$ 在有限区间上被有限数控制，不可能有限时间逃逸，
+  故解可无限延拓。
+\end{proof}
+
+\begin{example}[线性系统]\label{ex:linear-global}
+  考虑
+  \begin{equation}
+    \dot x=A(t)x+g(t)=f(t,x),
+  \end{equation}
+  其中 $A(t),g(t)$ 关于 $t$ 分段连续。
+  在任何有限区间 $[t_0,t_1]$ 上，$\norm{A(t)}\le a$，于是
+  \[
+    \norm{f(t,x)-f(t,y)}=\norm{A(t)(x-y)}\le a\norm{x-y}.
+  \]
+  由定理~\ref{thm:global-existence}，线性系统在 $[t_0,t_1]$ 上有唯一解；又 $t_1$ 可任意大，故解对一切 $t\ge t_0$ 存在。
+  特别地，线性系统\textbf{没有有限逃逸时间}。
+  \cite[Example 3.4]{khalilNonlinearSystems}
+\end{example}
+
+\subsection{局部 Lipschitz + 紧不变集}
+
+\begin{theorem}[全局存在性：紧集版本]\label{thm:global-existence-compact}
+  设 $f(t,x)$ 关于 $t$ 分段连续，且关于 $x$ 在 $D\subset\RR^n$ 上局部 Lipschitz（$t\ge t_0$，$x\in D$）。
+  设 $W\subset D$ 是紧集，$x_0\in W$，并且已知
+  \[
+    \dot x=f(t,x),\qquad x(t_0)=x_0
+  \]
+  的\textbf{每个}解都完全落在 $W$ 中。则存在唯一解，且它对所有 $t\ge t_0$ 有定义。
+  该结论见 \cite[Theorem 3.3]{khalilNonlinearSystems}；\cite[Lemma 1.3]{khalilNonlinearControl2015} 给出了同一结论。
+\end{theorem}
+
+\begin{proof}
+  由定理~\ref{thm:local-existence}，存在唯一局部解；设其最大存在区间为 $[t_0,T)$。
+  若 $T<\infty$，由引理~\ref{lem:leaves-compact}，解在 $t\to T^-$ 时必须离开 $D$ 的每个紧子集。
+  但解始终落在紧集 $W\subset D$ 中，矛盾。故 $T=\infty$。
+\end{proof}
+
+\begin{example}[$f$ 非全局 Lipschitz，但解全局存在]\label{ex:-x3}
+  考虑
+  \begin{equation}
+    \dot x=-x^3=:f(x).
+  \end{equation}
+  $f$ 局部 Lipschitz，但 $f'(x)=-3x^2$ 无界，故不是全局 Lipschitz。
+  然而 $x\dot x=-x^4\le0$，即 $x^2$ 沿轨迹单调不增，因此从 $x(0)=a$ 出发的解永远留在紧集 $\{x:|x|\le|a|\}$ 中。
+  由定理~\ref{thm:global-existence-compact}，解对一切 $t\ge0$ 存在且唯一。
+  \cite[Example 3.5/3.6]{khalilNonlinearSystems}
+\end{example}
+
+\begin{remark}[定理~\ref{thm:global-existence-compact} 的用法]
+  定理的关键在于“\textbf{不解方程}而证明解落在紧集中”。
+  第\ref{ch:bounded}章会看到，Lyapunov 方法正是为此而生：
+  若存在 $V(x)$ 使 $\dot V\le0$，则 $V$ 的任一紧子水平集 $\Omega_c=\{V\le c\}$ 都是正不变的，
+  于是“解留在紧集内”自动满足，全局存在性随之成立。
+\end{remark}
+
+\begin{remark}[保守性]
+  全局 Lipschitz 是充分而非必要条件：$f(x)=-x^3$ 不满足它，却有全局唯一解（例~\ref{ex:-x3}）。
+  因此实际建模中不应为了套用定理~\ref{thm:global-existence} 而强行假设全局 Lipschitz，
+  更常用的是定理~\ref{thm:global-existence-compact}。
+\end{remark}
+
+\section{解对初值与参数的连续依赖}\label{sec:continuous-dependence}
+
+“解对初值和参数连续依赖”是微分方程能描述真实系统的前提：
+初值测不准、参数有误差，解不应发生跳变。
+
+\begin{theorem}[有界扰动下的偏差估计]\label{thm:dependence-bound}
+  设 $f(t,x)$ 关于 $t$ 分段连续，且在 $[t_0,t_1]\times W$ 上关于 $x$ Lipschitz，常数为 $L$，
+  其中 $W\subset\RR^n$ 为开连通集。
+  设 $y(t),z(t)$ 分别是
+  \[
+    \dot y=f(t,y),\ y(t_0)=y_0,
+    \qquad
+    \dot z=f(t,z)+g(t,z),\ z(t_0)=z_0
+  \]
+  的解，且 $y(t),z(t)\in W$（$t\in[t_0,t_1]$）。
+  若 $\norm{g(t,x)}\le\mu$，则
+  \begin{equation}\label{eq:dependence-bound}
+    \norm{y(t)-z(t)}
+    \le\norm{y_0-z_0}\,e^{L(t-t_0)}
+    +\frac{\mu}{L}\left(e^{L(t-t_0)}-1\right),
+    \qquad t\in[t_0,t_1].
+  \end{equation}
+  \cite[Theorem 3.4]{khalilNonlinearSystems}
+\end{theorem}
+
+\begin{proof}[证明思路]
+  两式相减并取范数，得
+  \[
+    \norm{y(t)-z(t)}\le\gamma+\mu(t-t_0)+\int_{t_0}^{t}L\norm{y(s)-z(s)}\,\dd s,
+    \qquad \gamma=\norm{y_0-z_0}.
+  \]
+  对 $u(t)=\norm{y(t)-z(t)}$ 应用 Gronwall 不等式（引理~\ref{lem:gronwall}），并分部积分即可。
+\end{proof}
+
+\begin{remark}[怎样读这个界]
+  式~\eqref{eq:dependence-bound} 有两项：
+  \begin{itemize}
+    \item 初值误差项 $\gamma e^{L(t-t_0)}$：误差被 $L$ 指数放大，$L$ 越大系统对初值越敏感；
+    \item 持续扰动项 $\frac{\mu}{L}(e^{L(t-t_0)}-1)$：扰动被“积分平滑”，但同样会随时间指数增长。
+  \end{itemize}
+  注意这只是有限时间区间上的估计，\textbf{并不蕴含稳定性}；
+  要得到 $t\to\infty$ 的结论，必须额外假设 $y(t)$ 本身（例如指数）稳定。
+  另外，若 $f$ 关于 $x$ 不 Lipschitz（例如含 $\sgn$），该结论可能完全失效。
+\end{remark}
+
+\begin{theorem}[对初值与参数的连续依赖]\label{thm:continuous-dependence}
+  设 $f(t,x,\lambda)$ 关于 $(t,x,\lambda)$ 连续，且关于 $x$ 在
+  $[t_0,t_1]\times D\times\{\norm{\lambda-\lambda_0}\le c\}$ 上局部 Lipschitz（关于 $t,\lambda$ 一致），$D$ 为开连通集。
+  设 $y(t,\lambda_0)$ 是 $\dot x=f(t,x,\lambda_0)$、$y(t_0,\lambda_0)=y_0\in D$ 的解，且在 $[t_0,t_1]$ 上位于 $D$ 内。
+  则对任意 $\varepsilon>0$，存在 $\delta>0$，使得当
+  \[
+    \norm{z_0-y_0}<\delta,\qquad\norm{\lambda-\lambda_0}<\delta
+  \]
+  时，$\dot x=f(t,x,\lambda)$、$z(t_0)=z_0$ 有唯一解 $z(t,\lambda)$ 定义在 $[t_0,t_1]$ 上，且
+  \[
+    \norm{z(t,\lambda)-y(t,\lambda_0)}<\varepsilon,\qquad\forall t\in[t_0,t_1].
+  \]
+  \cite[Theorem 3.5]{khalilNonlinearSystems}
+\end{theorem}
+
+\begin{proof}[证明思路]
+  在标称解 $y(t,\lambda_0)$ 周围构造一根“管道”（tube）$U=\{(t,x):\norm{x-y(t,\lambda_0)}\le\varepsilon\}$。
+  $U$ 紧，故 $f$ 在 $U$ 上关于 $x$ Lipschitz；
+  由 $f$ 关于 $\lambda$ 连续，$\lambda$ 靠近 $\lambda_0$ 时 $\norm{f(t,x,\lambda)-f(t,x,\lambda_0)}$ 一致地小。
+  把参数扰动看成定理~\ref{thm:dependence-bound} 中的 $g$，并取足够小的 $\alpha$，
+  使 $\alpha\left(1+\frac1L\right)e^{L(t_1-t_0)}\le\varepsilon$，即可保证解在 $[t_0,t_1]$ 内不跑出管道。
+\end{proof}
+
+\begin{remark}[对滑模控制的意义]
+  定理~\ref{thm:continuous-dependence} 是“名义模型 + 有界扰动”能作为设计依据的数学理由：
+  只要闭环右端 Lipschitz，扰动导致的偏差可以被式~\eqref{eq:dependence-bound} 定量界定。
+  而滑模控制为了\textbf{消除}这个偏差，故意让右端不连续，于是跳出本章框架，进入第\ref{ch:bounded}章。
+\end{remark}
+
+\section{比较原理与有限时间到达估计}\label{sec:comparison-lemma}
+
+\begin{lemma}[比较引理]\label{lem:comparison}
+  考虑标量方程
+  \begin{equation}\label{eq:comparison-ode}
+    \dot u=f(t,u),\qquad u(t_0)=u_0,
+  \end{equation}
+  其中 $f(t,u)$ 关于 $t$ 连续、关于 $u$ 局部 Lipschitz（$t\ge0$，$u\in J\subset\RR$）。
+  设 $[t_0,T)$ 是~\eqref{eq:comparison-ode} 的解 $u(t)$ 的最大存在区间，且 $u(t)\in J$。
+  设 $v(t)$ 连续，其\textbf{上右 Dini 导数}满足
+  \begin{equation}
+    D^+v(t)\le f(t,v(t)),\qquad v(t_0)\le u_0,
+  \end{equation}
+  且 $v(t)\in J$（$t\in[t_0,T)$）。则 $v(t)\le u(t)$（$t\in[t_0,T)$）。
+  \cite[Lemma 3.4]{khalilNonlinearSystems}
+\end{lemma}
+
+\begin{definition}[上右 Dini 导数]
+  连续函数 $v(t)$ 的上右 Dini 导数定义为
+  \begin{equation}
+    D^+v(t)=\limsup_{h\to0^+}\frac{v(t+h)-v(t)}{h}.
+  \end{equation}
+\end{definition}
+
+\begin{remark}[为什么用 Dini 导数]
+  $v(t)$ 可能不可导（例如 $v(t)=|x(t)|$ 在 $x=0$ 处），但比较引理只要求 $D^+v$ 存在且满足微分不等式。
+  这使比较引理可以直接用于非光滑 Lyapunov 函数，是第\ref{ch:bounded}章 Dini 方法的前身。
+\end{remark}
+
+\begin{example}[用比较引理证明全局存在]\label{ex:comparison-bound}
+  考虑
+  \begin{equation}
+    \dot x=-(1+x^2)x,\qquad x(0)=a .
+  \end{equation}
+  取 $v(t)=x^2(t)$，则
+  \[
+    \dot v=2x\dot x=-2x^2-2x^4\le-2x^2=-2v,
+    \qquad v(0)=a^2 .
+  \]
+  令 $u(t)$ 解 $\dot u=-2u,\ u(0)=a^2$，即 $u(t)=a^2e^{-2t}$。
+  由比较引理，$x^2(t)\le a^2e^{-2t}$，故 $|x(t)|\le|a|e^{-t}$ 对一切 $t\ge0$ 成立。
+  于是解不会有限时间逃逸，且原点指数稳定。
+  \cite[Example 3.8]{khalilNonlinearSystems}
+\end{example}
+
+\begin{example}[滑模到达时间的有限时间估计]\label{ex:reaching-time}
+  设滑模变量满足
+  \begin{equation}\label{eq:reaching-condition}
+    s\dot s\le-\alpha|s|,\qquad \alpha>0 .
+  \end{equation}
+  取 $V=\frac12s^2$，则 $V\ge0$，且
+  \[
+    \dot V=s\dot s\le-\alpha|s|=-\alpha\sqrt{2V}.
+  \]
+  令 $w=\sqrt V$，则 $\dot w=\dfrac{\dot V}{2\sqrt V}\le-\dfrac{\alpha}{\sqrt2}$（$V>0$ 时），
+  故 $w(t)\le w(0)-\frac{\alpha}{\sqrt2}t$。
+  由此得到\textbf{有限时间到达}（reaching time）估计
+  \begin{equation}
+    t_r\le\frac{\sqrt2\,w(0)}{\alpha}=\frac{|s(0)|}{\alpha}.
+  \end{equation}
+  这与直接求解 $\dot s=-\alpha\sgn{s}$ 得到的到达时间 $|s(0)|/\alpha$ 一致。
+  若只有 $\dot V\le-\alpha V$，则只能得到指数收敛 $V(t)\le V(0)e^{-\alpha t}$，永远不能真正到达 $s=0$；
+  这正是线性滑模（一阶）与终端滑模（分数幂）的本质区别。
+\end{example}
+
+\begin{remark}[超螺旋算法的情形]
+  对 STA，Lyapunov 函数满足 $\dot V\le-k\sqrt V$，同理得到有限时间界 $t_r\le 2\sqrt{V(0)}/k$。
+  详见 STA 章节。
+\end{remark}
+
+\section{Lipschitz 检验表：控制中常见的右端}\label{sec:lipschitz-table}
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{c|c|c|c}
+    \hline
+    右端项 & 连续 & 局部 Lipschitz & 全局 Lipschitz \\
+    \hline
+    $\sgn{x}$ & 除 $0$ 外 & 否（$0$ 处） & 否 \\
+    $\sat(x)$ & 是 & 是 & 是（$L=1$）\\
+    $|x|$ & 是 & 是 & 是（$L=1$）\\
+    $x^{1/3}$ & 是 & 否（$0$ 处） & 否 \\
+    $\sqrt{|x|}$ & 是 & 否（$0$ 处） & 否 \\
+    $x^2$ & 是（$C^1$） & 是 & 否 \\
+    $-x^3$ & 是（$C^1$） & 是 & 否 \\
+    $\sin x$ & 是（$C^\infty$） & 是 & 是（$L=1$）\\
+    $A(t)x+g(t)$ & 分段连续 & 是 & 有限区间上是（$\norm{A(t)}\le a$）\\
+    \hline
+  \end{tabular}
+  \caption{常见右端项的 Lipschitz 性质}
+  \label{tab:lipschitz-table}
+\end{table}
+
+由表~\ref{tab:lipschitz-table} 可以直接读出几条工程结论：
+
+\begin{enumerate}
+  \item \textbf{理想开关（$\sgn$）}：不满足本章任何定理，必须用第\ref{ch:bounded}章的 Filippov 框架；
+  \item \textbf{饱和逼近（$\sat(s/\varepsilon)$）}：全局 Lipschitz，但 Lipschitz 常数 $L=1/\varepsilon$ 随 $\varepsilon\to0$ 趋于无穷。
+        这解释了滑模控制中“取小边界层 $\Rightarrow$ 高增益 $\Rightarrow$ 数值刚性”的权衡；
+  \item \textbf{终端滑模中的分数幂}（$|s|^\alpha\sgn s$，$0<\alpha<1$）：在 $s=0$ 处不 Lipschitz，
+        这是它能“有限时间到达”的代价；
+  \item \textbf{多项式非线性}（$x^2,x^3$）：局部 Lipschitz 但非全局，需用定理~\ref{thm:global-existence-compact} 配合 Lyapunov 函数证明全局存在。
+\end{enumerate}
+
+\begin{remark}[单边 Lipschitz：介于两者之间]
+  有些函数虽然不局部 Lipschitz，却满足\textbf{单边 Lipschitz}（one-sided Lipschitz）条件：存在 $L$ 使
+  \begin{equation}
+    \langle f(x)-f(y),\,x-y\rangle\le L\norm{x-y}^2 .
+  \end{equation}
+  可以证明：局部 Lipschitz $\Rightarrow$ 单边 Lipschitz，但反之不成立。
+  例如 $f(x)=-\sgn{x}$ 在 $\RR$ 上满足单边 Lipschitz（取 $L=0$），却不局部 Lipschitz。
+  单边 Lipschitz 条件足以保证唯一性，但不能保证存在性——
+  这从另一个角度说明了“存在性靠有界，唯一性靠（单边）Lipschitz”这一分工。
+\end{remark}
+
+\section{本章小结与通往非光滑理论的桥}\label{sec:lipschitz-summary}
+
+本章的三条存在唯一性定理构成一条递进的链：
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{p{3.6cm}|p{5.4cm}|p{6.2cm}}
+    \hline
+    定理 & 条件 & 结论 \\
+    \hline
+    定理~\ref{thm:local-existence} & 分段连续 + 局部 Lipschitz & 某个小区间 $[t_0,t_0+\delta]$ 上存在唯一解 \\
+    \hline
+    定理~\ref{thm:global-existence} & 分段连续 + 全局 Lipschitz & 任意有限区间 $[t_0,t_1]$ 上存在唯一解 \\
+    \hline
+    定理~\ref{thm:global-existence-compact} & 分段连续 + 局部 Lipschitz + 解留在紧集 & 所有 $t\ge t_0$ 上存在唯一解 \\
+    \hline
+  \end{tabular}
+  \caption{三条存在唯一性定理的递进关系}
+  \label{tab:existence-chain}
+\end{table}
+
+配套的两个估计工具是：
+\begin{itemize}
+  \item \textbf{Gronwall 不等式}（引理~\ref{lem:gronwall}）：给出解对初值/参数偏差的指数界（定理~\ref{thm:dependence-bound}）；
+  \item \textbf{比较引理}（引理~\ref{lem:comparison}）：把标量微分不等式转化为对解的界，并给出有限时间到达估计（例~\ref{ex:reaching-time}）。
+\end{itemize}
+
+为便于回查原书，表~\ref{tab:khalil-map} 给出本章各节与 Khalil 教材的对应关系。
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{p{5.6cm}|p{6.4cm}}
+    \hline
+    本章内容 & Khalil 原书位置 \\
+    \hline
+    \S\ref{sec:why-lipschitz} 滑模与控制不连续 & \cite[§14.1.2]{khalilNonlinearSystems} \\
+    \S\ref{sec:lipschitz-def} 系统描述、分段连续与 Lipschitz 定义 & \cite[§1.1]{khalilNonlinearControl2015}；\cite[§3.1]{khalilNonlinearSystems} \\
+    \S\ref{sec:lipschitz-constant} Jacobian 估计与算例 & \cite[Lemma 3.1--3.3, Example 3.1--3.2]{khalilNonlinearSystems} \\
+    \S\ref{sec:local-existence} 局部存在唯一性 & \cite[Theorem 3.1, Appendix C.1]{khalilNonlinearSystems}；\cite[Lemma 1.1]{khalilNonlinearControl2015} \\
+    \S\ref{sec:maximal-interval} 延拓与有限逃逸时间 & \cite[§3.1, Example 3.3]{khalilNonlinearSystems} \\
+    \S\ref{sec:global-existence} 全局存在唯一性 & \cite[Theorem 3.2--3.3]{khalilNonlinearSystems}；\cite[Lemma 1.2--1.3]{khalilNonlinearControl2015} \\
+    \S\ref{sec:continuous-dependence} 连续依赖 & \cite[Theorem 3.4--3.5]{khalilNonlinearSystems} \\
+    \S\ref{sec:comparison-lemma} 比较原理与有限时间估计 & \cite[Lemma 3.4, Example 3.8]{khalilNonlinearSystems} \\
+    \hline
+  \end{tabular}
+  \caption{本章与 Khalil 教材的对应关系}
+  \label{tab:khalil-map}
+\end{table}
+
+当控制律中出现 $\sgn$、bang-bang、终端滑模等不连续项时：
+\begin{enumerate}
+  \item 经典解可能\textbf{不存在}（式~\eqref{eq:minimal-sgn-dist}）；
+  \item 即使存在，也\textbf{不唯一}（例~\ref{ex:not-lipschitz}）；
+  \item 普通 Lie 导数 $\dot V=\nabla V^\top f$ 在切换面上无定义。
+\end{enumerate}
+下一章将把“右端连续”替换为“右端有界”，用 Carathéodory 解、Filippov 微分包含与 sample-and-hold 解重建解的存在性，
+并引入 Dini 导数、Clarke 广义梯度与集值 Lie 导数来重建 Lyapunov 稳定性理论。

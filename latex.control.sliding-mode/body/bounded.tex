@@ -1,309 +1,433 @@
-\chapter{非光滑控制系统：右端有界}
+\chapter{非光滑控制系统：右端有界}\label{ch:bounded}
 
-对于右端不连续的系统，目前仍然是学界的研究重点，主流有两种方法来刻画(\cite{poznyakVadimUtkinSliding2023})。
-一个是以\cite{filippovDifferentialEquationsDiscontinuous1988}为代表的Filippov方法，一个是Utkin的equivalent control (EC)方法。
-其余方法可以见短文\cite{utkinBriefCommentsDoubts2022}、杂志\cite{cortesDiscontinuousDynamicalSystems2008}等文献。
+第\ref{ch:lipschitz}章的全部结论都建立在“右端关于状态 Lipschitz 连续”之上。
+滑模控制、bang-bang 控制、继电器与终端滑模的右端却恰恰不满足这一条件：
+它们\textbf{连续但不 Lipschitz}（如 $|s|^\alpha\sgn s$，$0<\alpha<1$），
+或者\textbf{连连续都不满足}（如 $\sgn s$）。
+本章把假设从“Lipschitz”放宽为“有界”，代价是必须重新定义什么叫“解”，并重建整套 Lyapunov 工具。
 
-\section{不一定连续可微的解}
+对右端不连续的系统，目前主流有两类刻画方法 \cite{poznyakVadimUtkinSliding2023}：
+一个是以 \cite{filippovDifferentialEquationsDiscontinuous1988} 为代表的 Filippov 方法，
+另一个是 Utkin 的等效控制（equivalent control, EC）方法。
+其余方法可参见短文 \cite{utkinBriefCommentsDoubts2022}、综述 \cite{cortesDiscontinuousDynamicalSystems2008} 等文献。
+本章的非光滑 Lyapunov 部分主要参照 \cite{shevitzLyapunovStabilityTheory1994,郑凯_基于Filippov微分包含解的非平滑控制系统}。
 
+\section{不一定连续可微的解}\label{sec:nonsmooth-solutions}
 
+考虑如下动态系统
+\begin{equation}\label{eq:discontinuous-system}
+  \dot{x}(t)=\mathcal{X}(x(t)),\qquad x(t_0)=x_0,
+\end{equation}
+其中 $x\in\RR^d$，$\mathcal{X}:\RR^d\to\RR^d$ \textbf{不需要连续}。
+称连续可微的解 $t\mapsto x(t)$ 为\textbf{经典（classical）解}。
+显然，如果 $\mathcal{X}$ 连续，那么方程所有解都是 classical 的。
+不失一般性，取 $t_0=0$，且只考虑 $t>0$ 的情况。
 
-考虑如下的动态系统 \[
-\dot{x}(t)=\mathcal{X}(x(t))\ x(t_0)=x_0
-\tag{7}
-\] 其中\(x\in \mathbb{R}^d\)， \(d\)为一个正整数，
-并且\(\mathcal{X}:\mathbb{R}^d \to \mathbb{R}^d\) \textbf{不需要连续}。
-我们称\textbf{连续可微的解\(t \mapsto x(t)\)为经典（classical）解}。
-显然，如果\(\mathcal{X}\)连续，那么方程所有解都是classical的。
-不失一般性，我们认为\(t_0=0\)，并且只考虑\(t>0\)的情况。
+下面按“对右端的要求从强到弱”的顺序介绍四种解的概念，汇总见表~\ref{tab:solution-concepts-nonsmooth}。
 
+\subsection{Carathéodory 解：把逐点等式换成积分等式}
 
+\textbf{Carathéodory 解}是 classical 解的一般化。
+粗略地说，Carathéodory 解是满足微分方程~\eqref{eq:discontinuous-system} 的 Lebesgue 积分形式
+\begin{equation}\label{eq:caratheodory}
+  x(t)=x(t_0)+\int_{t_0}^t \mathcal{X}(x(s))\,\dd s,\qquad t>t_0
+\end{equation}
+的绝对连续曲线。
+通过使用积分形式~\eqref{eq:caratheodory}，Carathéodory 解不再要求方程解必须在所有时刻都沿着向量场的方向，
+也就是说，微分方程~\eqref{eq:discontinuous-system} 只须在\textbf{几乎处处}（a.e.）成立，
+不满足的点可以是一个 Lebesgue 零测集。
+这一放松足以处理“右端关于 $t$ 有跳跃”的情形，但\emph{不能}处理右端在状态空间中出现跳跃的情形
+（例如 $\sgn{s(x)}$ 在滑模面上跳变），因为后者在轨迹停留的那片区域上处处不满足方程。
 
-\textbf{Caratheodory解}是classical解的一般化。
-粗略地说，Caratheodory解是满足微分方程(7)的Lebesgue积分形式(8)的绝对连续曲线
-\[
-x(t)=x(t_0)+\int_{t_0}^t X(x(s)) ds,\quad t>t_0
-\tag{8}
-\]
-通过使用积分形式(8)，Caratheodory解不再要求方程解必须所有时间都沿着向量场的方向。
-也就是说，微分方程(7)need bot be satisfied on a set of measure zero.
+\subsection{Filippov 解：把右端换成集值映射}
 
-\textbf{Filippov解}使用微分包含式（differential
-inclusion）来替换微分方程(7)右侧 \[
-\dot{x}(t)\in \mathcal{F} (x(t))
-\] 其中\(\mathcal{F}:\mathbb{F}^d \to \mathfrak{B}(\mathbb{F}^d)\)，
-\(\mathfrak{B}(\mathbb{R}^d)\)为d维实数空间\(\mathbb{R}^d\)的所有子集的集合。
-Filippov解是绝对连续曲线。
-对于任意给定的状态\(x\)，Filippov解不只关注向量场在\(x\)处的值，
-Filippov解的思想是引入由向量场中\(x\)的领域决定的一组\textbf{方向集合}。
-文献中常常使用集值映射（set-value map），
-也就是说这种映射的值是一个集合，而不像标准的函数（映射）的值只有一个。
+\textbf{Filippov 解}使用微分包含（differential inclusion）替换微分方程的右端：
+\begin{equation}\label{eq:filippov-inclusion}
+  \dot{x}(t)\in \mathcal{F}(x(t)),
+\end{equation}
+其中 $\mathcal{F}:\RR^d\rightrightarrows\mathfrak{B}(\RR^d)$ 是集值映射，
+$\mathfrak{B}(\RR^d)$ 表示 $\RR^d$ 的全部子集构成的集合族。
+Filippov 解是绝对连续曲线。
+对于任意给定的状态 $x$，Filippov 解不只关注向量场在 $x$ 处的值，
+其思想是引入由向量场在 $x$ 的邻域上取值决定的一组\textbf{方向集合}。
+文献中常称之为\textbf{集值映射}（set-valued map）：
+这种映射的取值是一个集合，而不像普通函数那样只有一个值。
 
 \begin{quote}
-An ordinary differential inclusion says the derivative must lie in a
-specified set, which may also depend on the function and independent
-variable.
+An ordinary differential inclusion says the derivative must lie in a specified set, which may also depend on the function and independent variable.
 \end{quote}
 
-Caratheodory解和Filippov解都不能完全解决非连续动态系统的问题，
-围绕存在的问题由\textbf{Sample-and-hold}解以及其他的一些描述方法。
+\begin{definition}[Filippov 解]\label{def:filippov-solution}
+  \cite{filippovDifferentialEquationsDiscontinuous1988}
+  若函数 $x:[t_0,t_1]\to\RR^d$ 绝对连续，且对几乎所有的 $t\in[t_0,t_1]$ 满足
+  \begin{equation}\label{eq:filippov-set}
+    \dot{x}(t)\in\mathbb{K}[\mathcal{X}](x(t)),
+    \qquad
+    \mathbb{K}[\mathcal{X}](x)=\bigcap_{\delta>0}\ \bigcap_{\mu(\bar N)=0}
+      \overline{\mathrm{co}}\ \mathcal{X}\big(B(x,\delta)\setminus\bar N\big),
+  \end{equation}
+  则称 $x(t)$ 为~\eqref{eq:discontinuous-system} 的\textbf{Filippov 解}。
+  这里 $\bigcap_{\mu(\bar N)=0}$ 表示对所有 Lebesgue 零测集 $\bar N$ 取交集，
+  $\overline{\mathrm{co}}(S)$ 表示集合 $S$ 的凸闭包，$B(x,\delta)$ 表示以 $x$ 为心、$\delta$ 为半径的开球。
+\end{definition}
 
-\subsection{解的存在性和唯一性}\label{ux89e3ux7684ux5b58ux5728ux6027ux548cux552fux4e00ux6027}
+\begin{remark}[Filippov 构造的三个动作]
+  式~\eqref{eq:filippov-set} 依次做了三件事：
+  \begin{enumerate}
+    \item 挖掉零测集 $\bar N$（排除无关的奇异取值）；
+    \item 取 $\delta\to0$ 的邻域极限（只看 $x$ 附近的向量场）；
+    \item 取凸闭包（把极限点之间的“混合方向”全部纳入）。
+  \end{enumerate}
+  对 $\sgn{x}$，在 $x=0$ 处就得到 $\mathbb{K}[\mathrm{sgn}](0)=[-1,1]$，
+  它恰好对应“在原点两侧来回切换”的所有可能平均速度。
+\end{remark}
+
+\subsection{Sample-and-hold 解}
+
+Carathéodory 解和 Filippov 解都不能完全解决非连续动态系统的所有问题，
+围绕仍然存在的问题，还有 \textbf{sample-and-hold} 解以及其他描述方法：
+把控制器视为以采样周期 $T$ 保持常值的分段常值信号，闭环右端在每个采样区间内是连续的。
+这种解与数字实现直接对应，也是“抖振”分析的出发点之一 \cite{cortesDiscontinuousDynamicalSystems2008}。
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{@{}p{2.6cm}|p{4.2cm}|p{3.8cm}|p{3.5cm}@{}}
+    \hline
+    解的概念 & 对右端的要求 & 解的光滑性 & 唯一性 \\
+    \hline
+    classical & 关于 $x$ 连续；Lipschitz 保证唯一 & $C^1$（或分段 $C^1$） & Lipschitz $\Rightarrow$ 唯一 \\
+    \hline
+    Carathéodory & 关于 $x$ 连续，关于 $t$ 可测 & 绝对连续 & 需额外条件 \\
+    \hline
+    Filippov & 可测 + 局部本质有界 & 绝对连续 & \textbf{一般不保证} \\
+    \hline
+    sample-and-hold & 采样区间内连续 & 分段 $C^1$ & 采样区间内唯一 \\
+    \hline
+  \end{tabular}
+  \caption{四种解概念的对比 \cite{cortesDiscontinuousDynamicalSystems2008}}
+  \label{tab:solution-concepts-nonsmooth}
+\end{table}
+
+\section{解的存在性和唯一性}\label{sec:nonsmooth-existence}
 
 对于常微分方程而言，向量场如果只连续不能保证解的唯一性。
-我们说解的一个性质弱，表示不是所有解满足这一性质。
-我们说解的一个性质强，表示所有解满足这一性质。
-所以设计控制器的思路可以是
-
+我们说解的一个性质\textbf{弱}，表示不是所有解都满足这一性质；
+说一个性质\textbf{强}，表示所有解都满足这一性质。
+因此设计控制器的思路可以是
 \begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-
-\item
-  设计控制器并考虑控制器下的闭环系统
-\item
-  用一个集值映射将每一个状态映射到允许的输入产生的所有向量的集合，并将这个映射与控制系统关联起来，（原文表述如下）
+  \item 设计控制器并考虑控制器作用下的闭环系统；
+  \item 用一个集值映射把每个状态映射到允许输入产生的所有向量集合，并将这个映射与控制系统关联起来：
 \end{enumerate}
-
 \begin{quote}
-associate with the control system the set-valued map that assigns each
-state to the set of all vectors generated by the allowable inputs and
-consider the resulting differential inclusion.
+associate with the control system the set-valued map that assigns each state to the set of all vectors generated by the allowable inputs and consider the resulting differential inclusion.
 \end{quote}
 
-\subsection{classical
-解的存在性}\label{classical-ux89e3ux7684ux5b58ux5728ux6027}
+第\ref{ch:lipschitz}章已经证明：局部 Lipschitz 给出\textbf{存在 + 唯一}（定理~\ref{thm:local-existence}），
+全局 Lipschitz 或“局部 Lipschitz + 紧不变集”给出\textbf{全局存在 + 唯一}（定理~\ref{thm:global-existence}、\ref{thm:global-existence-compact}）。
+把条件放宽为“有界”后，结论变成：
+\begin{itemize}
+  \item \textbf{存在性}：只要求右端可测且局部本质有界（Filippov 情形）；
+  \item \textbf{唯一性}：一般\textbf{丢失}，需要在具体问题中额外验证（例如横截条件、单边 Lipschitz、单调性等）。
+\end{itemize}
+这正是“Filippov 解的所有性质中不包含唯一性”的真正含义：
+不是定理不够强，而是\textbf{不连续右端本质上就可以产生多个解}。
 
-考虑微分方程： \[
-\dot{x}(t)=X(x(t)),\quad x(0)=x_0
-\tag{10}
-\] 其中\(X:\mathbb{R}^d \to \mathbb{R}^d\)是一个向量场。
-如果\(0=X(x_e)\)，那么点\(x_e\in \mathbb{R}^d\)是(10)的一个平衡点。
-在\([0,t_1]\)上一个(10)的classical解是一个连续可微的映射\(x:[0,t_1]\to\mathbb{R}^d\)。
-不失一般性，我们只考虑从时间\(t_0=0\)开始的解。 如果解\(t\mapsto x(t)\)
-不能在时间上延申（extend），
-也就是说解不是定义域内更大的一个时间区间上的解的截断，
-那么称该解为最大解（maximal solution）。
-最大解的定义暗示了解的区间只能是\([0,T),T>0\)或\([0,\infty)\)。
+\begin{theorem}[Filippov 解的存在性]\label{thm:filippov-existence}
+  设 $f:\RR^d\times\RR\to\RR^d$ 可测，且满足局部本质有界（essentially locally bounded），
+  即对每个紧集 $K\subset\RR^d\times\RR$，存在常数 $M_K$ 使得 $\norm{f(x,t)}\le M_K$ 在 $K$ 上几乎处处成立。
+  则对每个初值 $(t_0,x_0)$，微分包含~\eqref{eq:filippov-inclusion} 至少存在一个局部 Filippov 解，
+  且该解可延拓到最大存在区间；但该解\textbf{一般不唯一}。
+  \cite{cortesDiscontinuousDynamicalSystems2008}
+\end{theorem}
 
-Peano's theorem 说明了连续的向量场可以保证classical解存在：
+\begin{remark}[“有界”这一假设有多弱]
+  它只要求 $f$ 在紧集上（几乎处处）有界，甚至不要求连续。
+  $\sgn$、$\sat$、bang-bang 控制全都满足。
+  对比第\ref{ch:lipschitz}章：那里要求“斜率有界”，这里只要求“幅值有界”。
+  假设越弱，解越多，理论工具也越重。
+\end{remark}
 
+\section{经典解：存在性、唯一性与反例}\label{sec:classical-examples}
+
+本节回顾第\ref{ch:lipschitz}章的结论在“非光滑向量场”上的具体表现，
+说明为什么必须引入新的解概念。
+
+考虑微分方程
+\begin{equation}\label{eq:classical-system}
+  \dot{x}(t)=\mathcal{X}(x(t)),\qquad x(0)=x_0,
+\end{equation}
+其中 $\mathcal{X}:\RR^d\to\RR^d$ 是一个向量场。
+如果 $\mathcal{X}(x_e)=0$，那么点 $x_e\in\RR^d$ 是~\eqref{eq:classical-system} 的一个平衡点。
+在 $[0,t_1]$ 上，~\eqref{eq:classical-system} 的一个 classical 解是一个连续可微映射 $x:[0,t_1]\to\RR^d$。
+如果解 $t\mapsto x(t)$ 不能在时间上延伸（extend），
+也就是说它不是定义在更大时间区间上的解的截断，那么称该解为\textbf{最大解}（maximal solution）。
+最大解的定义暗示了解的区间只能是 $[0,T)$（$T>0$）或 $[0,\infty)$。
+
+\subsection{经典解的存在性：Peano 定理}
+
+Peano 定理说明连续的向量场可以保证 classical 解存在：
 \begin{quote}
-(Proposition 1) 令\(X:\mathbb{R}^d\to \mathbb{R}^d\)是连续向量场。
-于是，对于所有\(x_0\in\mathbb{R}^d\)，
-\textbf{存在}一个(10)的classical解，该解满足\(x(0)=x_0\)
+（Proposition 1）令 $\mathcal{X}:\RR^d\to\RR^d$ 是连续向量场。
+于是对任意 $x_0\in\RR^d$，\textbf{存在}一个~\eqref{eq:classical-system} 的 classical 解，满足 $x(0)=x_0$。
 \end{quote}
+注意：Peano 定理只给存在性，不给唯一性。连续性是“存在”的充分条件，但不是“唯一”的充分条件。
 
-\subsection{classical
-解的唯一性}\label{classical-ux89e3ux7684ux552fux4e00ux6027}
+\subsection{经典解的唯一性：单边 Lipschitz 条件}
 
 \begin{quote}
-(Proposition 2) 令\(x:\mathbb{R}^d\to\mathbb{R}^d\)连续，
-假设对于所有的\(x\in\mathbb{R}^d\)，
-存在一个\(\epsilon>0\)使得\(X\)是在状态\(x\)的\(\epsilon\)领域\(B(x,\epsilon)\)上单侧Lipschitz连续。
-然后，对于所有\(x_0\in \mathbb{R}^d\)，存在一个起始于\(x(0)=x_0\)的(10)的\textbf{唯一的}classical
-解
+（Proposition 2）令 $\mathcal{X}:\RR^d\to\RR^d$ 连续，假设对所有的 $x\in\RR^d$，
+存在 $\epsilon>0$ 使得 $\mathcal{X}$ 在 $x$ 的 $\epsilon$ 邻域 $B(x,\epsilon)$ 上单边 Lipschitz 连续。
+则对任意 $x_0\in\RR^d$，存在起始于 $x(0)=x_0$ 的~\eqref{eq:classical-system} 的\textbf{唯一} classical 解。
 \end{quote}
+单边 Lipschitz 条件比第\ref{ch:lipschitz}章的双边 Lipschitz 条件弱（见表~\ref{tab:lipschitz-table} 后的注），
+但 Proposition 2 仍然要求 $\mathcal{X}$ \textbf{连续}，因此 $\sgn$ 这类跳跃型不连续仍被排除在外。
+值得强调的是：$\sgn$ 本身是单边 Lipschitz 的（取 $L=0$ 即可），
+这说明\textbf{单边 Lipschitz 足以给唯一性，却不足以保证存在性}——
+存在性靠“右端有界/连续”，唯一性靠“（单边）Lipschitz”。
 
-\subsection{classical
-解存在性和唯一性示例}\label{classical-ux89e3ux5b58ux5728ux6027ux548cux552fux4e00ux6027ux793aux4f8b}
+\subsection{反例：不连续时经典解可能不存在}
 
-下面的例子说明如果向量场不连续，那么(10)可能不存在经典解
-
+下面的例子说明如果向量场不连续，那么~\eqref{eq:classical-system} 可能不存在经典解：
 \begin{quote}
-考虑如下向量场：\(X:\mathbb{R}\to\mathbb{R}\) \[
-X(x)=\begin{cases}
--1, & x>0\\
-1 , & x\leq 0
+考虑向量场 $\mathcal{X}:\RR\to\RR$，
+\[
+\mathcal{X}(x)=\begin{cases}
+-1, & x>0,\\
+1,  & x\leq0 .
 \end{cases}
-\] 显然在\(x=0\)处该函数不连续。
-假设存在一个连续可微的解满足\(\dot{x}(t)=X(x(t))\)和\(x(0)=0\)。
-然后\(\dot{x}(0)=X(x(0))=X(0)=1\)，
-于是，对于所有的充分小的时间\(t\)，\(x(t)>0\)
-并且\(\dot{x}(t)=X(x(t))=-1\)， 这与\(t\mapsto \dot{x}(t)\)连续矛盾。
-所以，不存在classical 解。
+\]
+显然在 $x=0$ 处该函数不连续。
+假设存在连续可微解满足 $\dot{x}(t)=\mathcal{X}(x(t))$ 与 $x(0)=0$，
+则 $\dot{x}(0)=\mathcal{X}(x(0))=\mathcal{X}(0)=1$，
+于是对充分小的时间 $t$，$x(t)>0$ 且 $\dot{x}(t)=\mathcal{X}(x(t))=-1$，
+这与 $t\mapsto\dot{x}(t)$ 连续矛盾。因此不存在 classical 解。
 \end{quote}
 
-下面的例子说明如果向量场不连续，那么(10)也可能存在经典解。
+\subsection{反例：不连续时经典解仍可能存在}
 
+下例说明不连续向量场也可能有经典解：
 \begin{quote}
-考虑向量场\(X:\mathbb{R}\to\mathbb{R}\) \[
-X(x)=-\mathrm{sign}(x)=\begin{cases}
+考虑向量场 $\mathcal{X}:\RR\to\RR$，
+\[
+\mathcal{X}(x)=-\operatorname{sign}(x)=\begin{cases}
 -1, & x>0,\\
 0,   & x=0,\\
 1,   & x<0,
 \end{cases}
-\] 唯一最大解为： \[
+\]
+其唯一最大解为
+\[
 \begin{aligned}
-&x(t)=x(0)-t, 
-t\in [0,x(0)) 
-&\textrm{if}
-\ x(0)>0, \\
-&x(t)=0,  t\in [0,\infty)
-&\textrm{if}\ x(0)=0 
-\\
-&x(t)=x(0)+t,  t\in [0,-x(0))
-&\textrm{if}\ 
-x(0)<0,
+&x(t)=x(0)-t,\quad t\in[0,x(0)), &&\text{若 } x(0)>0,\\
+&x(t)=0,\quad t\in[0,\infty), &&\text{若 } x(0)=0,\\
+&x(t)=x(0)+t,\quad t\in[0,-x(0)), &&\text{若 } x(0)<0 .
 \end{aligned}
 \]
 \end{quote}
+这个例子说明：$x=0$ 处的取值 $\mathcal{X}(0)=0$ 恰好与“到达后停住”的物理解一致，
+因此解在几乎处处意义下成立。
+但只要在方程中加入一个非零扰动（例~\eqref{eq:minimal-sgn-dist}），这个巧合就被破坏，经典解随之消失。
 
-下面例子说明连续但是不是单侧Lipschitz连续的向量场可能有多个classical解
+\subsection{反例：连续但非单边 Lipschitz 时解可能不唯一}
 
 \begin{quote}
-考虑向量场\(X:\mathbb{R}\to\mathbb{R}\) \[
-X(s)=\sqrt{|x|}
-\] 这个向量场处处连续，并在\(\mathbb{R}/\{0\}\)局部Lipschitz连续，
-但是在零处不局部连续，在零的领域也不单侧Lipschitz连续。
-从\(x(0)=0\)开始，该动态系统有许多最大解，具体而言为：
-对所有\(a>0\)，\(x_a:[0,\infty)\to \mathbb{R}\)，表达式为： \[
+考虑向量场 $\mathcal{X}:\RR\to\RR$，$\mathcal{X}(x)=\sqrt{|x|}$。
+该向量场处处连续，并在 $\RR\setminus\{0\}$ 上局部 Lipschitz 连续，
+但在 $0$ 处不局部 Lipschitz，在 $0$ 的邻域也不单边 Lipschitz。
+从 $x(0)=0$ 出发，该动态系统有许多最大解：
+对每个 $a\ge0$，定义
+\[
 x_a(t)=\begin{cases}
-0, & 0\leq t \leq a,\\
-(t-a)^2/4, & t\geq a
+0, & 0\le t\le a,\\
+(t-a)^2/4, & t\ge a .
 \end{cases}
 \]
 \end{quote}
 
-下面例子说明连续但是不是单侧Lipschitz连续的向量场只有一个classical解
-\textgreater{} 考虑向量场\(X:\mathbb{R}\to\mathbb{R}\) \[
-X(s)=\begin{cases}
--x \mathrm{log} x, & x>0\\
-0,                            & x=0,\\
-x \mathrm{log}(-x),& x<0,
+\subsection{反例：连续但非单边 Lipschitz 时解仍唯一}
+
+\begin{quote}
+考虑向量场
+\[
+\mathcal{X}(x)=\begin{cases}
+-x\log x, & x>0,\\
+0, & x=0,\\
+x\log(-x), & x<0,
 \end{cases}
-\] \textgreater{} 唯一最大解为： \[
+\]
+其唯一最大解为
+\[
 \begin{aligned}
-    &x(t)=-\exp(\log (-x(0)) \exp(t)), 
-    &\textrm{if}\ x(0)<0 \\
-    &x(t)=0, 
-    &\textrm{if}\ x(0)=0 \\
-    &x(t)=\exp(\log x(0) \exp(-t)), 
-    &\textrm{if}\ x(0)>0
+&x(t)=-\exp\big(\log(-x(0))\,e^{t}\big), &&\text{若 } x(0)<0,\\
+&x(t)=0, &&\text{若 } x(0)=0,\\
+&x(t)=\exp\big(\log x(0)\,e^{-t}\big), &&\text{若 } x(0)>0 .
 \end{aligned}
 \]
+\end{quote}
+这两个例子（$\sqrt{|x|}$ 与 $x\log|x|$）说明：
+“连续 + 非 Lipschitz”既不保证唯一，也不保证不唯一，必须逐个问题分析。
+这正是 Filippov 框架只承诺存在性、不承诺唯一性的原因。
 
-\section{非光滑Lyapunov 方法（Dini导数）}
+\section{非光滑 Lyapunov 方法（Dini 导数）}\label{sec:dini}
 
-使用Dini导数表示的非光滑系统李亚普诺夫方法见书\cite{roucheStabilityTheoryLiapunov1977}。
-Dini导数可以用于计算连续但是不可导的函数的导数，因此常用于非光滑系统的分析。
-Dini导数的定义为：
+使用 Dini 导数表示的非光滑系统 Lyapunov 方法见 \cite{roucheStabilityTheoryLiapunov1977}。
+Dini 导数可以用于计算连续但不可导函数的导数，因此常用于非光滑系统的分析。
 
-\begin{definition}[Dini导数]
-  \citefrom{\cite[p 659 in proof of theorem 3.4]{khalilNonlinearSystems}}
-  The \textbf{upper Dini derivative}, which is also called an upper right-hand derivative, of continuous function  is defined by 
+Dini 导数的定义见 \cite[p.~659, Theorem 3.4 的证明]{khalilNonlinearSystems}。
+
+\begin{definition}[Dini 导数]
+  连续函数 $v(t)$ 的\textbf{上右 Dini 导数}（upper right-hand derivative）定义为
   \begin{equation}
-    D^+ v(t) = \limsup_{h\to 0^+} \frac{v(t+h)-v(t)}{h}
+    D^+ v(t)=\limsup_{h\to0^+}\frac{v(t+h)-v(t)}{h}.
   \end{equation}
-  where $\limsup_{n\to\infty}$ (the limit superior).
 \end{definition}
-这里的$\limsup$是上极限，形象地理解是，函数$y=\sin(x)$在无穷处是没有极限的，但是在无穷远处是有上极限$\limsup_{x\to\infty} \sin(x)=1$和下极限$\liminf_{x\to\infty} \sin(x)=-1$的。
 
-\begin{lemma}[非光滑版本的 LaSalle 不变集原理]
-  \citefrom{最早出自\cite[Theorem 2]{lasalleStabilityTheoryOrdinary1968}
-  也见于\cite[p 243]{roucheStabilityTheoryLiapunov1977}}
-  % yuSecondorderConsensusMultiagent2017
-  Let $x(t)$ be a solution of $\dot{x} = f(x)$ with $x(0) = x_0 \in \RR^k$, where \tR{$f: U \to \RR^k$ is continuous} with an open subset $U$ of $R^k$, and let $V: U \to R$ be a locally Lipschitz function such that $D^+V(x(t)) ≤ 0$, where $D^+$ denotes the upper Dini derivative. 
-  Then, with denoting the positive limit set as $\lambda^+(x_0)$, $\lambda^+(x_0)\cup U$ is contained in the union of all solutions that remain in $S = \{x \in U : D^+V(x(t)) = 0\}$.
+这里的 $\limsup$ 是上极限。形象地理解：函数 $y=\sin x$ 在无穷远处没有极限，但有
+\[
+  \limsup_{x\to\infty}\sin x=1,\qquad \liminf_{x\to\infty}\sin x=-1 .
+\]
+
+该结论最早出自 Lasalle 的 \cite[Theorem 2]{lasalleStabilityTheoryOrdinary1968}。\par
+Rouche 与 Lasalle 的著作 \cite[p.~243]{roucheStabilityTheoryLiapunov1977} 也收录了这一结果。
+
+\begin{lemma}[非光滑版本的 LaSalle 不变集原理]\label{lem:nonsmooth-lasalle}
+  设 $x(t)$ 是 $\dot{x}=f(x)$、$x(0)=x_0\in U$ 的解，其中 $f:U\to\RR^k$ 连续，$U\subset\RR^k$ 为开集；
+  设 $V:U\to\RR$ 局部 Lipschitz，且沿解满足 $D^+V(x(t))\le0$。
+  记 $S=\{x\in U: D^+V(x(t))=0\}$，$\lambda^+(x_0)$ 为 $x_0$ 的正极限集。
+  则 $\lambda^+(x_0)$ 包含于 $S$ 中的最大不变集的闭包内。
 \end{lemma}
 
+\begin{remark}[Dini 方法的位置]
+  Dini 导数只依赖 $v(t)$ 本身，不需要 Filippov 微分包含或 Clarke 广义梯度，
+  是工程论文中最常用的非光滑 Lyapunov 工具（见第\ref{ch:case}章对“为什么教材偏爱 Dini”的讨论）。
+  但它要求 $V$ 沿轨迹的复合函数 $V(x(t))$ 连续，且需要单独验证 $D^+V\le0$。
+\end{remark}
 
-\section{非光滑Lyapunov 方法（chark梯度）}
+\section{非光滑 Lyapunov 方法（Clarke 广义梯度）}\label{sec:clarke}
 
-
-本节参照\parencite{shevitzLyapunovStabilityTheory1994,郑凯_基于Filippov微分包含解的非平滑控制系统}，介绍非光滑微分方程Filippov解的定义及其稳定性的基本定理。
+本节参照 Shevitz 与 Paden 的工作 \cite{shevitzLyapunovStabilityTheory1994}，
+以及郑凯的博士论文 \cite{郑凯_基于Filippov微分包含解的非平滑控制系统}，
+介绍 Filippov 意义下解的定义及其稳定性的基本定理。
 
 考虑向量微分方程
-\begin{equation}\label{eq:nonsmooth diff}
-    \dot{x}=f(x,t)
+\begin{equation}\label{eq:nonsmooth-diff}
+  \dot{x}=f(x,t),
 \end{equation}
-其中函数 $f:\RR^p \times \RR \to \RR^p$ 是可测的（measurable），并且满足局部本性有界（essentially locally bounded）。
-首先定义该方程的解。
+其中 $f:\RR^p\times\RR\to\RR^p$ 可测，并且局部本质有界（essentially locally bounded）。
+其 Filippov 解的定义见定义~\ref{def:filippov-solution}。
 
-\begin{definition}
-    （Filippov解，\cite{filippovDifferentialEquationsDiscontinuous1988}）
-    如果一个关于时间$t$的函数$x(t)$在$[t_0,t_1]$上绝对连续，并且对于几乎（almost）所有$t\in[t_0,t_1]$满足
-    \[
-        \dot{x}\in \mathbb{K}[f](x,t),
-        \quad 
-        \mathbb{K}[f](x,t)=\bigcap_{\delta>0} \bigcap_{\mu(\bar{N})=0} \overline{co} f(B(x,\delta)\backslash \bar{N},t)
-    \]
-    那么称该函数$x(t)$为\eqref{eq:nonsmooth diff}的解。
-    这里，
-    $\bigcap_{\mu(\bar{N})=0}$表示所有Lebesgue测度为0的集合$\bar{N}$的交集，
-    $\overline{co}(X)$表示$X$的凸闭包，$B(x,\delta)$表示以$x$为球心，$\delta$为半径的开球。
+\subsection{广义方向导数与广义梯度}
+
+广义梯度和广义微分都是针对 Lipschitz 连续函数定义的，Lipschitz 连续是连续的一种特殊情况。
+
+\begin{definition}[广义方向导数]\label{def:generalized-directional}
+  \cite{clarkeOptimizationNonsmoothAnalysis1990}
+  若函数 $V:\Omega\to\RR$ 在 $x$ 附近 Lipschitz 连续，$v\in\Omega$，
+  则 $V$ 在 $x$ 处沿 $v$ 方向的\textbf{广义方向导数}为
+  \begin{equation}
+    V^o(x;v)=\limsup_{y\to x,\ h\downarrow0}\frac{V(y+hv)-V(y)}{h},
+  \end{equation}
+  其中 $y\in\Omega$。
 \end{definition}
 
-\subsubsection{广义梯度与广义微分}
+这里的广义方向导数在 $x$ 处是关于 $v$ 的正齐次可加函数，可作为支持函数确定一个凸集
+\cite{clarkeOptimizationNonsmoothAnalysis1990}，我们将这一凸集定义为 $V$ 在 $x$ 处的广义梯度。
 
-广义梯度和广义微分都是针对Lipschitz连续函数的，Lipschitz连续是连续的一种特殊情况。
-
-\begin{definition}[广义方向导数]\cite{clarkeOptimizationNonsmoothAnalysis1990}
-    若函数$V:\Omega\to\RR$在$x$附近是Lipschitz连续的，向量$v\in\Omega$，则函数$V$在$x$处沿$v$方向的广义方向导数为
-    \begin{equation}
-        V^o(x;v)=
-        \limsup_{y\to x ,h\downarrow 0} 
-        \frac{V(y+hv)-V(y)}{h}
-    \end{equation}
-    其中$y\in\Omega$.
-\end{definition}
-这里的广义方向导数在$x$处是关于$v$的正齐次可加函数，可作为支持函数确定一凸集\cite{clarkeOptimizationNonsmoothAnalysis1990}，我们将这一凸集定义为函数$f(x)$在$x$处的广义梯度。
-
-\begin{definition}[广义梯度]\cite{clarkeOptimizationNonsmoothAnalysis1990}
-    若函数$V:\Omega\to\RR$在$x$附近是Lipschitz连续的，则函数$f$在$x$处的广义梯度定义为
-    \begin{equation}
-        \partial V(x)=
-        \{\zeta \in\RR^n \big|  
-        V^o(x;v)\geq \langle\zeta,v\rangle, \forall v\in\Omega\}
-    \end{equation}
+\begin{definition}[广义梯度]\label{def:generalized-gradient}
+  \cite{clarkeOptimizationNonsmoothAnalysis1990}
+  若函数 $V:\Omega\to\RR$ 在 $x$ 附近 Lipschitz 连续，则 $V$ 在 $x$ 处的\textbf{广义梯度}定义为
+  \begin{equation}
+    \partial V(x)=\big\{\zeta\in\RR^n:\ V^o(x;v)\ge\langle\zeta,v\rangle,\ \forall v\in\Omega\big\}.
+  \end{equation}
 \end{definition}
 
-\begin{theorem}[广义梯度的计算]
-    \cite{clarkeOptimizationNonsmoothAnalysis1990}
-    \label{thm:general gradient}
-    对于一个局部Lipschitz连续的函数$V:\RR^p\times \RR\to \RR$，
-    定义
-    \begin{equation}
-        \label{eq:general gradient}
-        \partial V(x,t)=\overline{co}\{\lim_{y\to x}\nabla V(x)|
-        y\notin S,
-        y\notin \Omega_f\}
-    \end{equation}
-    为函数$V$在$(x,t)$处的广义梯度，
-    其中，$S\subset \RR^n$, $\Omega_f\in\Omega$为$x$附近所有不可微点的集合。
+\begin{theorem}[广义梯度的计算]\label{thm:general-gradient}
+  \cite{clarkeOptimizationNonsmoothAnalysis1990}
+  设 $V:\RR^p\times\RR\to\RR$ 局部 Lipschitz，则
+  \begin{equation}\label{eq:general-gradient}
+    \partial V(x,t)=\overline{\mathrm{co}}\Big\{\lim_{y\to x}\nabla V(y):\ y\notin S,\ y\notin\Omega_f\Big\}
+  \end{equation}
+  是 $V$ 在 $(x,t)$ 处的广义梯度，
+  其中 $S\subset\RR^n$ 为任意零测集，$\Omega_f\subset\Omega$ 为 $x$ 附近所有不可微点的集合。
 \end{theorem}
-定理\ref{thm:general gradient}可以看做是广义梯度的等价定义，除去所有梯度不存在的点，然后利用凸集来构造新的梯度集合。
-若函数在$x$处本身就是可微的，则由梯度定义可知式\eqref{eq:general gradient}中的极限存在且唯一，这说明广义梯度也适用于平滑函数。
-% 这一点与式(2-5)给出的KF[f](xt)的定义类似。
 
-\begin{theorem}
-    \cite{shevitzLyapunovStabilityTheory1994}
-    令向量函数$x(t)$在区间$[t_0,t_1]$上是方程\eqref{eq:nonsmooth diff}的Filippov解，Lipschitz函数$V:\RR^n\times \RR \to \RR$是正则的，则函数$V(x(t),t)$几乎处处存在，并满足 
-    \begin{equation}
-        \frac{\dd }{\dd t} V(x(t),t)\overset{a.e.}{\in} \dot{\tilde{V}}(x,t)\triangleq
-        \bigcap_{\xi \in \partial V}
-        \xi^T \begin{bmatrix}
-            \mathbb{K}[f](x,t)
-            \\1
-        \end{bmatrix}
-    \end{equation}
+定理~\ref{thm:general-gradient} 可以看作广义梯度的等价定义：
+除去所有梯度不存在的点，然后取梯度极限的凸闭包。
+若 $V$ 在 $x$ 处本身可微，则式~\eqref{eq:general-gradient} 中的极限存在且唯一，
+这说明广义梯度也适用于光滑函数。
+这一点与式~\eqref{eq:filippov-set} 中 $\mathbb{K}[f]$ 的定义完全平行。
+
+\subsection{集值 Lie 导数}
+
+\begin{theorem}[集值 Lie 导数]\label{thm:set-valued-lie}
+  \cite{shevitzLyapunovStabilityTheory1994}
+  令向量函数 $x(t)$ 在区间 $[t_0,t_1]$ 上是方程~\eqref{eq:nonsmooth-diff} 的 Filippov 解，
+  $V:\RR^n\times\RR\to\RR$ 是 Lipschitz 且正则的函数。
+  则复合函数 $V(x(t),t)$ 几乎处处可导，并满足
+  \begin{equation}\label{eq:set-valued-lie}
+    \frac{\dd}{\dd t}V(x(t),t)\overset{\text{a.e.}}{\in}
+    \dot{\tilde{V}}(x,t)\triangleq
+    \bigcap_{\xi\in\partial V}\xi^\top
+    \begin{bmatrix}
+      \mathbb{K}[f](x,t)\\1
+    \end{bmatrix}.
+  \end{equation}
 \end{theorem}
-此处，如果对于所有的$\psi$存在usual one-sided directional 导数$f'(x;\psi)$, 并且$f'(x;\psi)=f^o(x;\psi)$，其中
+
+此处，如果对所有的 $\psi$ 存在通常的单侧方向导数 $f'(x;\psi)$，并且 $f'(x;\psi)=f^o(x;\psi)$，其中
 \begin{equation*}
-    f^o(x;\psi)=\lim_{y\to x,t\downarrow 0 }\sup \frac{f(y+t\psi)-y}{t}
+  f^o(x;\psi)=\limsup_{y\to x,\ t\downarrow0}\frac{f(y+t\psi)-f(y)}{t},
 \end{equation*}
-那么称$f(x,t):\RR^p \times \RR\to \RR$为正则函数（regular function）。
+那么称 $f(x,t):\RR^p\times\RR\to\RR$ 为\textbf{正则函数}（regular function）。
 
-\begin{theorem}[非光滑系统LaSalle定理]\label{thm:LaSalle}
-    \cite{shevitzLyapunovStabilityTheory1994} \textbf{Theorem} 3.2
-    % Let $\Omega$ be a compact set such that every Filipov solution to the autonomous system $\dot{x} = f(x)$, 
-    % $x(0) = x(t_0)$ starting in $\Omega$ is unique and remains in $\Omega$ for all $t \geq  t_0$. 
-    % Let $V: \Omega \to R$ be a time independent regular function such that $v\leq 0$ for all $v\in\dot{\tilde{V}}$ 
-    % (if $\dot{\tilde{V}}$ is the empty set then this is trivially satisfied). 
-    % Define $S = \{x \in \Omega | 0 \in \dot{\tilde{V}}\}$. 
-    % Then every trajectory in $\Omega$ converges to the largest invariant set, $M$, in the closure of $S$.
-    设 $\Omega$ 是一个紧集，使得对于所有从 $\Omega$ 出发的自治系统 $\dot{x} = f(x)$，$x(0) = x(t_0)$ 的每一个 Filippov 解都是唯一的，并且在所有 $t \geq t_0$ 的时间内都保持在 $\Omega$ 中。
-    设 $V: \Omega \to R$ 是一个与时间无关的正则函数，使得对于所有 $v \in \dot{\tilde{V}}$，都有 $v \leq 0$（如果 $\dot{\tilde{V}}$ 是空集，则这一条件自然满足）。
-    定义 $S = \{x \in \Omega | 0 \in \dot{\tilde{V}}\}$。
-    那么，$\Omega$ 中的每一条轨迹都会收敛到 $S$ 的闭包中的最大不变集 $M$。
+\begin{remark}[交集而不是并集]
+  式~\eqref{eq:set-valued-lie} 的关键是取\textbf{交集}：
+  它要求对每一个合法次梯度 $\xi$，都存在某个合法 Filippov 速度 $v$ 使内积落在集合中，
+  从而保证稳定性结论对所有可能的“次梯度--速度”搭配一致成立。
+  若改成并集，则会把“某个次梯度与某个速度搭配使 $V$ 增加”的情形也算进来，
+  导致错误结论。第\ref{ch:case}章会用 $V=|x|$、$\dot x=-\sgn{x}$ 的一维算例说明这一点。
+\end{remark}
+
+\begin{theorem}[非光滑系统 LaSalle 定理]\label{thm:LaSalle}
+  \cite[Theorem 3.2]{shevitzLyapunovStabilityTheory1994}
+  设 $\Omega$ 是紧集，使得从 $\Omega$ 出发的自治系统 $\dot{x}=f(x)$、$x(0)=x(t_0)$ 的每个 Filippov 解唯一，且对所有 $t\ge t_0$ 保持在 $\Omega$ 中。
+  设 $V:\Omega\to\RR$ 是与时间无关的正则函数，使得对所有 $v\in\dot{\tilde{V}}$ 都有 $v\le0$
+  （若 $\dot{\tilde{V}}$ 为空集，则此条件自然满足）。
+  定义 $S=\{x\in\Omega: 0\in\dot{\tilde{V}}\}$。
+  则 $\Omega$ 中的每条轨迹都收敛到 $S$ 的闭包中的最大不变集 $M$。
 \end{theorem}
 
+\section{本章小结}\label{sec:bounded-summary}
+
+把第\ref{ch:lipschitz}章与本章放在一起，可以得到一张“假设--工具--结论”的对照表：
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{p{3.4cm}|p{4.4cm}|p{3.4cm}|p{3.2cm}}
+    \hline
+    右端的正则性 & 解的概念 & Lyapunov 工具 & 稳定性结论 \\
+    \hline
+    Lipschitz 连续 & classical（$C^1$） & 普通 Lie 导数 $\nabla V^\top f$ & 经典 Lyapunov / LaSalle \\
+    \hline
+    连续、可微 & classical & 普通 Lie 导数 & 同上 \\
+    \hline
+    连续、非 Lipschitz & Carathéodory / Filippov & Dini 上导数 & 非光滑 LaSalle \\
+    \hline
+    不连续、有界 & Filippov & Clarke 广义梯度 + 集值 Lie 导数 & Shevitz--Paden LaSalle \\
+    \hline
+    不连续、采样实现 & sample-and-hold & 采样区间内经典工具 & 离散化稳定性 \\
+    \hline
+  \end{tabular}
+  \caption{右端正则性、解概念与 Lyapunov 工具的对应关系}
+  \label{tab:regularity-tool-map}
+\end{table}
+
+三条主线可以概括为：
+\begin{enumerate}
+  \item \textbf{存在性}靠“有界”（Filippov 存在性定理~\ref{thm:filippov-existence}）；
+  \item \textbf{唯一性}靠“Lipschitz / 单边 Lipschitz”（第\ref{ch:lipschitz}章）；
+  \item \textbf{稳定性}靠“广义梯度 / 集值 Lie 导数 / Dini 导数”（本章第~\ref{sec:dini}、\ref{sec:clarke}~节）。
+\end{enumerate}
+下一章用一阶 bang-bang 系统把这三条主线串起来，并辨析 Utkin 等效控制与 Filippov 微分包含各自的适用边界。
