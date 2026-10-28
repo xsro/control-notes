@@ -35,8 +35,9 @@
 
 
  \usepackage[backend=biber, style=apa,url=false]{biblatex} % 指定后端为biber，引用样式为APA格式
-%\addbibresource{main_biber.bib} 
- \addbibresource{biblatex.bib} 
+% tex2ast extract-bib -i main.tex -o main_biber.bib --bib biblatex.bib
+\addbibresource{main_biber.bib} 
+%  \addbibresource{biblatex.bib} 
 
 \newcommand{\citefrom}[1]{\textcolor{gray}{#1}\\}
 \newcommand\tR{\textcolor{red}}
@@ -56,10 +57,9 @@
 	\include{body/pre}
 	\include{body/motivation}
 	\include{body/nonlinear}
-    \include{body/continuous}
     \include{body/bounded}
 	
-	\include{body/sta}
+	% \include{body/sta}
 	
 	\printbibliography % 打印参考文献列表
 \end{document}
