@@ -1,240 +1,460 @@
-\chapter{案例：一阶系统 bang-bang 控制}\label{ch:case}
+\chapter{案例：一阶 bang-bang 系统与等效控制}\label{ch:case}
 
-本章以一阶系统 $\dot x=-\mathrm{sgn}(x) + \delta$ 为案例，围绕 \textbf{Utkin 等效控制与 Filippov 微分包含、滑模控制中非光滑分析工具链} 等话题，试图解释为什么非光滑需要额外引入很多概念。
-前两章已经给出“右端 Lipschitz”（第\ref{ch:lipschitz}章）与“右端有界”（第\ref{ch:bounded}章）两套理论，本章把它们落到一个可以手算的例子上：
-凡是本章用到的严格定义与定理（Filippov 集值化、Clarke 广义梯度、集值 Lie 导数、非光滑 LaSalle），都已在第\ref{ch:bounded}章给出，这里不再重复，只讨论“为什么需要”以及“各自成立的条件”。
-
+前两章给出两套理论：右端 Lipschitz 时使用经典解（第\ref{ch:lipschitz}章），右端有界时使用 Filippov 解与集值工具（第\ref{ch:bounded}章）。本章把它们落到两个可以完全手算的一阶系统上：
+\begin{equation}\label{eq:case-system}
+  \text{(S1)}\quad \dot x=-\sgn{x},
+  \qquad\qquad
+  \text{(S2)}\quad \dot x=-\sgn{x}+0.9\sin t .
+\end{equation}
+两条系统的控制幅值都是 $k=1$，只差一个时变扰动 $0.9\sin t$，而 $0.9<1$ 恰好落在控制幅值以内。这个“差一点”的扰动足以让三种解概念、三种证明方法出现分歧，因此它们能说明本章要讲的全部要点：
 \begin{enumerate}
-  \item 为什么引入 Filippov 解，传统的 classical 解为什么不够
-  \begin{itemize}
-    \item 对于无扰动的 $\dot x=-\sgn{x}$（约定 $\sgn(0)=0$），严格意义下，$x_0\ne0$ 时并不存在全局 $C^1$ 的 classical 解：右端在 $x=0$ 处不连续，解在到达原点的时刻也不可微。但它的最大解
-    \[
-      x(t)=\max\{x_0-t,\,0\}\quad(x_0>0)
-    \]
-    是\textbf{分段 classical}（绝对连续）的，到达原点后 $\dot x=0$ 并停留，与物理直觉一致。这个例子之所以“看起来 classical 够用”，是因为 $\sgn(0)=0$ 恰好等于 Filippov 集 $[-1,1]$ 中的滑动等效值；并不是因为经典存在唯一性定理在这里适用（它并不适用）。
-    \item 但是，当系统存在扰动$\delta(t)$ ($\sup_{t\geq 0}|\delta(t)|\leq \bar{\delta}$)时， $\dot x=-\mathrm{sgn}(x)$，classical 解就不足了，因为当$x=0$后，对应的$\dot{x}=\delta(t)$，不存在一个满足这个微分方程的解。即使引入 Caratheodory 解（只需要几乎处处满足微分方程）也是不够的。
-    \item 因此，需要在Filippov 意义下理解，即方程的解在$x=0$时只需要满足$\dot{x}\in [-1,1] + [-\bar{\delta},\bar{\delta}]$即可。这就导致Filippov意义下可能存在多个解的情况。本例依然是唯一的解。
-    \item classical 解的\textbf{存在性}只要求右端连续（Peano 定理），\textbf{唯一性}才需要 Lipschitz（第\ref{ch:lipschitz}章定理~\ref{thm:local-existence}）；Filippov 解的存在性只要求右端可测且局部本性有界（定理~\ref{thm:filippov-existence}）。
-  \end{itemize}
-  \item Lyapunov 稳定性分析：为什么要用\textbf{集值李导数}，而不是普通李导数？
-    \begin{itemize}
-      \item 普通李导数依赖两个前提：右端映射单点、Lyapunov 函数光滑可微。案例若选取 $V=|x|^2$ 则可以满足；
-      \item Filippov 框架下，不连续控制使得速度变成集值 $\dot q\in\mathbb{K}[f]$；非光滑 Lyapunov（如 $V=|x|$）在切换面不可微，梯度替换为 Clarke 集值广义梯度 $\partial V$；链式法则不再有单点定义，因此需要集值李导数。
-      \item 以一维系统 $\dot x=-\sgn{x},\;V=|x|$ 做实例演算：在 $x=0$ 处普通 Lie 导数无定义，而 Shevitz–Paden 交集型集值 Lie 导数算出 $\dot{\tilde V}(0)=\{0\}$；结合 $x\neq0$ 时的 $\dot{\tilde V}=\{-1\}$ 与非光滑 LaSalle 定理，可得原点（有限时间）渐近稳定。同时点明交集定义的目的：既排除并集带来的“伪正值”，又保证结论对所有合法次梯度、所有 Filippov 允许速度统一成立。
-    \end{itemize}
-  \item 为什么绝大多数滑模教材不引入集值李导数？
-    \begin{itemize}
-      \item 传统滑模教材采用 Utkin 等效控制范式，把运动拆成\textbf{趋近阶段 + 滑动阶段}分开分析：趋近阶段 $s\neq0$ 光滑，直接使用普通李导数验证可达性；滑动阶段利用 $\dot s=0$ 反解等效控制 $u_\mathrm{eq}$，得到连续降维动力学；
-      \item 很多教材选用光滑 Lyapunov $V=\tfrac12 s^2$，天然避开非光滑次梯度；
-      \item 非光滑 Lyapunov 分析里更主流的工具是 Dini 上导数；\textbf{Shevitz–Paden 交集型集值李导数}是配套 Filippov 版本 LaSalle 不变集原理的专门工具，属于理论论文分支，并非滑模教材标配。
-    \end{itemize}
-  \item 深入辨析 Utkin 等效控制的完备性：它不是无条件公理，而是带前提的构造方法。
-    \begin{itemize}
-      \item 满足条件（仿射系统、单光滑滑模面、$\nabla s^\top G$ 非奇异（横截条件）、可达性成立）时，Utkin 等效控制等价于 Filippov 微分包含里唯一切向滑动解，是严格结论；
-      \item 它的局限：依赖仿射结构、单光滑滑模面、横截条件；超出范围就不再成立。教材简化叙事，直接给出 $\dot s=0$ 的滑模定义，所以读起来像人为假设。
-    \end{itemize}
-  \item 给出 Utkin 失效的标准二维反例：
-    \[
-    \dot{\boldsymbol x}= \begin{bmatrix}-x_2\\x_1\end{bmatrix}+\begin{bmatrix}1\\1\end{bmatrix}u,\quad s=x_1-x_2,\quad u=-\mathrm{sgn}(s)
-    \]
-    此时 $\nabla s^\top G=0$，横截条件破坏：要么不存在能维持滑模的等效控制，要么有无穷多等效控制，Utkin 单点动力学失效；但 Filippov 微分包含依然良定，可以用集合描述全部允许的速度。同时区分另一类失效场景：多个滑模面相交的角点滑动问题。
-  \item 核心对比：Utkin 等效控制偏向工程设计，简单好用但假设强；Filippov 微分包含 + Clarke 次梯度 / 集值李导数是底层数学框架，适用范围更广，用于严格证明解的存在性、不变集原理、多切换面 / 奇异情形下的稳定性。
+  \item 三种解概念（classical / Carathéodory / Filippov）各自能说什么、不能说什么（第\ref{sec:case-solutions}节）；
+  \item \textbf{等效控制}（equivalent control）是什么、为什么教材几乎只讲它、它成立需要什么条件（第\ref{sec:case-ec}节，本章重点）；
+  \item 两个 Lyapunov 函数 $V_1=\tfrac12x^2$ 与 $V_2=|x|$ 各自能给出什么（第\ref{sec:case-lyapunov}节）；
+  \item 三种处理非光滑性的方法：几乎处处导数、Dini 上导数、Clarke 广义梯度与集值 Lie 导数（第\ref{sec:case-methods}节）。
 \end{enumerate}
 
-下面逐节展开论述。
+一句话概括全章：\textbf{等效控制负责“滑模面上的运动”，非光滑 Lyapunov 工具负责“怎样到达滑模面”，把两者拼起来才是完整证明。}
 
-\section{普通李导数为什么不够用？}\label{sec:why-set-valued-lie-derivative}
+\section{两个系统与三种解概念}\label{sec:case-solutions}
 
-\subsection{普通李导数的两个前提}
-
-考虑自治系统 $\dot x = f(x)$ 与候选 Lyapunov 函数 $V(x)$。沿轨迹的（普通）李导数定义为
+两条系统都可写成仿射形式
 \[
-\dot V(x) = \nabla V(x)^\top f(x).
+\dot x=f_i(t,x)+g\,u,\qquad u=-\sgn{x},\qquad s(x)=x,\qquad g=1,
 \]
-这个看似简单的定义实际上依赖两个隐含前提：
-\begin{enumerate}
-  \item \textbf{右端映射单点}：$f(x)$ 在考察的每一点 $x$ 处都有唯一确定的值；
-  \item \textbf{Lyapunov 函数光滑可微}：$V(x)$ 在考察的每一点 $x$ 处都可微，梯度 $\nabla V(x)$ 是单点。
-\end{enumerate}
-当两条前提同时成立时，$\dot V(x)$ 是单点值，经典的 Lyapunov 定理可以直接套用。
+其中 $f_1\equiv0$，$f_2(t,x)=0.9\sin t$。记
+\begin{equation}\label{eq:case-fields}
+  \mathbb{K}_i:=\mathbb{K}[f_i]\quad(i=1,2),
+\end{equation}
+即 $f_1=-\sgn{x}$、$f_2=-\sgn{x}+0.9\sin t$ 的 Filippov 集值化。
 
-\subsection{回顾：经典 Lyapunov 定理}
+\subsection{classical 解：两条系统都没有}
 
-作为对照，先把经典（光滑）版本的结论写清楚 \cite[Theorem 4.1]{khalilNonlinearSystems}。
-考虑自治系统 $\dot x=f(x)$，$f$ 在包含原点的区域 $D$ 上局部 Lipschitz，$f(0)=0$。
-若存在连续可微函数 $V:D\to\RR$ 满足
-\begin{enumerate}
-  \item $V(0)=0$，且 $V(x)>0$（$x\in D,\ x\neq0$）；
-  \item $\dot V(x)=\nabla V(x)^\top f(x)\le0$（$x\in D$），
-\end{enumerate}
-则原点是\textbf{稳定}的；若进一步 $\dot V(x)<0$（$x\neq0$），则原点是\textbf{渐近稳定}的；
-若还有 $V(x)\to\infty$（$\norm{x}\to\infty$），则原点是\textbf{全局渐近稳定}的。
-
-这个定理的每个字都依赖“$f$ 单点、$V$ 可微”：
-若 $f$ 在滑模面上是集合 $\mathbb{K}[f]$，或 $V=|x|$ 在原点不可微，
-则 $\dot V$ 根本无从计算。下面两小节分别说明这两个前提是如何被滑模控制打破的。
-更一般的非自治版本（需要 $\mathcal K$ 类函数与 $\mathcal{KL}$ 类函数）见 \cite[§4.5]{khalilNonlinearSystems}。
-
-\subsection{Filippov 框架下速度变成集值}
-
-滑模控制的本质是不连续控制：控制量 $u = -\mathrm{sgn}(s)$ 在滑模面 $s=0$ 处发生跳变。直接把这样的 $u$ 代入系统 $\dot x = f(x) + g(x)u$，右端 $f(x) + g(x)(-\mathrm{sgn}(s(x)))$ 在 $s=0$ 处不连续，经典解的存在唯一性定理（右端局部 Lipschitz）不再适用。
-
-Filippov 的处理方式是\textbf{不把不连续点当作病态，而是把该点处的右端替换为一个集合}——取该点任意小邻域内向量场取值的凸闭包（忽略零测集），定义 Filippov 微分包含
+先看“吸引”这一半。$x>0$ 时
 \[
-\dot x \in \mathbb{K}[f](x) \triangleq \bigcap_{\delta>0}\; \bigcap_{\mu(N)=0}\; \overline{\mathrm{co}}\, f\big(B(x,\delta)\setminus N\big).
-\]
-在滑模面 $s=0$ 上，$\mathbb{K}[f](x)$ 一般不是单点，而是一个\textbf{集值映射}（set-valued map）：它给出该点处所有「允许的速度」，系统的解只要在绝对连续意义下满足 $\dot x(t)\in\mathbb{K}[f](x(t))$ 几乎处处成立即可。
-
-于是，第一个前提（右端单点）在滑模面上被打破。
-
-\subsection{非光滑 Lyapunov 与 Clarke 集值广义梯度}
-
-为了分析滑模面上的稳定性，常常选用非光滑 Lyapunov函数，例如 $V(x) = |x|$ 或 $V(x) = \|s(x)\|$。这类函数在滑模面（或切换面）上不可微：$|x|$ 在 $x=0$ 处有尖点。
-
-对于 Lipschitz 连续函数，Clarke 给出了\textbf{集值广义梯度}的定义：
-\[
-\partial V(x) = \overline{\mathrm{co}}\Big\{\lim_{k\to\infty} \nabla V(x_k) \;\Big|\; x_k \notin \Omega_V,\; x_k \to x \Big\},
-\]
-其中 $\Omega_V$ 是 $V$ 的不可微点集合。直观上，$\partial V(x)$ 是所有可达梯度极限的凸闭包；在可微点退化为单点 $\{\nabla V(x)\}$，在不可微点成为一个凸集。例如
-\[
-V(x)=|x|,\qquad \partial V(0) = [-1,1].
-\]
-
-于是，第二个前提（Lyapunov 函数光滑可微）也被打破：梯度本身已经是集值。
-
-\subsection{链式法则不再有单点定义——集值李导数的引入}
-
-在经典框架下，$V(x(t))$ 沿轨迹的导数是
-\[
-\frac{\mathrm d}{\mathrm d t} V(x(t)) = \nabla V(x(t))^\top \dot x(t).
-\]
-当 $\dot x(t)$ 取值于集合 $\mathbb{K}[f](x)$、$\nabla V(x)$ 取值于集合 $\partial V(x)$ 时，乘积
-\[
-\xi^\top v,\qquad \xi\in\partial V(x),\; v\in\mathbb{K}[f](x)
-\]
-不再是一个单点，而是一个集合。Shevitz 与 Paden 定义的\textbf{交集型集值李导数}为
-\[
-\dot{\tilde V}(x) \triangleq \bigcap_{\xi\in\partial V(x)} \xi^\top \mathbb{K}[f](x)
-      = \bigcap_{\xi\in\partial V(x)} \{\xi^\top v \mid v\in\mathbb{K}[f](x)\}.
-\]
-这里的关键是\textbf{交集}而非并集：它要求对\emph{每一个}合法的次梯度 $\xi$，都存在某个合法的 Filippov 速度 $v$ 使得内积落在该集合中，从而保证稳定性结论对所有可能的不确定性统一成立。
-
-\subsection{一维实例演算}
-
-考虑最简单的 bang-bang 系统
-\[
-\dot x = -\mathrm{sgn}(x) =
-\begin{cases}
--1, & x > 0,\\
-0,   & x = 0,\\
-1,   & x < 0,
-\end{cases}
+\text{(S1): }\ \dot x=-1,
 \qquad
-V(x) = |x|.
+\text{(S2): }\ \dot x=-1+0.9\sin t\le-0.1,
 \]
+$x<0$ 时两式符号相反。因此任一初值都在有限时间内到达 $x=0$：$(S1)$ 用时 $|x_0|$，$(S2)$ 至多 $10|x_0|$（估计见第\ref{sec:case-lyapunov}节）。
 
-\textbf{Filippov 微分包含：} 按 Filippov 定义，在 $x\neq0$ 处 $\mathbb{K}[f](x) = \{-\mathrm{sgn}(x)\}$（单点）；在 $x=0$ 处，任意小邻域内向量场取 $\{-1,1\}$（忽略 $x=0$ 处的零值），凸闭包为
-\[
-\mathbb{K}[f](0) = \overline{\mathrm{co}}\{-1,\,1\} = [-1,\,1].
-\]
+问题出在到达之后。设轨迹在 $t_0$ 时刻到达 $x=0$。若它要成为 $C^1$ 解，则 $\dot x(t_0)$ 必须同时满足两侧的要求：
 
-\textbf{Clarke 广义梯度：} $V(x)=|x|$ 在 $x\neq0$ 处可微，$\nabla V(x) = \mathrm{sgn}(x)$；在 $x=0$ 处不可微，所有可达梯度极限为 $\{-1,1\}$，凸闭包为
-\[
-\partial V(0) = [-1,\,1].
-\]
-
-\textbf{普通李导数：} 在 $x=0$ 处，$\nabla V(0)$ 不存在（单点无定义），$\dot V(0)$ 无法计算。
-
-\textbf{集值李导数（Shevitz–Paden 交集型）：}
-\[
-\dot{\tilde V}(0) = \bigcap_{\xi\in[-1,1]} \xi^\top [-1,1]
-                 = \bigcap_{\xi\in[-1,1]} [-\lvert\xi\rvert,\;\lvert\xi\rvert]
-                 = \{0\}.
-\]
-交集取到 $\{0\}$，意味着对任意 $\xi\in[-1,1]$，总存在 $v\in[-1,1]$（具体取 $v=\xi$ 即可）使得 $\xi^\top v = 0$。
-
-\textbf{物理解释：} $\dot{\tilde V}(0)=\{0\}$ 只说明在原点处 $V$ 不增；对 $x\neq0$ 还有 $\dot{\tilde V}(x)=\{-1\}<0$。
-因此 $\dot{\tilde V}\le0$，且使 $0\in\dot{\tilde V}$ 的集合只有 $S=\{0\}$。
-由非光滑 LaSalle 定理（定理~\ref{thm:LaSalle}），每条轨迹都收敛到 $S$ 中的最大不变集 $\{0\}$，即原点渐近稳定；
-实际上 $x(t)=\max\{x_0-t,0\}$ 在有限时间 $|x_0|$ 内到达原点并停留。
-注意：不能因为“原点处导数为 $0$”就断言非渐近稳定——渐近性由 LaSalle/不变集给出。
-
-\textbf{交集定义的用意：} 若采用并集 $\bigcup_{\xi\in\partial V}\xi^\top\mathbb{K}[f]$，在 $x=0$ 处会得到 $[-1,1]$，其中包含正值，从而无法排除“$V$ 增加”的组合。
-交集定义则要求：对\emph{每一个} $\xi\in\partial V$，都存在 $v\in\mathbb{K}[f]$ 使 $\xi^\top v\le0$（本例取 $v=\xi$ 即可），也就是交集里的所有值都不大于 $0$。
-只有这样，才能断言 $V$ 沿所有 Filippov 解不增；这正是非光滑分析中「对所有合法次梯度、所有允许速度统一成立」的思想。
-
-\section{为什么滑模教材不引入集值李导数？}\label{sec:why-textbooks-skip-set-valued}
-
-绝大多数滑模控制教材采用的是 Utkin 等效控制（Equivalent Control, EC）范式，而非 Filippov 微分包含 + 集值李导数的路线。原因有三。
-
-\subsection{Utkin 范式：趋近阶段与滑动阶段的分割}
-
-Utkin 范式的核心思想是把系统运动拆成两个阶段分别处理：
-
-\begin{enumerate}
-  \item \textbf{趋近阶段（$s\neq0$）：} 状态尚未到达滑模面，控制 $u = -k\,\mathrm{sgn}(s)$ 的作用是把状态「驱赶」向 $s=0$。在 $s\neq0$ 的区域内，$\mathrm{sgn}(s)$ 是常值，系统右端光滑，普通李导数完全够用。只需验证 $\dot V = s\dot s < 0$（取 $V = \tfrac12 s^2$）即可证明可达性。
-  \item \textbf{滑动阶段（$s=0$）：} 状态到达滑模面后，理想上应「贴着」$s=0$ 运动。此时强制 $\dot s = 0$，将其代入系统方程反解出等效控制 $u_\mathrm{eq}$：
-  \[
-  \dot s = \nabla s^\top (f + g u) = 0 \quad\Longrightarrow\quad u_\mathrm{eq} = -(\nabla s^\top g)^{-1} \nabla s^\top f.
-  \]
-  把 $u_\mathrm{eq}$ 代回原系统，得到降维的连续动力学 $\dot x = f + g u_\mathrm{eq}$，后续分析与连续系统无异。
-\end{enumerate}
-
-这个拆分在工程上极其自然：趋近阶段用简单的光滑分析，滑动阶段用一个「等效的连续控制」替代bang-bang 切换，得到的降维模型可以直接用于控制器设计与仿真。
-
-\subsection{光滑 Lyapunov 函数的便利}
-
-沿用 Utkin 范式的教材几乎无一例外地选用光滑 Lyapunov 函数 $V = \tfrac12 s^2$。它的梯度 $\nabla V = s$ 在整个状态空间上连续可微，普通李导数 $\dot V = s\dot s$ 随处有定义，完全不需要 Clarke 次梯度或集值李导数。这是教材避开非光滑工具的最直接原因。
-
-\subsection{Dini 上导数：非光滑分析的「平民工具」}
-
-当 Lyapunov 函数确实非光滑时（例如某些场合需要 $V = |s|$ 或 $V = \|s\|$），教材和论文中更常使用的是 Dini 上导数：
-\[
-D^+ V(x) = \limsup_{h\to 0^+} \frac{V(x+h f(x)) - V(x)}{h},
-\]
-而非 Shevitz–Paden 交集型集值李导数。Dini 导数的定义只依赖函数本身，不需要引入 Filippov 微分包含或 Clarke 广义梯度，配套的 LaSalle 不变集原理也有经典版本可用 \cite{roucheStabilityTheoryLiapunov1977}，Dini 版本的 Lyapunov 定理见第\ref{ch:bounded}章定理~\ref{thm:dini-lyapunov}。因此，对于不要求严格 Filippov 框架的场合，Dini 导数足够好用。
-
-\subsection{Shevitz–Paden 工具的定位}
-
-Shevitz–Paden 交集型集值李导数是\textbf{专门为 Filippov 版本 LaSalle 不变集原理}设计的工具。它的出现是为了在 Filippov 微分包含的严格框架下，给出与经典 LaSalle 定理平行的不变集结论——即定理~\ref{thm:LaSalle}。这套理论属于学术论文的分支，目标读者是做非光滑系统理论研究的学者，因此并未成为滑模教材的标配。
-
-简而言之：教材教你怎么「用」滑模控制（Utkin 等效控制 + 光滑 $V$），论文讨论滑模控制的「数学基础」（Filippov 微分包含 + 集值李导数）。二者分工不同。
-
-\section{Utkin 等效控制的完备性辨析}\label{sec:utkin-completeness}
-
-Utkin 等效控制常被教材当作滑模阶段的定义直接给出：「滑模就是 $\dot s = 0$」。但这个叙述是有前提的构造方法，而非无条件公理。
-
-\subsection{成立条件与严格结论}
-
-考虑仿射系统
-\[
-\dot x = f(x) + g(x) u,\qquad s = s(x),
-\]
-其中 $s: \mathbb R^n \to \mathbb R$ 是光滑函数。Utkin 等效控制成立需要以下条件同时满足：
-\begin{enumerate}
-  \item \textbf{仿射结构：} 控制以加性方式进入系统，$\dot x = f(x) + g(x)u$；
-  \item \textbf{单光滑滑模面：} $s(x)$ 是单值光滑函数，$\{x\mid s(x)=0\}$ 是一个光滑超曲面；
-  \item \textbf{横截条件（transversality condition）：} $\nabla s(x)^\top g(x) \neq 0$ 在滑模面上处处成立。这一条件保证控制 $u$ 能够影响 $\dot s$，从而可以通过调节 $u$ 把 $\dot s$ 「拉回」零；
-  \item \textbf{可达性成立：} 存在控制律使状态能在有限时间内到达 $s=0$。
-\end{enumerate}
-
-当上述条件全部满足时，Utkin 等效控制 $u_\mathrm{eq} = -(\nabla s^\top g)^{-1}\nabla s^\top f$ 是\textbf{严格结论}：它等价于 Filippov 微分包含在滑模面上的唯一切向滑动解。换言之，Filippov 框架下，所有满足 $\dot x \in \mathbb{K}[f+gu](x)$ 且停留在 $s=0$ 上的解，其速度必为
-\[
-\dot x = f(x) + g(x) u_\mathrm{eq}(x),
-\]
-且该速度是唯一的。这是 Utkin 方法在数学上的坚实基础。
-
-\subsection{局限性：教材叙事为何「像假设」}
-
-教材的简化叙事直接写出「滑模阶段 $\dot s = 0$」，然后反解 $u_\mathrm{eq}$，读起来像是一个人为假设。但实际上，这个步骤背后隐藏了上述四个条件，尤其是横截条件 $\nabla s^\top g \neq 0$。一旦超出这些条件的适用范围，Utkin 等效控制可能：
 \begin{itemize}
-  \item 根本不存在（无 $u$ 能使 $\dot s = 0$）；
-  \item 存在但不唯一（多个 $u$ 都能使 $\dot s = 0$）；
-  \item 即使存在且唯一，也不对应 Filippov 框架下真实的滑动解。
+  \item \textbf{若穿过原点：} 导数必须在 $t_0$ 连续。左极限是 $-1+\delta(t_0)$（$\delta$ 表示扰动：$(S1)$ 为 $0$，$(S2)$ 为 $0.9\sin t$），而在 $x=0$ 处方程给出的值是 $\delta(t_0)$，二者相差恰为 $1=k$——这个差来自控制量的不连续跳变 $2k$，与扰动无关。
+  \item \textbf{若停在原点：} 右导数为 $0$，而左极限仍是 $-1+\delta(t_0)$，二者相差 $-1+\delta(t_0)$，在 $|\delta|\le0.9$ 下其绝对值不小于 $0.1$，同样不可能为零。
 \end{itemize}
-因此，Utkin 等效控制是「带前提的构造方法」，它的有效性是有边界的。
+
+于是两条系统在 $[0,\infty)$ 上\textbf{都不存在 classical 解}。
+
+$(S1)$ 的最大解 $x(t)=\max\{x_0-t,0\}$ 只是\textbf{分段 classical}（绝对连续）的；它的导数
+\[
+\dot x(t)=\begin{cases}
+  -1,& t<x_0,\\
+  \ \ 0,& t>x_0
+\end{cases}
+\]
+在 $t=x_0$ 处不存在。另需注意：$(S1)$ 之所以“看起来 classical 够用”，是因为约定 $\sgn{0}=0$ 恰好使 $0$ 落在 $\mathbb{K}_1(0)=[-1,1]$ 之中，这个取值正好对应“停留在原点”的那条滑动段——这是巧合，而不是经典理论在这里成立。
+
+\subsection{Carathéodory 解：一个巧合与一次失败}
+
+Carathéodory 解只要求绝对连续并在\textbf{几乎处处}意义下满足方程（式~\eqref{eq:caratheodory}）。它对两条系统的判别完全不同。
+
+\textbf{(S1)：恰好有解。} 在约定 $\sgn{0}=0$ 下，常值 $x(t)\equiv0$ 满足 $0=-\sgn{0}$，因此它是 $(S1)$ 的 Carathéodory 解；$x(t)=\max\{x_0-t,0\}$ 也是。
+
+\textbf{(S2)：连全局解都没有。} 设 $x(t)$ 是 $(S2)$ 在 $[0,T)$ 上的绝对连续解，取 $V_2=|x|$。在 $x\neq0$ 处
+\[
+\dot V_2=\sgn{x}\,\dot x=-1+0.9\sgn{x}\sin t\le-0.1 .
+\]
+于是 $V_2$ 每秒至少下降 $0.1$，而 $V_2\ge0$，故 $V_2(t)=0$ 对一切 $t\ge10|x_0|$ 成立（积分论证见引理~\ref{lem:case-finite-time}）。此后 $x\equiv0$，而 $(S2)$ 在 $x=0$ 处要求 $\dot x=0.9\sin t$，对几乎所有 $t$ 不为零，矛盾。因此 $(S2)$ \textbf{不存在全局 Carathéodory 解}。
+
+教训是：Carathéodory 的“几乎处处”只放松了\textbf{时间}方向的光滑性，右端仍必须是单点等式；一旦方程在切换面上与“停留”直接矛盾（$0=0.9\sin t$），再放松时间方向也救不回来。
+
+\subsection{Filippov 解：把矛盾点换成集合}
+
+Filippov 的做法是承认这个矛盾，并把 $x=0$ 处的取值换成集合（定义~\ref{def:filippov-solution}、式~\eqref{eq:filippov-set}）。对两条系统：
+\begin{equation}\label{eq:case-filippov}
+  \mathbb{K}_1(0)=\overline{\mathrm{co}}\{-1,\,1\}=[-1,\,1],
+  \qquad
+  \mathbb{K}_2(t,0)=0.9\sin t+[-1,\,1]=[-1+0.9\sin t,\;1+0.9\sin t].
+\end{equation}
+两个集合都包含 $0$；并且由于 $|0.9\sin t|\le0.9<1$，$0$ 是\textbf{内点}。于是 $x\equiv0$ 同时是两条系统的 Filippov 解，$0\in\mathbb{K}_i$ 正是“允许停留”的精确含义。
+
+更强地，$\{0\}$ 是\textbf{强不变}的：任何解都在有限时间内到达原点，而到达之后不能离开——若在某个区间上 $|x|>0$，则该区间上 $|x|$ 严格下降，与非负性（起点为 $0$）矛盾。注意这需要两件事同时成立：$0\in\mathbb{K}_i$（允许停留）与两侧向量场都指向滑模面（$|x|$ 在 $x\neq0$ 时严格下降）。缺任何一条，原点都不是吸引的。
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{@{}p{2.2cm}|p{3.2cm}|p{2.2cm}|p{3.4cm}|p{2.8cm}@{}}
+    \hline
+    解概念 & 对右端的要求 & 光滑性 & (S1) & (S2) \\
+    \hline
+    classical & 关于 $x$ 连续（唯一性需 Lipschitz） & $C^1$ & 无全局解（导数在到达时刻跳变） & 无全局解 \\
+    \hline
+    Carathéodory & 关于 $x$ 连续，关于 $t$ 可测 & 绝对连续 & 有解（靠 $\sgn{0}=0$ 的巧合） & \textbf{无全局解} \\
+    \hline
+    Filippov & 可测 + 局部本质有界 & 绝对连续 & 有解，$x\equiv0$ 且 $0$ 强不变 & 有解，$x\equiv0$ 且 $0$ 强不变 \\
+    \hline
+  \end{tabular}
+  \caption{三种解概念在两条系统上的对照}
+  \label{tab:case-solution-concepts}
+\end{table}
+
+顺带把三条存在性定理的假设对齐，可以看出本例落在哪个缝隙里：
+
+\begin{itemize}
+  \item classical 解的\textbf{局部存在性}只要求右端连续（Peano 定理），\textbf{唯一性}才要求局部 Lipschitz（第\ref{ch:lipschitz}章定理~\ref{thm:local-existence}）；
+  \item Carathéodory 定理要求右端关于 $x$ 连续，$(S2)$ 在 $x=0$ 处不满足；
+  \item Filippov 解只要求右端可测且局部本质有界（定理~\ref{thm:filippov-existence}）。
+\end{itemize}
+
+$(S1)$、$(S2)$ 的右端既不连续、也不局部 Lipschitz，前两条都用不上；而它们可测且局部有界，Filippov 存在性定理恰好在“右端不连续”这条缝隙里生效。
+
+\section{等效控制：Utkin 范式}\label{sec:case-ec}
+
+上一节说明：在非光滑框架里，滑模面上的“速度”是一个集合。工程上真正被广泛使用的描述方式却不是微分包含，而是 Utkin 的\textbf{等效控制}：把切换信号换成一个等效的连续信号，在滑模面上做常规（光滑）分析。本节先给出定义，再在 $(S1)$、$(S2)$ 上手算，然后说明它的严格含义、成立条件，以及它能回答什么、不能回答什么。
+
+\subsection{定义：把切换信号换成连续信号}
+
+考虑
+\begin{equation}\label{eq:case-affine}
+  \dot x=f(t,x)+g(t,x)u,\qquad s=s(t,x),\qquad u=-k\,\sgn{s},\quad k>0 .
+\end{equation}
+沿轨迹对 $s$ 求导：
+\[
+\dot s=\partial_t s+\nabla s^\top\big(f+gu\big)
+=\underbrace{\big(\partial_t s+\nabla s^\top f\big)}_{\text{漂移项}}
++\underbrace{\big(\nabla s^\top g\big)}_{\text{控制增益}}\,u .
+\]
+若 $\nabla s^\top g\neq0$，令 $\dot s=0$ 解出
+\begin{equation}\label{eq:case-ueq}
+  u_\mathrm{eq}(t,x)=-\frac{\partial_t s+\nabla s^\top f}{\nabla s^\top g},
+\end{equation}
+这就是 Utkin 的\textbf{等效控制}。把它代回系统，得到\textbf{降维等效动力学}
+\[
+\dot x=f+g\,u_\mathrm{eq},
+\]
+其中不再含不连续项，可以按连续系统做分析。教材里“滑模阶段 $\dot s=0$”那句话，说的就是这个操作。
+
+需要立刻指出：这一步在形式上是“先假设 $s$ 可微、再令其导数为零”，而由 \S\ref{sec:case-solutions} 已经看到 $s(t)=x(t)$ 在切换时刻的导数会跳变 $1$。所以式~\eqref{eq:case-ueq} 必须另有严格解释，见 \S\ref{sec:case-ec-meaning}。
+
+\subsection{手算：(S1) 与 (S2) 的等效控制}
+
+对两条系统，$s=x$、$\partial_t s=0$、$\nabla s=1$、$g=1$，于是 $u_\mathrm{eq}=-f$，即“等效控制恰好抵消漂移项”：
+
+\begin{center}
+\small
+\begin{tabular}{@{}c|c|c|c|c@{}}
+  \hline
+  系统 & 漂移 $f(t,x)$ & 等效控制 $u_\mathrm{eq}$ & 滑动方程 $\dot x=f+gu_\mathrm{eq}$ & 可容许性 \\
+  \hline
+  (S1) & $0$ & $0$ & $0$ & $|u_\mathrm{eq}|=0<1$ \\
+  \hline
+  (S2) & $0.9\sin t$ & $-0.9\sin t$ & $0.9\sin t-0.9\sin t=0$ & $|u_\mathrm{eq}|\le0.9<1$ \\
+  \hline
+\end{tabular}
+\end{center}
+
+三点观察。
+
+\begin{enumerate}
+  \item \textbf{滑模面上的运动与扰动无关。} $(S2)$ 的等效控制是时变的，恰好把扰动“抵消”掉，因此降维后的动力学与无扰动的 $(S1)$ 完全相同（都是 $\dot x=0$）。这就是滑模控制最核心的性质：只要扰动与控制进入同一个通道（匹配条件，$g=1$ 对两条系统都成立）且幅值小于 $k$，滑模面上的运动就完全不受它影响。
+  \item \textbf{等效控制不必是常值。} 它可以是时变的、甚至状态相关的，只要落在可容许区间内（第\ref{sec:case-ec-conditions}节）。
+  \item \textbf{差别只体现在到达过程。} 两条系统的滑动方程相同，但 $(S2)$ 的到达时间上界放宽了 $10$ 倍（$10|x_0|$ 对 $|x_0|$）——扰动被抑制在滑模面上，代价体现在趋近段。
+\end{enumerate}
+
+\subsection{等效控制到底等于什么：Filippov 集的法向零点}\label{sec:case-ec-meaning}
+
+式~\eqref{eq:case-ueq} 的严格含义可以用一句话说清：\textbf{等效控制是 Filippov 集里让滑模面法向速度为零的那个（唯一）控制值}。把它写成命题。
+
+\begin{proposition}[等效控制 = 唯一的法向零点]\label{prop:case-ueq}
+  考虑~\eqref{eq:case-affine}，设 $s=s(x)$ 与 $t$ 无关，$g$ 与 $u$ 无关，切换值在 $s\to0^\pm$ 时的极限为 $u^\pm$。若在滑模面 $s=0$ 上
+  \[
+  \nabla s(x)^\top g(x)\neq0,
+  \qquad
+  \big(\nabla s^\top(f+gu^-)\big)\big(\nabla s^\top(f+gu^+)\big)<0 ,
+  \]
+  则
+  \[
+  \big\{v\in\mathbb{K}[f+gu](x):\ \nabla s(x)^\top v=0\big\}=\big\{f+g\,u_\mathrm{eq}\big\},
+  \]
+  并且相应的混合值 $u_\mathrm{eq}$ 落在 $\mathrm{co}\{u^-,u^+\}$ 内部。
+\end{proposition}
+
+\begin{proof}
+  在滑模面上 $\mathbb{K}[f+gu]=\mathrm{co}\{f+gu^-,f+gu^+\}=f+g\,\mathrm{co}\{u^-,u^+\}$。
+  泛函 $u\mapsto\nabla s^\top(f+gu)$ 是斜率为 $\nabla s^\top g\neq0$ 的仿射函数，故严格单调；两端取值异号，故在 $\mathrm{co}\{u^-,u^+\}$ 内有唯一零点 $u_\mathrm{eq}$，且 $\nabla s^\top g\neq0$ 使 $u_\mathrm{eq}=-(\nabla s^\top f)/(\nabla s^\top g)$。$v$ 与 $u$ 一一对应，结论得证。
+\end{proof}
+
+命题~\ref{prop:case-ueq} 解释了三件事。
+
+\begin{enumerate}
+  \item \textbf{为什么教材可以不理 Filippov。} 在“好条件”（横截条件 + 滑动条件）下，Filippov 集与切平面 $\{\nabla s^\top v=0\}$ 的交是单点，而这个点恰好就是 $f+gu_\mathrm{eq}$。两条路线给出同一个速度，因此用等效控制做的分析在数学上是成立的。
+  \item \textbf{“抖振的平均”是什么。} 取 $u=-k\,\sgn{s}$，设滑模面上控制取 $+k$ 的时间比例为 $\lambda_+$，则平均控制为 $k\lambda_+-k(1-\lambda_+)=k(2\lambda_+-1)$，令其等于 $u_\mathrm{eq}$ 得
+  \[
+  \lambda_+(t)=\frac{k+u_\mathrm{eq}(t)}{2k}\in(0,1).
+  \]
+  对 $(S2)$：$\lambda_+(t)=(1+0.9\sin t)/2\in[0.05,\,0.95]$。物理图像很直白：扰动为正时略多花一点时间取 $+1$ 去抵消它，扰动为负时反过来。
+  \item \textbf{为什么 $0\in\partial\mathbb{K}$ 时滑模会退化。} 命题要求 $u_\mathrm{eq}$ 在 $\mathrm{co}\{u^-,u^+\}$ \textbf{内部}（这正是 $0\in\operatorname{int}\mathbb{K}$）。若 $u_\mathrm{eq}$ 恰好落在端点，法向分量没有严格的“两侧异号”，滑模只剩擦过（grazing）的情形。
+\end{enumerate}
+
+\subsection{等效控制成立的四个条件}\label{sec:case-ec-conditions}
+
+式~\eqref{eq:case-ueq} 的推导只用了一行代数，但要让结论有意义，需要以下条件\emph{同时}成立：
+
+\begin{enumerate}
+  \item \textbf{仿射结构：} 控制以加性方式进入系统，$\dot x=f(t,x)+g(t,x)u$；
+  \item \textbf{单张光滑滑模面 + 横截条件：} $s$ 光滑单值，$\{s=0\}$ 是一张光滑超曲面，且 $\nabla s^\top g\neq0$ 在其上处处成立（保证 $u$ 能影响 $\dot s$）；
+  \item \textbf{滑动（可容许）条件：} $u_\mathrm{eq}(t,x)\in\mathrm{co}\{u^-,u^+\}$，即 $|u_\mathrm{eq}|\le k$，等价于 $0\in\operatorname{int}\mathbb{K}[f+gu]$；
+  \item \textbf{可达性：} 存在控制使状态在有限时间内到达 $s=0$（趋近段 $V=\tfrac12s^2$ 严格下降）。
+\end{enumerate}
+
+条件 3 最容易被忽略，而它恰恰是工程上最本质的一条：\textbf{等效控制的幅值不能超过控制幅值}。$(S2)$ 中的 $0.9$ 正好是这条界的临界参数。把扰动幅度改成 $1.5$：
+\[
+\dot x=-\sgn{x}+1.5\sin t,\qquad u_\mathrm{eq}(t)=-1.5\sin t .
+\]
+当 $|\sin t|>2/3$ 时 $|u_\mathrm{eq}|>1$，不再可容许。此时
+\[
+\mathbb{K}(t,0)=[-1+1.5\sin t,\;1+1.5\sin t]
+\]
+不含 $0$：原点不再是解，轨迹被推出滑模面；等到 $|\sin t|\le2/3$ 时它又被拉回。这就是\textbf{间歇滑模}（intermittent sliding）——滑模时有时无，等效控制时而存在、时而“欠幅”。
+
+用 Khalil 的语言说，条件 3 就是：匹配扰动的幅值必须小于控制增益，$|f|/|g|<k$ \cite[§14.1]{khalilNonlinearSystems}。这不是技术性假设，而是“控制器是否买得起抗扰性能”的预算约束。
+
+\subsection{等效控制能给出什么、不能给出什么}
+
+\begin{itemize}
+  \item \textbf{能给出：} 滑模面上的不变性（$x\equiv0$ 是解）与降维动力学；等效控制幅值的需求（据此选 $k$）；工程实现所需的占空比 $\lambda_+$。
+  \item \textbf{不能给出：} 到达时间与到达前的瞬态（那是滑模面之外的世界，需要趋近段的 Lyapunov 分析，见第\ref{sec:case-lyapunov}节）；条件 3 失效时的行为（$u_\mathrm{eq}$ 不存在，只能回到集值描述）；横截条件破坏的奇异情形（第\ref{sec:utkin-counterexample}节的反例）。
+  \item \textbf{尤其不能：} 用 $u_\mathrm{eq}$ 直接“证明”稳定性。$u_\mathrm{eq}$ 是“假设滑模已经发生”之后的产物，若没有独立证明滑模确实发生（条件 2--4），用降维系统得到的稳定性结论是循环论证。这正是本章要引入非光滑工具的原因。
+\end{itemize}
+
+\subsection{为什么教材普遍只用等效控制}
+
+绝大多数滑模教材采用“趋近阶段 + 滑动阶段”的分工，因而可以完全绕开非光滑工具：
+
+\begin{enumerate}
+  \item \textbf{趋近阶段（$s\neq0$）：} $\sgn{s}$ 是常值，右端光滑，普通 Lie 导数完全够用。取 $V=\tfrac12s^2$，只需验证 $\dot V=s\dot s<0$ 即可证明可达性与到达时间。
+  \item \textbf{滑动阶段（$s=0$）：} 用等效控制把不连续系统换成降维的连续系统 $\dot x=f+gu_\mathrm{eq}$，后续分析与连续系统无异（本节的 $(S1)$、$(S2)$ 都化成 $\dot x=0$）。
+  \item \textbf{Lyapunov 函数：} 选用光滑的 $V=\tfrac12s^2$，其梯度 $\nabla V=s$ 处处存在，天然避开 Clarke 广义梯度。
+\end{enumerate}
+
+如果确实需要非光滑 Lyapunov 函数（例如 $V=|s|$），教材与论文中更常用的是 \textbf{Dini 上导数}：它的定义只依赖函数本身与单点向量场，不需要引入广义梯度，配套的 Lyapunov 定理（定理~\ref{thm:dini-lyapunov}）与经典 LaSalle 不变集原理（\cite{roucheStabilityTheoryLiapunov1977}）都有现成版本。交集型\textbf{集值 Lie 导数}则是专为 Filippov 版 LaSalle 不变集原理（定理~\ref{thm:LaSalle}）设计的工具，属于理论论文分支，因此没有成为教材标配——第\ref{sec:case-methods}节会看到，它在原点处给出的信息其实相当有限。
+
+简而言之：教材教的是怎么“用”滑模控制（等效控制 + 光滑 $V$），论文讨论的是滑模控制的“数学基础”（Filippov 微分包含 + 集值李导数）。二者分工不同，并不矛盾。
+
+\section{两个 Lyapunov 函数}\label{sec:case-lyapunov}
+
+有了等效控制，滑模面上的问题已经解决；剩下的问题是“怎样到达滑模面”以及“到达之后会不会离开”。后者由 \S\ref{sec:case-solutions} 的强不变性回答，前者需要 Lyapunov 函数。本节比较两个最常用的选择：光滑的 $V_1=\tfrac12x^2$ 与非光滑的 $V_2=|x|$。
+
+\subsection{经典 Lyapunov 定理与它的两个前提}
+
+作为对照，先写出经典（光滑）版本 \cite[Theorem 4.1]{khalilNonlinearSystems}。考虑自治系统 $\dot x=f(x)$，$f$ 在包含原点的区域 $D$ 上局部 Lipschitz，$f(0)=0$。若存在连续可微的 $V:D\to\RR$ 满足 $V(0)=0$、$V(x)>0$（$x\in D$，$x\neq0$）且
+\[
+\dot V(x)=\nabla V(x)^\top f(x)\le0\qquad(x\in D),
+\]
+则原点稳定；若 $\dot V(x)<0$（$x\neq0$），则原点渐近稳定。这个定理的每一字都依赖两个隐含前提：
+
+\begin{enumerate}
+  \item \textbf{右端映射单点：} $f(x)$ 在每一点都有唯一确定的值；
+  \item \textbf{$V$ 光滑可微：} 梯度 $\nabla V(x)$ 是单点。
+\end{enumerate}
+
+两条系统恰好把这两个前提同时打破（速度是集合 $\mathbb{K}_i$，$V_2$ 在原点不可微），因此经典定理\textbf{不能}直接用于 $(S1)$、$(S2)$——即便 $V_1$ 是光滑的，因为系统本身没有 classical 解，定理关于解的存在性前提已经落空。这就是必须先换解概念、再谈 Lyapunov 工具的原因。
+
+\subsection{$V_1=\tfrac12x^2$：光滑，但在原点处导数为零}
+
+$V_1$ 光滑、正定、径向无界。沿轨迹（$x\neq0$ 时）：
+\[
+\text{(S1): }\ \dot V_1=x\dot x=-|x|=-\sqrt{2V_1},
+\]
+\[
+\text{(S2): }\ \dot V_1=x\big(-\sgn{x}+0.9\sin t\big)=-|x|+0.9\,x\sin t\le-0.1|x|=-0.1\sqrt{2V_1}.
+\]
+两式都是 $\dot V_1\le-\alpha\sqrt{2V_1}$ 的形式（$(S1)$ 取 $\alpha=1$，$(S2)$ 取 $\alpha=0.1$）。由比较引理~\ref{lem:comparison}（或例~\ref{ex:reaching-time} 的推导），有限时间到达估计为
+\[
+t_r\le\frac{\sqrt{2V_1(0)}}{\alpha}=\frac{|x_0|}{\alpha},
+\]
+即
+\begin{equation}\label{eq:case-bounds}
+  \text{(S1): }\ T_1\le|x_0|,
+  \qquad\qquad
+  \text{(S2): }\ T_2\le10\,|x_0| .
+\end{equation}
+对 $(S1)$，界是精确的（$x(t)=\max\{x_0-t,0\}$）。
+
+要注意 $V_1$ 的局限：它在原点处 $\dot V_1=0$，所以“严格下降”只在 $\{x\neq0\}$ 上成立。渐近性不能由 $\dot V_1<0$ 直接得到，而要靠“有限时间内到达 + 原点强不变”。另外，$\dot V_1\le-\alpha\sqrt{2V_1}$ 这种“$\sqrt{V}$ 型”不等式给出的才是有限时间，若只有 $\dot V\le-\alpha V$ 则只能得到指数收敛（见例~\ref{ex:reaching-time}）。
+
+\subsection{$V_2=|x|$：非光滑，但下降速率有下界}
+
+$V_2$ 正定、径向无界，但在原点不可微。沿轨迹（$x\neq0$ 时）：
+\[
+\text{(S1): }\ \dot V_2=\sgn{x}\,\dot x=-\sgn{x}\,\sgn{x}=-1,
+\]
+\[
+\text{(S2): }\ \dot V_2=\sgn{x}\big(-\sgn{x}+0.9\sin t\big)=-1+0.9\,\sgn{x}\sin t\le-0.1 .
+\]
+与 $V_1$ 相比，$V_2$ 给出的信息更强：下降速率有与状态无关的正下界。因此
+\[
+\text{(S1): }\ T_1\le\frac{|x_0|}{1}=|x_0|,
+\qquad\qquad
+\text{(S2): }\ T_2\le\frac{|x_0|}{0.1}=10\,|x_0|,
+\]
+与式~\eqref{eq:case-bounds} 一致——这不是巧合，因为 $\sqrt{2V_1}=V_2$。
+
+代价是 $V_2$ 在原点不可微，普通 Lie 导数在 $x=0$ 处无定义。第\ref{sec:case-methods}节的三种方法正是为了合法地在原点附近谈论 $\dot V_2$。
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{@{}p{2.6cm}|p{4.6cm}|p{4.6cm}@{}}
+    \hline
+     & $V_1=\tfrac12x^2$ & $V_2=|x|$ \\
+    \hline
+    光滑性 & 处处 $C^1$ & 原点不可微 \\
+    \hline
+    下降速率 & $\dot V_1\le-\alpha\sqrt{2V_1}$（依赖状态） & $\dot V_2\le-\alpha$（常数，更强） \\
+    \hline
+    原点处 & $\dot V_1=0$，需另证有限时间 & 普通导数无定义，需 a.e./Dini/Clarke \\
+    \hline
+    能否直接用经典定理 & 系统无 classical 解，不能 & 不能（非光滑且非 classical） \\
+    \hline
+    主要用途 & 趋近阶段可达性（教材范式） & 有限时间收敛的严格证明 \\
+    \hline
+  \end{tabular}
+  \caption{两个 Lyapunov 函数的对比}
+  \label{tab:case-lyapunov}
+\end{table}
+
+\section{三种方法：几乎处处导数、Dini 上导数、Clarke 广义梯度}\label{sec:case-methods}
+
+三种方法的差别不在“用什么函数”，而在“怎样在原点附近合法地谈论导数”。首先给出三种方法都要用到的一个引理。
+
+\begin{lemma}[非负绝对连续函数的有限时间归零]\label{lem:case-finite-time}
+  设 $t\mapsto V(t)\ge0$ 绝对连续，且存在 $c>0$ 使 $\dot V(t)\le-c$ 在集合 $\{V>0\}$ 上几乎处处成立。则
+  \[
+  V(t)=0\qquad\text{对一切 } t\ge V(0)/c .
+  \]
+\end{lemma}
+
+\begin{proof}
+  在 $\{V>0\}$ 的每个连通区间上积分得 $V$ 以速率 $c$ 下降，故 $V$ 必在 $V(0)/c$ 之前归零。另一方面 $V$ 不能从 $0$ 重新变为正：若 $V(t_0)=0$ 而 $V>0$ 于 $(t_0,t_1]$，则在该区间上积分给出 $V(t_1)\le V(t_0)-c(t_1-t_0)<0$，与 $V\ge0$ 矛盾。
+\end{proof}
+
+引理~\ref{lem:case-finite-time} 同时给出了“有限时间到达”与“到达后不离开”两件事，因此它是三种方法共同的落脚点。
+
+\subsection{方法一：几乎处处导数（推荐）}
+
+绝对连续函数的复合仍是绝对连续的：$V_2$ 局部 Lipschitz、$x(\cdot)$ 绝对连续，故 $V_2(x(\cdot))$ 绝对连续，并且几乎处处成立链式法则
+\[
+\frac{\dd}{\dd t}V_2(x(t))=\sgn{x(t)}\,\dot x(t)\qquad\text{a.e.}
+\]
+在 $x\neq0$ 处上式给出
+\[
+\text{(S1): }\ \dot V_2=-1,
+\qquad
+\text{(S2): }\ \dot V_2=-1+0.9\,\sgn{x}\sin t\le-0.1 ,
+\]
+于是引理~\ref{lem:case-finite-time} 直接给出式~\eqref{eq:case-bounds} 的界，并且同时保证“到达后不离开”。结论：
+
+\begin{quote}
+$(S1)$、$(S2)$ 在 Filippov 意义下\textbf{全局有限时间稳定}，到达时间界分别为 $|x_0|$ 与 $10|x_0|$；$(S1)$ 的界精确。
+\end{quote}
+
+这条证明只有三步：绝对连续 $\Rightarrow$ 几乎处处链式法则 $\Rightarrow$ 引理~\ref{lem:case-finite-time}。它不需要 Clarke 集值理论，也不需要预先验证原点不变性（引理已经包含），因此是最简洁、最值得推荐的路线。
+
+\subsection{方法二：Dini 上导数}
+
+Dini 上导数定义为（与比较引理~\ref{lem:comparison} 中用的导数一致）
+\[
+D^+V(t,x;f)=\limsup_{h\to0^+}\frac{V\big(x+hf(t,x)\big)-V(x)}{h}.
+\]
+它的优点是只依赖函数本身与\textbf{单点}向量场 $f$，不需要广义梯度。
+
+\textbf{远离原点：} 此时 $f$ 单点，Dini 导数与普通导数一致，于是
+\[
+\text{(S1): }\ D^+V_2=-1,
+\qquad
+\text{(S2): }\ D^+V_2=-1+0.9\,\sgn{x}\sin t\le-0.1 .
+\]
+
+\textbf{原点处：} 若把 $f$ 换成整个 Filippov 集并取上确界，情况立刻变坏。对 $V_2=|x|$，$D^+V_2(0;v)=|v|$，故
+\[
+\sup_{v\in\mathbb{K}_2(t,0)}D^+V_2(0;v)
+=\max\big\{|1+0.9\sin t|,\;|1-0.9\sin t|\big\}
+=1+0.9|\sin t|>0 .
+\]
+也就是说，“对所有 Filippov 速度取最大”的 Dini 条件在原点处\textbf{必然失效}（$(S1)$ 给出 $1>0$，$(S2)$ 给出 $1+0.9|\sin t|>0$）。这不是例子不巧，而是方法本身的性质：原点处的允许速度包含“向外”的分量，而逐点取最大恰好挑中了它。
+
+因此正确用法是：\textbf{远离原点}用 Dini 不等式（与普通导数一致），\textbf{原点}用引理~\ref{lem:case-finite-time} 的“到达后不离开”或 Dini 版 Lyapunov 定理（定理~\ref{thm:dini-lyapunov}，要求对每一个解分别验证）。不要指望一个全局的“取最大”条件。
+
+\subsection{方法三：Clarke 广义梯度与集值 Lie 导数}
+
+$V_2=|x|$ 的 Clarke 广义梯度（定理~\ref{thm:general-gradient}）为
+\[
+\partial V_2(x)=
+\begin{cases}
+  \ \{1\}, & x>0,\\
+  \,[-1,1], & x=0,\\
+  \ \{-1\}, & x<0 .
+\end{cases}
+\]
+
+\textbf{远离原点：} 梯度是单点，$\zeta=\sgn{x}$，于是与前面一致：
+\[
+\zeta v=-1\ \ \text{((S1))},
+\qquad
+\zeta v\le-0.1\ \ \text{((S2))},
+\qquad
+\zeta\in\partial V_2(x),\ v\in\mathbb{K}_i(t,x).
+\]
+
+\textbf{原点处：} 令 $\xi\in\partial V_2(0)=[-1,1]$，$v\in\mathbb{K}_2(t,0)=0.9\sin t+[-1,1]$，按 Shevitz--Paden 的交集型集值 Lie 导数（定理~\ref{thm:set-valued-lie}）计算：
+\[
+\dot{\tilde V}_2(t,0)=\bigcap_{\xi\in[-1,1]}\xi^\top\mathbb{K}_2(t,0)=\{0\}.
+\]
+这不是偶然。一般地，只要 $0\in\mathbb{K}[f](x)$ 且 $\mathbb{K}[f](x)$ 有界，就有
+\[
+\bigcap_{\xi\in\partial V(x)}\xi^\top\mathbb{K}[f](x)=\{0\},
+\]
+因为 $0$ 属于每个集合 $\xi^\top\mathbb{K}[f](x)$，而当 $|\xi|\to0$ 时该集合收缩为 $\{0\}$。这个事实有两层含义：
+
+\begin{itemize}
+  \item 好的一面：$\dot{\tilde V}_2=\{0\}\subseteq(-\infty,0]$ 在原点自动成立，于是全局 $\dot{\tilde V}_2\subseteq(-\infty,0]$，$S=\{x:0\in\dot{\tilde V}_2(x)\}=\{0\}$，配合定理~\ref{thm:LaSalle}（需 Filippov 解唯一与紧不变集，本例都满足）可断言每条轨迹收敛到 $0$。
+  \item 局限的一面：交集定义只保证“存在匹配的速度使内积为零”，并不保证“每个速度都使 $V$ 下降”，因此它在原点处给不出任何下降\textbf{速率}。有限时间结论仍然要靠第\ref{sec:case-methods}节方法一的 $\dot V_2\le-0.1$（$x\neq0$）与引理~\ref{lem:case-finite-time}。
+\end{itemize}
+
+作为对比，若采用“对所有 $(\zeta,v)$ 取最大”的 Clarke 条件，原点处会得到
+\[
+\max_{\zeta\in\partial V_2(0),\,v\in\mathbb{K}_2(t,0)}\zeta v=1+0.9|\sin t|>0,
+\]
+条件失败。所以三种方法都必须把原点单独处理——区别只在于：方法一用“到达后不离开”，方法二、三用“远离原点的不等式 + 不变性”。
+
+\subsection{三种方法对照}
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{@{}p{2.6cm}|p{3.6cm}|p{3.6cm}|p{3.4cm}@{}}
+    \hline
+    方法 & 需要的假设 & 原点处给出什么 & 结论强度 \\
+    \hline
+    几乎处处导数 & 解绝对连续；$V$ 沿解 a.e. 可导 & 不需要在原点求导：引理~\ref{lem:case-finite-time} 直接给出归零且不离开 & 有限时间 + 到达时间界（最强） \\
+    \hline
+    Dini 上导数 & $V$ 连续、局部 Lipschitz；单点 $f$ & “取最大”形式失效（$=1+0.9|\sin t|>0$），须逐解验证或分离处理 & 可达性、有限时间（需额外论证） \\
+    \hline
+    Clarke + 集值 Lie 导数 & $V$ 局部 Lipschitz、正则 & 交集自动为 $\{0\}$：弱不增，无速率 & 不变集原理（LaSalle）、渐近稳定 \\
+    \hline
+  \end{tabular}
+  \caption{三种处理非光滑性的方法}
+  \label{tab:case-methods}
+\end{table}
+
+三者的关系可以归纳为一句话：\textbf{都归结为“远离原点的严格下降 + 原点的强不变性”，差别只在“在原点附近如何合法地谈论导数”。}对 $(S1)$、$(S2)$ 这种一维系统，方法一最省事；方法二、三的价值在于能推广到多变量、非一致收敛、解不唯一的场合。
 
 \section{Utkin 失效的二维反例}\label{sec:utkin-counterexample}
+
+等效控制的四条条件中，任何一条被破坏都可能失效。前面已看到条件 3（可容许性）的破坏会导致间歇滑模；本节给出条件 2（横截条件）被破坏的反例，此时等效控制连定义都成问题。
 
 \subsection{反例构造}
 
@@ -244,7 +464,7 @@ Utkin 等效控制常被教材当作滑模阶段的定义直接给出：「滑�
 \qquad
 s(x) = x_1 - x_2,
 \qquad
-u = -\mathrm{sgn}(s).
+u = -k\,\sgn{s},\quad k>0.
 \]
 这里 $f(x) = \begin{bmatrix} -x_2 \\ x_1 \end{bmatrix}$，$g(x) = \begin{bmatrix} 1 \\ 1 \end{bmatrix}$。
 
@@ -254,56 +474,62 @@ u = -\mathrm{sgn}(s).
 \[
 \nabla s^\top g = \begin{bmatrix} 1 & -1 \end{bmatrix} \begin{bmatrix} 1 \\ 1 \end{bmatrix} = 1 - 1 = 0.
 \]
-横截条件 $\nabla s^\top g \neq 0$ 被破坏：控制 $u$ 的变化对 $\dot s$ 没有一阶影响。
+横截条件 $\nabla s^\top g\neq0$ 被破坏：控制 $u$ 的变化对 $\dot s$ 没有一阶影响。
 
-\subsection{Utkin 等效控制的失效}
+\subsection{等效控制的失效}
 
-按 Utkin 方法，令 $\dot s = 0$：
+按 Utkin 方法，令 $\dot s=0$：
 \[
 \dot s = \nabla s^\top (f + g u) = \begin{bmatrix} 1 & -1 \end{bmatrix} \left( \begin{bmatrix} -x_2 \\ x_1 \end{bmatrix} + \begin{bmatrix} 1 \\ 1 \end{bmatrix} u \right)
        = (-x_2 - x_1) + (1 - 1) u
        = -(x_1 + x_2).
 \]
-注意 $u$ 的系数为零，方程 $\dot s = 0$ 简化为 $x_1 + x_2 = 0$，与 $u$ 无关。这意味着：
+注意 $u$ 的系数为零，方程 $\dot s=0$ 简化为 $x_1+x_2=0$，与 $u$ 无关。这意味着：
 \begin{itemize}
-  \item 在 $s=0$ 且 $x_1+x_2=0$ 的交线上（即原点 $x_1=x_2=0$），任何 $u$ 值都能使 $\dot s = 0$——\textbf{等效控制有无穷多个}；
-  \item 在 $s=0$ 但 $x_1+x_2 \neq 0$ 的点，$\dot s \neq 0$ 且无法通过调节 $u$ 改变——\textbf{不存在任何等效控制}能维持滑模。
+  \item 在 $s=0$ 与 $x_1+x_2=0$ 的交点（即原点 $x_1=x_2=0$）上，任何 $u$ 都能使 $\dot s=0$——\textbf{等效控制有无穷多个}；
+  \item 在 $s=0$ 但 $x_1+x_2\neq0$ 的点上，$\dot s\neq0$ 且无法通过调节 $u$ 改变——\textbf{不存在任何等效控制}能维持滑模。
 \end{itemize}
 Utkin 的单点等效动力学 $u_\mathrm{eq} = -(\nabla s^\top g)^{-1}\nabla s^\top f$ 因分母为零而直接无定义。
 
-\subsection{Filippov 框架下的正确描述}
+\subsection{Filippov 框架下的良定描述}
 
-Filippov 微分包含不受此影响。在 $s=0$ 上，控制 $u = -\mathrm{sgn}(s)$ 在 $s=0$ 处的 Filippov 集值化为 $[-1,1]$，于是
+Filippov 微分包含不受此影响：在 $s=0$ 上，$u=-k\,\sgn{s}$ 集值化为 $[-k,k]$，于是
 \[
-\mathbb{K}[f+gu](x) = f(x) + g(x)\,[-1,1]
-                    = \begin{bmatrix} -x_2 \\ x_1 \end{bmatrix} + \begin{bmatrix} 1 \\ 1 \end{bmatrix} [-1,1]
-                    = \begin{bmatrix} -x_2 + [-1,1] \\ x_1 + [-1,1] \end{bmatrix}.
+\mathbb{K}[f+gu](x) = f(x) + g(x)\,[-k,k]
+                    = \begin{bmatrix} -x_2 \\ x_1 \end{bmatrix} + \begin{bmatrix} 1 \\ 1 \end{bmatrix} [-k,k]
+                    = \begin{bmatrix} -x_2 + [-k,k] \\ x_1 + [-k,k] \end{bmatrix}.
 \]
-这是一个良定的集值映射，它完整描述了系统在滑模面上所有允许的速度。我们可以在此基础上讨论解的存在性、滑动运动的定性性质，以及稳定性——这些是 Utkin 方法无法直接给出的。
+这是一个良定的集值映射，完整描述了滑模面上所有允许的速度；可以在此基础上讨论解的存在性与唯一性。
+
+\begin{remark}[这个反例真正说明了什么]
+  集合 $\mathbb{K}[f+gu]$ 良定，并不意味着“滑模仍然存在”。在 $s=0$ 上，任何允许速度 $v$ 的法向分量都是 $\nabla s^\top v=-(x_1+x_2)$，\textbf{与 $u$ 无关}。因此除原点外它恒不为零，轨迹总是横穿 $s=0$，\textbf{不存在非平凡的滑动模态}；在原点处法向分量恒为 $0$，$\mathbb{K}[f+gu](0)=\{(v,v):v\in[-k,k]\}$ 全部落在切向，滑模退化成一个平衡点。
+  换句话说，Filippov 框架在这里的价值不是“救回”滑模，而是把“到底有没有滑动解、滑动速度是什么”变成\textbf{可以判定}的问题：Utkin 方法只能给出“$u_\mathrm{eq}$ 无定义”，Filippov 框架能给出“不存在非平凡滑动模态”这一完整结论，并且说明了原因是滑模面的法向方向不受控制影响，而不是控制增益不够大。
+\end{remark}
 
 \subsection{另一类失效场景：角点滑动}
 
-除横截条件破坏外，还有一类 Utkin 方法失效的典型场景：\textbf{多个滑模面相交的角点}。当系统有多个切换面 $\{s_1=0\},\{s_2=0\},\dots$，且它们在某个角点（如 $s_1=s_2=0$）相交时，Utkin 的单滑模面等效控制方法无法直接推广——Filippov 微分包含可以自然地处理这种多集值交叠的复杂情形，给出角点处的滑动解定义，而 Utkin 范式需要额外的几何条件与分情况讨论。
+除横截条件破坏外，还有一类 Utkin 方法失效的典型场景：\textbf{多张滑模面相交的角点}。当系统有多个切换面 $\{s_1=0\},\{s_2=0\},\dots$ 且在某个角点（如 $s_1=s_2=0$）相交时，Utkin 的单滑模面等效控制方法无法直接推广；Filippov 微分包含可以自然地处理这种多个集值集合交叠的情形，给出角点处的滑动解定义，而 Utkin 范式需要额外的几何条件与分情况讨论。
 
 \section{核心对比：Utkin vs.\ Filippov}\label{sec:comparison}
 
 \begin{table}[!htp]
   \centering
-  \begin{tabular}{|p{5em}|p{18em}|p{18em}|}
+  \small
+  \begin{tabular}{|p{6.5em}|p{16.8em}|p{16.8em}|}
     \hline
-    & \textbf{Utkin 等效控制} & \textbf{Filippov 微分包含 + Clarke 次梯度 / 集值李导数} \\
+    \textbf{对比项} & \textbf{Utkin 等效控制} & \textbf{Filippov 微分包含 + Clarke 次梯度 / 集值李导数} \\
     \hline
     定位 & 工程设计工具 & 底层数学框架 \\
     \hline
     核心操作 & 拆分趋近 / 滑动阶段，反解等效控制 $u_\mathrm{eq}$ & 将不连续右端集值化，用微分包含描述所有允许解 \\
     \hline
-    Lyapunov 工具 & 光滑 $V=\tfrac12 s^2$，普通李导数 & 非光滑 $V$，Clarke 广义梯度 $\partial V$，集值李导数 $\dot{\tilde V}$ 或 Dini 上导数 \\
+    \makecell[l]{Lyapunov\\工具} & 光滑 $V=\tfrac12 s^2$，普通李导数 & 非光滑 $V$，Clarke 广义梯度 $\partial V$，集值李导数 $\dot{\tilde V}$ 或 Dini 上导数 \\
     \hline
-    适用条件 & 仿射系统、单光滑滑模面、$\nabla s^\top g\neq0$、可达性 & 只要 $f$ 可测且局部本质有界即可定义 Filippov 解 \\
+    适用条件 & 仿射系统、单张光滑滑模面、$\nabla s^\top g\neq0$、$|u_\mathrm{eq}|\le k$、可达性 & 只需右端可测、局部本质有界 \\
     \hline
-    滑模面上的行为 & 单点等效动力学 $\dot x = f + g u_\mathrm{eq}$（降维连续系统） & 集值速度集合 $\mathbb{K}[f+gu](x)$，可能包含多个滑动方向 \\
+    滑模面上 & 单点等效动力学 $\dot x = f + g u_\mathrm{eq}$（降维连续系统） & 集值速度集合 $\mathbb{K}[f+gu](x)$，可能包含多个滑动方向 \\
     \hline
-    能处理的场景 & 常规单滑模面仿射系统 & 单滑模面、多滑模面相交、横截条件破坏、奇异控制等复杂情形 \\
+    适用场景 & 常规单滑模面仿射系统 & 单滑模面、多滑模面相交、横截条件破坏、奇异控制等复杂情形 \\
     \hline
     主要用途 & 控制器设计、仿真、物理解释 & 解的存在唯一性严格证明、不变集原理、非光滑 Lyapunov 稳定性分析 \\
     \hline
@@ -312,15 +538,44 @@ Filippov 微分包含不受此影响。在 $s=0$ 上，控制 $u = -\mathrm{sgn}
   \label{tab:utkin-vs-filippov}
 \end{table}
 
-总结而言：
+\section{本章小结}\label{sec:case-summary}
+
+把两条系统的结论汇总如下（均指 Filippov 意义）：
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \begin{tabular}{@{}p{5cm}|c|c@{}}
+    \hline
+    性质 & (S1) $\dot x=-\sgn{x}$ & (S2) $\dot x=-\sgn{x}+0.9\sin t$ \\
+    \hline
+    原点是否为平衡点 / Filippov 解 & 是 & 是 \\
+    \hline
+    原点的强不变性 & 是 & 是 \\
+    \hline
+    全局 Lyapunov 稳定 & 是 & 是 \\
+    \hline
+    全局有限时间稳定 & 是 & 是 \\
+    \hline
+    到达时间界 & $|x_0|$（精确） & $10\,|x_0|$ \\
+    \hline
+    等效控制 $u_\mathrm{eq}$ & $0$ & $-0.9\sin t$（可容许） \\
+    \hline
+    Carathéodory 全局解 & 有（靠 $\sgn{0}=0$） & 无 \\
+    \hline
+  \end{tabular}
+  \caption{两个系统的结论对照}
+  \label{tab:case-conclusions}
+\end{table}
+
+\textbf{推荐做法：}取 $V=|x|$，沿 Filippov 解使用几乎处处导数得到 $\dot V\le-1$ 或 $\dot V\le-0.1$（$x\neq0$），再用引理~\ref{lem:case-finite-time} 一次性得到“有限时间到达 + 到达后不离开”。这条路线只需三步，且对两条系统统一适用。
+
+最后回到全书的定位。两套范式并非对立，而是\textbf{互补}关系：
+
 \begin{itemize}
-  \item \textbf{Utkin 等效控制}偏向工程设计，简单好用但假设强。在满足仿射结构、单光滑滑模面、横截条件与可达性时，它给出的等效动力学与 Filippov 框架严格等价，是滑模控制教材与工程实践的主流工具。
-  \item \textbf{Filippov 微分包含 + Clarke 次梯度 / 集值李导数}是底层数学框架，适用范围更广。它不依赖仿射结构与横截条件，能统一处理滑模面相交、横截条件破坏等奇异情形，并为解的存在性、不变集原理以及非光滑 Lyapunov 稳定性提供严格证明。
-  \item 二者并非对立，而是\textbf{互补}关系：Utkin 方法是 Filippov 框架在「好条件」下的工程简化，Filippov 框架是 Utkin 方法在「坏条件」下的数学 rescue。
+  \item \textbf{Utkin 等效控制}偏向工程设计，简单好用但假设强。在仿射结构、单张光滑滑模面、横截条件与可容许条件同时成立时，它给出的等效动力学与 Filippov 框架严格等价（命题~\ref{prop:case-ueq}），是滑模控制教材与工程实践的主流工具。
+  \item \textbf{Filippov 微分包含 + 非光滑 Lyapunov 工具}是底层数学框架，适用范围更广。它不依赖仿射结构与横截条件，能统一处理滑模面相交、横截条件破坏、间歇滑模等奇异情形，并为解的存在性、不变集原理与非光滑稳定性提供严格证明。
+  \item 二者的分工可以用本章的一句话概括：\textbf{等效控制负责滑模面，非光滑工具负责滑模面之外}。教材教你“怎么用”，论文回答“为什么能用”。
 \end{itemize}
 
-本章通过一阶 bang-bang 系统的案例，从普通李导数的局限出发，依次引入集值李导数、Utkin 等效控制及其失效反例，最终落脚于两种范式的对比。
-本章的定位是\textbf{把前两章的理论用在最小的例子上}：
-第\ref{ch:lipschitz}章回答“经典解什么时候存在且唯一”，第\ref{ch:bounded}章回答“右端不连续时解与稳定性如何定义”，
-本章回答“在具体的滑模控制问题里，应该选哪一套、各自的前提是什么”。
-更接近算法层面的内容（超螺旋算法的增益条件与严格 Lyapunov 证明）见第\ref{ch:sta}章。
+第\ref{ch:lipschitz}章回答“经典解什么时候存在且唯一”，第\ref{ch:bounded}章回答“右端不连续时解与稳定性如何定义”，本章回答“在具体的滑模控制问题里应该选哪一套、各自的前提是什么”。更接近算法层面的内容（超螺旋算法的增益条件与严格 Lyapunov 证明）见第\ref{ch:sta}章。
